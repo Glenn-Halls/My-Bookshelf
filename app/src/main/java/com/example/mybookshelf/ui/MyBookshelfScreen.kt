@@ -16,7 +16,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
+import com.example.mybookshelf.ui.util.BookshelfNavigationType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,9 +35,23 @@ fun MyBookshelfScreen(
     windowSize: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
+    // Get window width from window size
+    val windowWidth = windowSize.widthSizeClass
+    // Get window height from window size
+    val windowHeight = windowSize.heightSizeClass
+    // Define navigation type based on WindowSize dimensions
+    val navigationType: BookshelfNavigationType =
+        when (windowWidth) {
+            WindowWidthSizeClass.Compact -> BookshelfNavigationType.BOTTOM_BAR
+            WindowWidthSizeClass.Medium -> BookshelfNavigationType.NAVIGATION_RAIL
+            WindowWidthSizeClass.Expanded -> BookshelfNavigationType.NAVIGATION_DRAWER
+            else -> BookshelfNavigationType.BOTTOM_BAR
+        }
     Scaffold(
         topBar = {
-            MyBookshelfTopBar {}
+            if (windowHeight != WindowHeightSizeClass.Compact) {
+                MyBookshelfTopBar {}
+            }
         }
     ){ paddingValues ->
         Box(
@@ -49,6 +66,9 @@ fun MyBookshelfScreen(
                 )
                 Text(
                     text = windowSize.widthSizeClass.toString(),
+                )
+                Text(
+                    text = "$navigationType"
                 )
             }
         }
