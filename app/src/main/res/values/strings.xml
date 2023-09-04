@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">My Bookshelf</string>
+    <string name="back_button">back button</string>
 </resources>
