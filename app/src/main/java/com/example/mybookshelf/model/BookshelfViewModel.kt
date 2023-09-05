@@ -1,7 +1,10 @@
 package com.example.mybookshelf.model
 
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.lifecycle.ViewModel
-import com.example.mybookshelf.ui.util.ScreenSelect
+import com.example.mybookshelf.ui.util.BookshelfNavigationType
+import com.example.mybookshelf.ui.util.NavigationElement
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -13,11 +16,22 @@ class BookshelfViewModel : ViewModel() {
     // Accessor to state values
     val uiState: StateFlow<BookshelfUiState> = _uiState
 
-    fun navigateToScreen(screen: ScreenSelect) {
+    // Navigate to selected screen
+    fun navigateToScreen(nav: NavigationElement) {
         _uiState.update {
             it.copy(
-                currentScreen = screen
+                currentScreen = nav.screenSelect
             )
+        }
+    }
+
+    // Get navigation setup based on window size
+    fun getNavigationSetup(windowSize: WindowSizeClass): BookshelfNavigationType {
+        return when (windowSize.widthSizeClass) {
+            WindowWidthSizeClass.Compact -> BookshelfNavigationType.BOTTOM_BAR
+            WindowWidthSizeClass.Medium -> BookshelfNavigationType.NAVIGATION_RAIL
+            WindowWidthSizeClass.Expanded -> BookshelfNavigationType.NAVIGATION_DRAWER
+            else -> BookshelfNavigationType.BOTTOM_BAR
         }
     }
 }

@@ -20,10 +20,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
 import com.example.mybookshelf.ui.util.NavigateBackTab
+import com.example.mybookshelf.ui.util.NavigationElement
 import com.example.mybookshelf.ui.util.NavigationTabs
 
 @Composable
 fun BookshelfBottomNavBar(
+    onTabPressed: (NavigationElement) -> Unit,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
@@ -33,7 +35,7 @@ fun BookshelfBottomNavBar(
         NavigationTabs.forEach {
             NavigationBarItem(
                 selected = false,
-                onClick = { /*TODO*/ },
+                onClick = { onTabPressed(it) },
                 icon = {
                     Icon(
                         painter = painterResource(id = it.icon),
@@ -57,6 +59,7 @@ fun BookshelfBottomNavBar(
 
 @Composable
 fun BookshelfNavigationRail(
+    onTabPressed: (NavigationElement) -> Unit,
     modifier: Modifier = Modifier,
     showBackButton: Boolean = false
 ) {
@@ -66,7 +69,7 @@ fun BookshelfNavigationRail(
             val backButton = NavigateBackTab
             NavigationRailItem(
                 selected = false, 
-                onClick = { /*TODO*/ },
+                onClick = { onTabPressed(backButton) },
                 icon = {
                     Icon(
                         painter = painterResource(backButton.icon),
@@ -85,7 +88,7 @@ fun BookshelfNavigationRail(
         NavigationTabs.forEach {
             NavigationRailItem(
                 selected = false,
-                onClick = { /*TODO*/ },
+                onClick = { onTabPressed(it) },
                 icon = {
                     Icon(
                         painter = painterResource(it.icon),

@@ -18,7 +18,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,13 +45,8 @@ fun MyBookshelfScreen(
     // Get window height from window size
     val windowHeight = windowSize.heightSizeClass
     // Define navigation type based on WindowSize dimensions
-    val navigationType: BookshelfNavigationType =
-        when (windowWidth) {
-            WindowWidthSizeClass.Compact -> BookshelfNavigationType.BOTTOM_BAR
-            WindowWidthSizeClass.Medium -> BookshelfNavigationType.NAVIGATION_RAIL
-            WindowWidthSizeClass.Expanded -> BookshelfNavigationType.NAVIGATION_DRAWER
-            else -> BookshelfNavigationType.BOTTOM_BAR
-        }
+    val navigationType = viewModel.getNavigationSetup(windowSize)
+
     Scaffold(
         topBar = {
             if (windowHeight != WindowHeightSizeClass.Compact) {
@@ -61,13 +55,16 @@ fun MyBookshelfScreen(
         },
         bottomBar = {
             if (navigationType == BookshelfNavigationType.BOTTOM_BAR) {
-                BookshelfBottomNavBar()
+                BookshelfBottomNavBar(
+                    onTabPressed = { viewModel.navigateToScreen(it) }
+                )
             }
         }
     ){ innerPadding ->
         Row(modifier = Modifier.padding(innerPadding)) {
             if (navigationType == BookshelfNavigationType.NAVIGATION_RAIL) {
                 BookshelfNavigationRail(
+                    onTabPressed = { viewModel.navigateToScreen(it) },
                     showBackButton = windowHeight == WindowHeightSizeClass.Compact
                 )
             }
