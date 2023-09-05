@@ -52,12 +52,17 @@ fun MyBookshelfScreen(
             if (windowHeight != WindowHeightSizeClass.Compact) {
                 MyBookshelfTopBar {}
             }
+        },
+        bottomBar = {
+            if (navigationType == BookshelfNavigationType.BOTTOM_BAR) {
+                BookshelfBottomNavBar()
+            }
         }
-    ){ paddingValues ->
+    ){ innerPadding ->
         Box(
             contentAlignment = Alignment.Center,
             modifier = modifier
-                .padding(paddingValues)
+                .padding(innerPadding)
                 .fillMaxSize()
         ) {
             Column {
@@ -70,6 +75,7 @@ fun MyBookshelfScreen(
                 Text(
                     text = "$navigationType"
                 )
+                BookshelfBottomNavBar()
             }
         }
     }
@@ -95,7 +101,7 @@ fun MyBookshelfTopBar(onUpButtonClick: () -> Unit) {
             IconButton(onClick = onUpButtonClick) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.back_button)
+                    contentDescription = stringResource(R.string.back_button),
                 )
             }
         }
