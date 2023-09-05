@@ -9,6 +9,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -16,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
-
+import com.example.mybookshelf.ui.util.NavigateBackTab
 import com.example.mybookshelf.ui.util.NavigationTabs
 
 @Composable
@@ -41,6 +44,58 @@ fun BookshelfBottomNavBar(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = MaterialTheme.colorScheme.onSecondary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSecondary
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .background(MaterialTheme.colorScheme.secondary)
+            )
+        }
+    }
+}
+
+@Composable
+fun BookshelfNavigationRail(
+    modifier: Modifier = Modifier,
+    showBackButton: Boolean = false
+) {
+    NavigationRail {
+        val iconSize = 40.dp
+        if (showBackButton) {
+            val backButton = NavigateBackTab
+            NavigationRailItem(
+                selected = false, 
+                onClick = { /*TODO*/ },
+                icon = {
+                    Icon(
+                        painter = painterResource(backButton.icon),
+                        contentDescription = stringResource(backButton.name),
+                        modifier = Modifier
+                            .padding(dimensionResource(R.dimen.padding_small))
+                            .size(iconSize)
+
+                    )
+                },
+                colors = NavigationRailItemDefaults.colors(
+                    unselectedIconColor = MaterialTheme.colorScheme.primary,
+                )
+            )
+        }
+        NavigationTabs.forEach {
+            NavigationRailItem(
+                selected = false,
+                onClick = { /*TODO*/ },
+                icon = {
+                    Icon(
+                        painter = painterResource(it.icon),
+                        contentDescription = stringResource(it.name),
+                        modifier = Modifier
+                            .padding(dimensionResource(R.dimen.padding_small))
+                            .size(iconSize)
+                    )
+                },
+                colors = NavigationRailItemDefaults.colors(
                     indicatorColor = MaterialTheme.colorScheme.onSecondary,
                     unselectedIconColor = MaterialTheme.colorScheme.onSecondary
                 ),

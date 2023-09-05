@@ -1,9 +1,7 @@
 package com.example.mybookshelf.ui
 
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,7 +18,6 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,23 +56,11 @@ fun MyBookshelfScreen(
             }
         }
     ){ innerPadding ->
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        ) {
-            Column {
-                Text(
-                    text = windowSize.heightSizeClass.toString(),
+        Row(modifier = Modifier.padding(innerPadding)) {
+            if (navigationType == BookshelfNavigationType.NAVIGATION_RAIL) {
+                BookshelfNavigationRail(
+                    showBackButton = windowHeight == WindowHeightSizeClass.Compact
                 )
-                Text(
-                    text = windowSize.widthSizeClass.toString(),
-                )
-                Text(
-                    text = "$navigationType"
-                )
-                BookshelfBottomNavBar()
             }
         }
     }
