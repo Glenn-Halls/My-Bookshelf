@@ -1,7 +1,9 @@
 package com.example.mybookshelf.ui
 
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -18,20 +20,27 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
+import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBookshelfScreen(
+    viewModel: BookshelfViewModel,
     windowSize: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
+    // State Flow accessor to UI State
+    val uiState by viewModel.uiState.collectAsState()
     // Get window width from window size
     val windowWidth = windowSize.widthSizeClass
     // Get window height from window size
@@ -61,6 +70,12 @@ fun MyBookshelfScreen(
                 BookshelfNavigationRail(
                     showBackButton = windowHeight == WindowHeightSizeClass.Compact
                 )
+            }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(text = uiState.currentScreen.toString())
             }
         }
     }

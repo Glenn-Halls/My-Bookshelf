@@ -9,16 +9,17 @@ data class NavigationElement(
     val name: Int,
     @DrawableRes
     val icon: Int,
+    val screenSelect: ScreenSelect
 )
 
 val NavigationTabs = listOf<NavigationElement>(
-    NavigationElement(R.string.best_sellers, R.drawable.bestseller),
-    NavigationElement(R.string.watch_list, R.drawable.watch_list),
-    NavigationElement(R.string.browse, R.drawable.search),
-    NavigationElement(R.string.my_books, R.drawable.owned),
-    NavigationElement(R.string.favourites, R.drawable.favourite)
+    NavigationElement(R.string.best_sellers, R.drawable.bestseller, ScreenSelect.BEST_SELLERS),
+    NavigationElement(R.string.watch_list, R.drawable.watch_list, ScreenSelect.WATCH_LIST),
+    NavigationElement(R.string.browse, R.drawable.search, ScreenSelect.BROWSE),
+    NavigationElement(R.string.my_books, R.drawable.owned, ScreenSelect.MY_BOOKS),
+    NavigationElement(R.string.favourites, R.drawable.favourite, ScreenSelect.FAVOURITES)
 )
 
-val NavigateBackTab = NavigationElement(R.string.back_button, R.drawable.back_arrow)
+val NavigateBackTab = NavigationElement(R.string.back_button, R.drawable.back_arrow, ScreenSelect.NONE)
 
 

@@ -7,3 +7,7 @@ enum class BookshelfNavigationType {
 enum class BookshelfContentLayout {
     LIST_ONLY, DETAILS_ONLY, LIST_AND_DETAILS
 }
+
+enum class ScreenSelect {
+    NONE, BEST_SELLERS, WATCH_LIST, BROWSE, MY_BOOKS, FAVOURITES
+}
