@@ -12,6 +12,7 @@ data class NavigationElement(
     val screenSelect: ScreenSelect
 )
 
+// Navigation elements to be used by bottom nav, navigation rail and nav drawer
 val NavigationTabs = listOf<NavigationElement>(
     NavigationElement(R.string.best_sellers, R.drawable.bestseller, ScreenSelect.BEST_SELLERS),
     NavigationElement(R.string.watch_list, R.drawable.watch_list, ScreenSelect.WATCH_LIST),

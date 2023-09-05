@@ -40,14 +40,14 @@ fun MyBookshelfScreen(
 ) {
     // State Flow accessor to UI State
     val uiState by viewModel.uiState.collectAsState()
-    // Get window width from window size
-    val windowWidth = windowSize.widthSizeClass
-    // Get window height from window size
-    val windowHeight = windowSize.heightSizeClass
-    // Define navigation type based on WindowSize dimensions
+    // Define navigation type based on WindowSizeClass dimensions
     val navigationType = viewModel.getNavigationSetup(windowSize)
+    // Get window height in order to NOT show top bar on compact screens
+    val windowHeight = windowSize.heightSizeClass
+
 
     Scaffold(
+        // Do not show top bar on compact screens
         topBar = {
             if (windowHeight != WindowHeightSizeClass.Compact) {
                 MyBookshelfTopBar {}
@@ -62,6 +62,7 @@ fun MyBookshelfScreen(
         }
     ){ innerPadding ->
         Row(modifier = Modifier.padding(innerPadding)) {
+            // Display navigation rail for non-compact-width screens
             if (navigationType == BookshelfNavigationType.NAVIGATION_RAIL) {
                 BookshelfNavigationRail(
                     onTabPressed = { viewModel.navigateToScreen(it) },
@@ -84,7 +85,7 @@ fun MyBookshelfTopBar(onUpButtonClick: () -> Unit) {
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = stringResource(id = R.string.app_name),
+                text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.displayLarge
             )
         },
