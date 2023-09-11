@@ -47,7 +47,7 @@ class BookshelfViewModel : ViewModel() {
     fun getBestsellers() {
         viewModelScope.launch {
             val result: String = try {
-                BestsellerApi.retrofitService.getBestsellers()
+                "Success, ${BestsellerApi.retrofitService.getBestsellers().totalItems} books found."
             } catch (e: Exception) {
                 "Bestseller retrieval failure: ${e.message}"
             }
