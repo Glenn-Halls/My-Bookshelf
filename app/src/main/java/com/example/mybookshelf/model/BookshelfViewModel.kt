@@ -4,6 +4,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mybookshelf.network.BestsellerApi
 import com.example.mybookshelf.network.BookshelfApi
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
@@ -43,6 +44,21 @@ class BookshelfViewModel : ViewModel() {
         }
     }
 
+    fun getBestsellers() {
+        viewModelScope.launch {
+            val result: String = try {
+                BestsellerApi.retrofitService.getBestsellers()
+            } catch (e: Exception) {
+                "Bestseller retrieval failure: ${e.message}"
+            }
+            _uiState.update {
+                it.copy(
+                    bestSellers = result
+                )
+            }
+        }
+    }
+
     // Get navigation setup based on window size
     fun getNavigationSetup(windowSize: WindowSizeClass): BookshelfNavigationType {
         return when (windowSize.widthSizeClass) {
@@ -55,5 +71,6 @@ class BookshelfViewModel : ViewModel() {
 
     init {
         searchBooks()
+        getBestsellers()
     }
 }

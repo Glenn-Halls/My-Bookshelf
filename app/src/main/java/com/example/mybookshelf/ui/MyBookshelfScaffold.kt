@@ -69,11 +69,9 @@ fun MyBookshelfScreen(
             // Determine screen to display based on current screen selection
             when (uiState.currentScreen) {
                 ScreenSelect.NONE -> Text("hello")
-                ScreenSelect.BEST_SELLERS -> Text("Best Sellers")
+                ScreenSelect.BEST_SELLERS -> Text(uiState.bestSellers ?: "?")
                 ScreenSelect.WATCH_LIST -> Text("Watch List")
-                ScreenSelect.BROWSE -> {
-                    Text(text = uiState.searchResult ?: "?")
-                }
+                ScreenSelect.BROWSE -> Text(uiState.searchResult ?: "?")
                 ScreenSelect.MY_BOOKS -> Text("My Books")
                 ScreenSelect.FAVOURITES -> Text("Favourites")
                 else -> Text("null")
