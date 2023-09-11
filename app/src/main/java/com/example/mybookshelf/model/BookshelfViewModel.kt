@@ -32,7 +32,7 @@ class BookshelfViewModel : ViewModel() {
     fun searchBooks() {
         viewModelScope.launch {
             val searchResult: String = try {
-                BookshelfApi.retrofitService.getBooks()
+                "Success, ${BookshelfApi.retrofitService.getBooks().totalItems} books found."
             } catch (e: Exception) {
                 "Search Failure: ${e.message}"
             }
