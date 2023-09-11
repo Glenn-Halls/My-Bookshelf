@@ -1,9 +1,7 @@
 package com.example.mybookshelf.ui
 
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -21,7 +19,6 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
+import com.example.mybookshelf.ui.util.ScreenSelect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +42,6 @@ fun MyBookshelfScreen(
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
     val windowHeight = windowSize.heightSizeClass
-
 
     Scaffold(
         // Do not show top bar on compact screens
@@ -69,11 +66,15 @@ fun MyBookshelfScreen(
                     showBackButton = windowHeight == WindowHeightSizeClass.Compact
                 )
             }
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Text(text = uiState.currentScreen.toString())
+            // Determine screen to display based on current screen selection
+            when (uiState.currentScreen) {
+                ScreenSelect.NONE -> Text("hello")
+                ScreenSelect.BEST_SELLERS -> Text("Best Sellers")
+                ScreenSelect.WATCH_LIST -> Text("Watch List")
+                ScreenSelect.BROWSE -> Text("Browse")
+                ScreenSelect.MY_BOOKS -> Text("My Books")
+                ScreenSelect.FAVOURITES -> Text("Favourites")
+                else -> Text("null")
             }
         }
     }
