@@ -3,11 +3,14 @@ package com.example.mybookshelf.model
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mybookshelf.network.BookshelfApi
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class BookshelfViewModel : ViewModel() {
 
@@ -25,6 +28,21 @@ class BookshelfViewModel : ViewModel() {
         }
     }
 
+    fun searchBooks() {
+        viewModelScope.launch {
+            val searchResult: String = try {
+                BookshelfApi.retrofitService.getBooks()
+            } catch (e: Exception) {
+                "Search Failure: ${e.message}"
+            }
+            _uiState.update {
+                it.copy(
+                    searchResult = searchResult
+                )
+            }
+        }
+    }
+
     // Get navigation setup based on window size
     fun getNavigationSetup(windowSize: WindowSizeClass): BookshelfNavigationType {
         return when (windowSize.widthSizeClass) {
@@ -33,5 +51,9 @@ class BookshelfViewModel : ViewModel() {
             WindowWidthSizeClass.Expanded -> BookshelfNavigationType.NAVIGATION_DRAWER
             else -> BookshelfNavigationType.BOTTOM_BAR
         }
+    }
+
+    init {
+        searchBooks()
     }
 }

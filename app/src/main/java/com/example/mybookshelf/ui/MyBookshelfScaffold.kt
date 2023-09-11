@@ -71,7 +71,9 @@ fun MyBookshelfScreen(
                 ScreenSelect.NONE -> Text("hello")
                 ScreenSelect.BEST_SELLERS -> Text("Best Sellers")
                 ScreenSelect.WATCH_LIST -> Text("Watch List")
-                ScreenSelect.BROWSE -> Text("Browse")
+                ScreenSelect.BROWSE -> {
+                    Text(text = uiState.searchResult ?: "?")
+                }
                 ScreenSelect.MY_BOOKS -> Text("My Books")
                 ScreenSelect.FAVOURITES -> Text("Favourites")
                 else -> Text("null")
