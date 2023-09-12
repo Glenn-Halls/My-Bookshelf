@@ -4,8 +4,8 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mybookshelf.network.BestsellerApi
-import com.example.mybookshelf.network.BookshelfApi
+import com.example.mybookshelf.data.NetworkBestsellerRepository
+import com.example.mybookshelf.data.NetworkBookRepository
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,8 @@ class BookshelfViewModel : ViewModel() {
     fun searchBooks() {
         viewModelScope.launch {
             val searchResult: String = try {
-                "Success, ${BookshelfApi.retrofitService.getBooks().totalItems} books found."
+                val jsonReply = NetworkBookRepository().getBooks()
+                "Success, ${jsonReply.totalItems} books found."
             } catch (e: Exception) {
                 "Search Failure: ${e.message}"
             }
@@ -47,7 +48,8 @@ class BookshelfViewModel : ViewModel() {
     fun getBestsellers() {
         viewModelScope.launch {
             val result: String = try {
-                "Success, ${BestsellerApi.retrofitService.getBestsellers().totalItems} books found."
+                val jsonReply = NetworkBestsellerRepository().getBestsellers()
+                "Success, ${jsonReply.totalItems} books found."
             } catch (e: Exception) {
                 "Bestseller retrieval failure: ${e.message}"
             }
