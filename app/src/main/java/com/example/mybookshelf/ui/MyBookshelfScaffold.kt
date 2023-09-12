@@ -115,5 +115,5 @@ fun MyBookshelfTopBar(onUpButtonClick: () -> Unit) {
 )
 fun MyBookshelfScreenPreview(){
     val windowSize = WindowSizeClass.calculateFromSize(DpSize(450.dp, 800.dp))
-    MyBookshelfApplication(windowSize = windowSize)
+    MyBookshelfApp(windowSize = windowSize)
 }

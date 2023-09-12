@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+
 
 package com.example.mybookshelf.ui.test
 
@@ -8,15 +8,19 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.example.mybookshelf.ui.MyBookshelfApplication
+import com.example.mybookshelf.ui.MyBookshelfApp
 import com.example.mybookshelf.ui.theme.MyBookshelfTheme
 import org.junit.Rule
 import org.junit.Test
 
 // Instances of window size classes representing common device configurations
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 private val mobilePhonePortrait = WindowSizeClass.calculateFromSize(DpSize(450.dp, 800.dp))
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 private val mobilePhoneLandscape = WindowSizeClass.calculateFromSize(DpSize(800.dp, 450.dp))
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 private val foldablePortrait = WindowSizeClass.calculateFromSize(DpSize(700.dp, 900.dp))
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 private val foldableLandscape = WindowSizeClass.calculateFromSize(DpSize(900.dp, 700.dp))
 
 class TopAppBarTest {
@@ -29,7 +33,7 @@ class TopAppBarTest {
     fun mobilePhonePortrait_topAppBar_backButtonVisible() {
         composeTestRule.setContent {
             MyBookshelfTheme {
-                MyBookshelfApplication(windowSize = mobilePhonePortrait)
+                MyBookshelfApp(windowSize = mobilePhonePortrait)
             }
         }
         composeTestRule.onNodeWithContentDescription("back button").assertExists()
@@ -41,7 +45,7 @@ class TopAppBarTest {
     fun mobilePhoneLandscape_navRail_backButtonVisible() {
         composeTestRule.setContent {
             MyBookshelfTheme {
-                MyBookshelfApplication(windowSize = mobilePhoneLandscape)
+                MyBookshelfApp(windowSize = mobilePhoneLandscape)
             }
         }
         composeTestRule.onNodeWithContentDescription("back button").assertExists()

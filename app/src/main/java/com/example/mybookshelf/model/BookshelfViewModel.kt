@@ -3,9 +3,14 @@ package com.example.mybookshelf.model
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import com.example.mybookshelf.data.NetworkBestsellerRepository
-import com.example.mybookshelf.data.NetworkBookRepository
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.mybookshelf.MyBookshelfApplication
+import com.example.mybookshelf.data.BestsellerRepository
+import com.example.mybookshelf.data.BookRepository
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +18,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class BookshelfViewModel : ViewModel() {
+class BookshelfViewModel(
+    private val bookRepository: BookRepository,
+    private val bestsellerRepository: BestsellerRepository,
+) : ViewModel() {
 
     // Create observable state holder
     private val _uiState = MutableStateFlow(BookshelfUiState())
@@ -32,7 +40,7 @@ class BookshelfViewModel : ViewModel() {
     fun searchBooks() {
         viewModelScope.launch {
             val searchResult: String = try {
-                val jsonReply = NetworkBookRepository().getBooks()
+                val jsonReply = bookRepository.getBooks()
                 "Success, ${jsonReply.totalItems} books found."
             } catch (e: Exception) {
                 "Search Failure: ${e.message}"
@@ -48,7 +56,7 @@ class BookshelfViewModel : ViewModel() {
     fun getBestsellers() {
         viewModelScope.launch {
             val result: String = try {
-                val jsonReply = NetworkBestsellerRepository().getBestsellers()
+                val jsonReply = bestsellerRepository.getBestsellers()
                 "Success, ${jsonReply.totalItems} books found."
             } catch (e: Exception) {
                 "Bestseller retrieval failure: ${e.message}"
@@ -74,5 +82,16 @@ class BookshelfViewModel : ViewModel() {
     init {
         searchBooks()
         getBestsellers()
+    }
+
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as MyBookshelfApplication)
+                val bookRepository = application.container.bookRepository
+                val bestsellerRepository = application.container.bestsellerRepository
+                BookshelfViewModel(bookRepository, bestsellerRepository)
+            }
+        }
     }
 }

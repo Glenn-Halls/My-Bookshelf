@@ -9,8 +9,10 @@ import com.example.mybookshelf.ui.theme.MyBookshelfTheme
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun MyBookshelfApplication(windowSize: WindowSizeClass) {
-    val viewModel: BookshelfViewModel = viewModel()
+fun MyBookshelfApp(windowSize: WindowSizeClass) {
+    val viewModel: BookshelfViewModel = viewModel(
+        factory = BookshelfViewModel.Factory
+    )
     MyBookshelfTheme {
         MyBookshelfScreen(
             viewModel,
