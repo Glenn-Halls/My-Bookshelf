@@ -1,5 +1,6 @@
 package com.example.mybookshelf.model
 
+import android.util.Log
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.lifecycle.ViewModel
@@ -39,11 +40,12 @@ class BookshelfViewModel(
 
     fun searchBooks() {
         viewModelScope.launch {
-            val searchResult: String = try {
-                val jsonReply = bookRepository.getBooks()
-                "Success, ${jsonReply.totalItems} books found."
+            var searchResult: SearchResult
+            try {
+                searchResult = bookRepository.getBooks()
             } catch (e: Exception) {
-                "Search Failure: ${e.message}"
+                Log.e("ViewModel", e.message.toString())
+                searchResult = SearchResult(0, emptyList())
             }
             _uiState.update {
                 it.copy(

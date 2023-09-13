@@ -71,7 +71,9 @@ fun MyBookshelfScreen(
                 ScreenSelect.NONE -> Text("hello")
                 ScreenSelect.BEST_SELLERS -> Text(uiState.bestSellers ?: "?")
                 ScreenSelect.WATCH_LIST -> Text("Watch List")
-                ScreenSelect.BROWSE -> Text(uiState.searchResult ?: "?")
+                ScreenSelect.BROWSE -> BookGrid(
+                    books = uiState.searchResult!!.items,
+                    onCardClick = {})
                 ScreenSelect.MY_BOOKS -> Text("My Books")
                 ScreenSelect.FAVOURITES -> Text("Favourites")
                 else -> Text("null")
