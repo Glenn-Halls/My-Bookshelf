@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mybookshelf.R
+import com.example.mybookshelf.data.getShortDescription
 import com.example.mybookshelf.model.Book
 
 @OptIn(ExperimentalMaterial3Api::class)
