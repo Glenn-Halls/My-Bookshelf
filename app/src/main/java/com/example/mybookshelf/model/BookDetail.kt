@@ -12,5 +12,11 @@ data class BookDetail(
     val date: String? = "Date not available",
     val description: String? = "Description not available",
     @SerialName(value = "imageLinks")
-    val bookCover: String? = NO_COVER_AVAILABLE
+    val bookCover: BookCover? = BookCover()
+)
+
+@Serializable
+data class BookCover(
+    val smallThumbnail: String? = NO_COVER_AVAILABLE,
+    val thumbnail: String? = NO_COVER_AVAILABLE,
 )
