@@ -5,6 +5,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.mybookshelf.R
 
@@ -20,8 +21,9 @@ val Montserrat = FontFamily(
 val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = GoudyBookletter,
-        fontWeight = FontWeight.Normal,
-        fontSize = 32.sp,
+        fontWeight = FontWeight.Bold,
+        fontSize = 40.sp,
+        letterSpacing = .09.em,
     ),
     displayMedium = TextStyle(
         fontFamily = Montserrat,
@@ -31,6 +33,11 @@ val Typography = Typography(
     labelLarge = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
+        fontSize = 18.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     ),
     labelSmall = TextStyle(
