@@ -40,12 +40,11 @@ class BookshelfViewModel(
 
     fun searchBooks() {
         viewModelScope.launch {
-            var searchResult: SearchResult
-            try {
-                searchResult = bookRepository.getBooks()
+            val searchResult: SearchResult = try {
+                bookRepository.getBooks()
             } catch (e: Exception) {
                 Log.e("ViewModel", e.message.toString())
-                searchResult = SearchResult(0, emptyList())
+                SearchResult(0, emptyList())
             }
             _uiState.update {
                 it.copy(
@@ -57,15 +56,15 @@ class BookshelfViewModel(
 
     fun getBestsellers() {
         viewModelScope.launch {
-            val result: String = try {
-                val jsonReply = bestsellerRepository.getBestsellers()
-                "Success, ${jsonReply.totalItems} books found."
+            val bestsellerResult: BestsellerResult = try {
+                bestsellerRepository.getBestsellers()
             } catch (e: Exception) {
-                "Bestseller retrieval failure: ${e.message}"
+                Log.e("ViewModel", e.message.toString())
+                BestsellerResult(0, emptyList())
             }
             _uiState.update {
                 it.copy(
-                    bestSellers = result
+                    bestSellers = bestsellerResult
                 )
             }
         }
