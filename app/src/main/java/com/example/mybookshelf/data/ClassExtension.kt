@@ -2,8 +2,8 @@ package com.example.mybookshelf.data
 
 import com.example.mybookshelf.model.Book
 
-fun Book.getShortDescription(charLength: Int = 0): String {
-    val toString = bookDetail?.description.toString()
+fun Book.getShortDescription(charLength: Int = 300): String {
+    val toString = bookDetail.description
     val firstWord = toString.takeWhile { it != ' ' }
 
     // If character length is less than 1, return empty string.

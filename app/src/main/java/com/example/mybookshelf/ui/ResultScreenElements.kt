@@ -79,7 +79,7 @@ fun BookCard(
                 style = MaterialTheme.typography.labelMedium
             )
             Text(
-                text = book.getShortDescription(15),
+                text = book.getShortDescription(),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelMedium
             )
