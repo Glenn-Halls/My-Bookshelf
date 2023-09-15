@@ -5,6 +5,26 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Bestseller(
-    @SerialName(value = "uri")
-    val nytLink: String
+    val rank: Int,
+    @SerialName(value = "rank_last_week")
+    val previousRank: Int,
+    @SerialName(value = "weeks_on_list")
+    val weeksOnList: Int,
+    @SerialName(value = "primary_isbn13")
+    val isbn13: String,
+    val title: String,
+    val author: String,
+    val description: String,
+    val price: String,
+)
+
+val FakeBestseller = Bestseller(
+    rank = 99,
+    previousRank = 98,
+    weeksOnList = 99,
+    isbn13 = "isbn 13",
+    title = "title",
+    author = "author",
+    description = "description",
+    price = "price"
 )

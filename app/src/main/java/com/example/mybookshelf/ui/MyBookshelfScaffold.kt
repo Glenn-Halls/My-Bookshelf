@@ -29,7 +29,6 @@ import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.ScreenSelect
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBookshelfScreen(
     viewModel: BookshelfViewModel,
@@ -69,8 +68,8 @@ fun MyBookshelfScreen(
             // Determine screen to display based on current screen selection
             when (uiState.currentScreen) {
                 ScreenSelect.NONE -> Text("hello")
-                ScreenSelect.BEST_SELLERS -> Text(uiState.bestSellers!!.results.size.toString())
-                ScreenSelect.WATCH_LIST -> Text(uiState.bestSellers!!.results.toString())
+                ScreenSelect.BEST_SELLERS -> Text(uiState.bestSellers!!.results.listName)
+                ScreenSelect.WATCH_LIST -> Text(uiState.bestSellers!!.results.bestsellerList.toString())
                 ScreenSelect.BROWSE -> BookGrid(
                     books = uiState.searchResult!!.items,
                     onCardClick = {})

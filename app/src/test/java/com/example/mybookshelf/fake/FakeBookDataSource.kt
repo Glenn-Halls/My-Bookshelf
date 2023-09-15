@@ -1,9 +1,10 @@
 package com.example.mybookshelf.fake
 
-import com.example.mybookshelf.model.Bestseller
-import com.example.mybookshelf.model.BestsellerResult
+import com.example.mybookshelf.model.BestsellerResults
+import com.example.mybookshelf.model.BestsellerSearch
 import com.example.mybookshelf.model.Book
-import com.example.mybookshelf.model.SearchResult
+import com.example.mybookshelf.model.BookSearchResult
+import com.example.mybookshelf.model.FakeBestseller
 
 object FakeBookDataSource {
     const val totalItems = 3
@@ -20,18 +21,23 @@ object FakeBookDataSource {
         Book(idThree, linkThree)
     )
     val results = listOf(
-        Bestseller(linkOne),
-        Bestseller(linkTwo),
-        Bestseller(linkThree)
+        FakeBestseller,
+        FakeBestseller,
+        FakeBestseller
     )
 
-    val searchResult = SearchResult(
+    val searchResult = BookSearchResult(
         totalItems = totalItems,
         items = items,
     )
 
-    val bestsellerResult = BestsellerResult(
+    val bestsellerSearch = BestsellerSearch(
         totalItems = totalItems,
-        results = results
+        results = BestsellerResults(
+            "Made-up list",
+            "Made-up date",
+            "Made-up description",
+            results
+        )
     )
 }

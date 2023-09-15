@@ -40,11 +40,11 @@ class BookshelfViewModel(
 
     fun searchBooks() {
         viewModelScope.launch {
-            val searchResult: SearchResult = try {
+            val searchResult: BookSearchResult = try {
                 bookRepository.getBooks()
             } catch (e: Exception) {
                 Log.e("ViewModel", e.message.toString())
-                SearchResult(0, emptyList())
+                BookSearchResult(0, emptyList())
             }
             _uiState.update {
                 it.copy(
@@ -56,15 +56,20 @@ class BookshelfViewModel(
 
     fun getBestsellers() {
         viewModelScope.launch {
-            val bestsellerResult: BestsellerResult = try {
+            val bestsellerSearch: BestsellerSearch = try {
                 bestsellerRepository.getBestsellers()
             } catch (e: Exception) {
                 Log.e("ViewModel", e.message.toString())
-                BestsellerResult(0, emptyList())
+                BestsellerSearch(0, BestsellerResults(
+                    "",
+                    "",
+                    "",
+                    listOf(FakeBestseller)
+                ))
             }
             _uiState.update {
                 it.copy(
-                    bestSellers = bestsellerResult
+                    bestSellers = bestsellerSearch
                 )
             }
         }

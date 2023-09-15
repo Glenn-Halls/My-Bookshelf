@@ -1,13 +1,13 @@
 package com.example.mybookshelf.fake
 
-import com.example.mybookshelf.model.BestsellerResult
+import com.example.mybookshelf.model.BestsellerSearch
 import com.example.mybookshelf.network.BookshelfBestsellerApiService
 
 class FakeBestsellerApiService : BookshelfBestsellerApiService {
-    override suspend fun getBestsellers(): BestsellerResult {
-        return BestsellerResult(
+    override suspend fun getBestsellers(): BestsellerSearch {
+        return BestsellerSearch(
             totalItems = FakeBookDataSource.totalItems,
-            results = FakeBookDataSource.results
+            results = FakeBookDataSource.bestsellerSearch.results
         )
     }
 }

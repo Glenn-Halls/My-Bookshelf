@@ -15,7 +15,7 @@ class NetworkBestsellerRepositoryTest {
                 bestsellerApiService = FakeBestsellerApiService()
             )
             assertEquals(
-                FakeBookDataSource.bestsellerResult.results,
+                FakeBookDataSource.bestsellerSearch.results,
                 repository.getBestsellers().results
             )
         }
