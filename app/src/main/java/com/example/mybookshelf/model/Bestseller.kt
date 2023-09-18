@@ -3,6 +3,8 @@ package com.example.mybookshelf.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+private const val NO_COVER_AVAILABLE = "https://i.imgur.com/YjoNXCX.png"
+
 @Serializable
 data class Bestseller(
     val rank: Int,
@@ -14,8 +16,11 @@ data class Bestseller(
     val isbn13: String,
     val title: String,
     val author: String,
+    val publisher: String,
     val description: String,
     val price: String,
+    @SerialName(value = "book_image")
+    val coverImage: String = NO_COVER_AVAILABLE
 )
 
 val FakeBestseller = Bestseller(
@@ -25,6 +30,7 @@ val FakeBestseller = Bestseller(
     isbn13 = "isbn 13",
     title = "title",
     author = "author",
+    publisher = "publisher",
     description = "description",
     price = "price"
 )

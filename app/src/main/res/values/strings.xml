@@ -7,4 +7,5 @@
     <string name="my_books">My Books</string>
     <string name="favourites">Favourites</string>
     <string name="book_cover">book cover</string>
+    <string name="favourite">favourite</string>
 </resources>

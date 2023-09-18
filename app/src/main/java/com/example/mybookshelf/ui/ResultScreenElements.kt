@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,7 +46,9 @@ import coil.compose.AsyncImage
 import com.example.mybookshelf.R
 import com.example.mybookshelf.data.getCoilUrl
 import com.example.mybookshelf.data.getShortDescription
+import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
+import com.example.mybookshelf.model.FakeBestseller
 import kotlinx.coroutines.delay
 
 @Composable
@@ -63,6 +67,26 @@ fun BookGrid(
             key = { book -> book.id }
         ) {
             book -> BookCard(book = book, onCardClick = onCardClick)
+        }
+    }
+}
+
+@Composable
+fun BestsellerGrid(
+    bestsellers: List<Bestseller>,
+    onCardClick: (Bestseller) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 300.dp),
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(dimensionResource(R.dimen.padding_medium))
+        ) {
+        items(
+            items = bestsellers,
+            key = { bestseller -> bestseller.isbn13 }
+        ) {
+            bestseller -> BestsellerCard(bestseller = bestseller, onCardClick = {})
         }
     }
 }
@@ -108,6 +132,84 @@ fun BookCard(
             )
             Text(
                 text = book.getShortDescription(),
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BestsellerCard(
+    bestseller: Bestseller,
+    onCardClick: (Bestseller) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        elevation = CardDefaults.cardElevation(),
+        onClick = {onCardClick(bestseller)},
+        modifier = modifier.padding(dimensionResource(R.dimen.padding_medium)),
+    ) {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .height(420.dp)
+                .padding(dimensionResource(R.dimen.padding_medium))
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = bestseller.title,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.displayMedium
+            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier.fillMaxWidth()
+            ){
+                AsyncImage(
+                    model = bestseller.coverImage,
+                    contentDescription = stringResource(R.string.book_cover),
+                    placeholder = painterResource(R.drawable.loading_img),
+                    error = painterResource(R.drawable.ic_broken_image),
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier.fillMaxWidth(.45f),
+                    alignment = Alignment.Center
+                )
+                Box(
+                    modifier = modifier
+                        .fillMaxWidth(.7f)
+                        .aspectRatio(.7f)
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "Rank: ${bestseller.rank}",
+                            style = MaterialTheme.typography.labelLarge,
+                            )
+                        Text(
+                            text = "Previous: ${bestseller.previousRank}",
+                            style = MaterialTheme.typography.labelMedium,
+                            )
+                        Text(
+                            text = "Weeks: ${bestseller.weeksOnList}",
+                            style = MaterialTheme.typography.labelMedium,
+                            )
+                        Text(
+                            text = "Author:\n${bestseller.author}",
+                            style = MaterialTheme.typography.labelMedium,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+            }
+            Text(
+                text = bestseller.description,
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelMedium
             )
@@ -190,4 +292,10 @@ fun LoadingAnimation3(
 @Preview
 fun BookCardPreview() {
     BookCard(book = Book("id", "link"), onCardClick = {})
+}
+
+@Composable
+@Preview
+fun BestsellerCardPreview() {
+    BestsellerCard(bestseller = FakeBestseller, onCardClick = {})
 }
