@@ -83,10 +83,19 @@ fun BookCard(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .height(450.dp)
+                .height(470.dp)
                 .padding(dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth()
         ) {
+            AsyncImage(
+                model = book.getCoilUrl(),
+                contentDescription = stringResource(R.string.book_cover),
+                placeholder = painterResource(R.drawable.loading_img),
+                error = painterResource(R.drawable.ic_broken_image),
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.fillMaxWidth(.45f),
+                alignment = Alignment.Center
+            )
             Text(
                 text = book.bookDetail.title,
                 textAlign = TextAlign.Center,
@@ -101,16 +110,6 @@ fun BookCard(
                 text = book.getShortDescription(),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelMedium
-            )
-//            Text(text = book.getCoilUrl())
-            AsyncImage(
-                model = book.getCoilUrl(),
-                contentDescription = stringResource(R.string.book_cover),
-                placeholder = painterResource(R.drawable.loading_img),
-                error = painterResource(R.drawable.ic_broken_image),
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth(.45f),
-                alignment = Alignment.Center
             )
         }
     }
