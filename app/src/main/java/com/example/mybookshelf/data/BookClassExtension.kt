@@ -24,3 +24,8 @@ fun Book.getShortDescription(charLength: Int = 300): String {
         toString
     }
 }
+
+fun Book.getCoilUrl(): String {
+    val oldUrl: String = bookDetail.bookCover.thumbnail
+    return oldUrl.replace("http://", "https://")
+}
