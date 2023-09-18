@@ -75,6 +75,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     // Kotlin Serialization dependency
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    // Coil Library
+    implementation("io.coil-kt:coil-compose:2.4.0")
     // J Unit test implementation
     testImplementation("junit:junit:4.13.2")
     // Kotlin CoRoutines implementation
