@@ -74,7 +74,7 @@ fun MyBookshelfScreen(
                     books = uiState.searchResult!!.items,
                     onCardClick = {})
                 ScreenSelect.MY_BOOKS -> Text(uiState.searchResult!!.items.toString())
-                ScreenSelect.FAVOURITES -> Text("Favourites")
+                ScreenSelect.FAVOURITES -> Text(uiState.nytLists.toString())
                 else -> Text("null")
             }
         }

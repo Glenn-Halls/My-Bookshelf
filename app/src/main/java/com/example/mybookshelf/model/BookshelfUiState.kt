@@ -6,4 +6,5 @@ data class BookshelfUiState(
     val currentScreen: ScreenSelect? = null,
     val searchResult: BookSearchResult? = null,
     val bestSellers: BestsellerSearch? = null,
+    val nytLists: List<NytBestsellerList>? = null,
 )

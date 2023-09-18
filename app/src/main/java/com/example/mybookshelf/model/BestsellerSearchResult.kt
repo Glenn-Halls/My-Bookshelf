@@ -23,3 +23,19 @@ data class BestsellerResults(
     @SerialName(value = "books")
     val bestsellerList: List<Bestseller>
 )
+
+@Serializable
+data class NytListSearch(
+    val results: List<NytBestsellerList>
+)
+@Serializable
+data class NytBestsellerList(
+    @SerialName(value = "list_name")
+    val listName: String,
+    @SerialName(value = "newest_published_date")
+    val publishedDate: String,
+    @SerialName(value = "oldest_published_date")
+    val firstPublished: String,
+    @SerialName(value = "updated")
+    val frequency: String,
+)

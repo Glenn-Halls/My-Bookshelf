@@ -2,6 +2,7 @@ package com.example.mybookshelf.data
 
 import com.example.mybookshelf.network.BookshelfApiService
 import com.example.mybookshelf.network.BookshelfBestsellerApiService
+import com.example.mybookshelf.network.BookshelfNytListApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -10,6 +11,7 @@ import retrofit2.Retrofit
 interface AppContainer {
     val bookRepository: BookRepository
     val bestsellerRepository: BestsellerRepository
+    val nytListRepository: NytListRepository
 }
 
 class DefaultAppContainer : AppContainer{
@@ -53,5 +55,23 @@ class DefaultAppContainer : AppContainer{
 
     override val bestsellerRepository: BestsellerRepository by lazy {
         NetworkBestsellerRepository(bestsellerRetrofitService)
+    }
+
+    /**
+     * Use the Retrofit builder to build a Retrofit object to access NYT lists
+     */
+    private val nytListRetrofit = Retrofit.Builder()
+        .addConverterFactory(bestsellerJson.asConverterFactory(
+            "application/json".toMediaType()
+        ))
+        .baseUrl(bestsellerBaseUrl)
+        .build()
+
+    private val nytListRetrofitService: BookshelfNytListApiService by lazy {
+        nytListRetrofit.create(BookshelfNytListApiService::class.java)
+    }
+
+    override val nytListRepository: NytListRepository by lazy {
+        NetworkNytListRepository(nytListRetrofitService)
     }
 }

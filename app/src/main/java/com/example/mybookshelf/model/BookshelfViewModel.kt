@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
+import com.example.mybookshelf.data.NytListRepository
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 class BookshelfViewModel(
     private val bookRepository: BookRepository,
     private val bestsellerRepository: BestsellerRepository,
+    private val nytListRepository: NytListRepository,
 ) : ViewModel() {
 
     // Create observable state holder
@@ -75,6 +77,31 @@ class BookshelfViewModel(
         }
     }
 
+    private fun getNytLists() {
+        viewModelScope.launch {
+            val nytListSearch: NytListSearch = try {
+                nytListRepository.getNytLists()
+            } catch (e: Exception) {
+                Log.e("ViewModel", e.message.toString())
+                NytListSearch(
+                    listOf(
+                        NytBestsellerList(
+                            listName = "No Lists Found...",
+                            publishedDate = "",
+                            firstPublished = "",
+                            frequency = "",
+                        )
+                    )
+                )
+            }
+            _uiState.update {
+                it.copy(
+                    nytLists = nytListSearch.results
+                )
+            }
+        }
+    }
+
     // Get navigation setup based on window size
     fun getNavigationSetup(windowSize: WindowSizeClass): BookshelfNavigationType {
         return when (windowSize.widthSizeClass) {
@@ -88,6 +115,7 @@ class BookshelfViewModel(
     init {
         searchBooks()
         getBestsellers()
+        getNytLists()
     }
 
     companion object {
@@ -96,7 +124,8 @@ class BookshelfViewModel(
                 val application = (this[APPLICATION_KEY] as MyBookshelfApplication)
                 val bookRepository = application.container.bookRepository
                 val bestsellerRepository = application.container.bestsellerRepository
-                BookshelfViewModel(bookRepository, bestsellerRepository)
+                val nytListRepository = application.container.nytListRepository
+                BookshelfViewModel(bookRepository, bestsellerRepository, nytListRepository)
             }
         }
     }
