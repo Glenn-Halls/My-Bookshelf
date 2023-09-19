@@ -118,6 +118,14 @@ class BookshelfViewModel(
         }
     }
 
+    fun selectNytList(nytList: String) {
+        _uiState.update {
+            it.copy(
+                nytListSelected = nytList
+            )
+        }
+    }
+
     // Get navigation setup based on window size
     fun getNavigationSetup(windowSize: WindowSizeClass): BookshelfNavigationType {
         return when (windowSize.widthSizeClass) {

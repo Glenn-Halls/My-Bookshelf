@@ -66,7 +66,9 @@ fun MyBookshelfScreen(
                 ScreenSelect.NONE -> Text("hello")
                 ScreenSelect.BEST_SELLERS -> NytBestsellerScreen(
                     bestsellers = uiState.bestseller!!.results.bestsellerList,
-                    onCardClick = { viewModel.selectBestseller(it) }
+                    onCardClick = { viewModel.selectBestseller(it) },
+                    nytListSelected = "test",
+                    showSearch = false
                 )
                 ScreenSelect.WATCH_LIST -> Text(uiState.bestseller!!.results.bestsellerList.toString())
                 ScreenSelect.BROWSE -> BookSearchScreen(

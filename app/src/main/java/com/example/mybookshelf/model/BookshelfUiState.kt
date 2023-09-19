@@ -9,4 +9,5 @@ data class BookshelfUiState(
     val nytLists: List<NytBestsellerList>? = null,
     val selectedBook: Book? = null,
     val selectedBestseller: Bestseller? = null,
+    val nytListSelected: String? = null,
 )
