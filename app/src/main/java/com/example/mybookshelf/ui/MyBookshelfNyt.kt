@@ -1,23 +1,45 @@
 package com.example.mybookshelf.ui
 
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.mybookshelf.model.Bestseller
+import com.example.mybookshelf.model.NytUiState
 
 @Composable
 fun NytBestsellerScreen(
-    bestsellers: List<Bestseller>,
+    nytUiState: NytUiState,
     onCardClick: (Bestseller) -> Unit,
-    nytListSelected: String,
-    showSearch: Boolean,
+    onTryAgain: () -> Unit,
+    hideTopBar: Boolean,
     modifier: Modifier = Modifier,
+    listSelected: String?,
 ) {
-    if (nytListSelected != null) {
-        BestsellerGrid(bestsellers = bestsellers, onCardClick = onCardClick)
-    }
-    else {
-        Text(nytListSelected ?: "null")
-        Text(showSearch.toString())
+    val showHeader: Boolean = (listSelected != null && !hideTopBar)
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        when (nytUiState) {
+            is NytUiState.Loading -> LoadingScreen()
+            is NytUiState.Error -> ErrorScreen(onTryAgain)
+            is NytUiState.Success ->
+                Scaffold(
+                    topBar = {
+                        if (showHeader) {
+                            BookshelfHeader(heading = listSelected!!)
+                        }
+                    }
+                ) { innerPadding ->
+                    BestsellerGrid(
+                        bestsellers = nytUiState.bestsellerList,
+                        onCardClick = onCardClick,
+                        modifier = modifier.padding(innerPadding)
+
+                    )
+                }
+        }
     }
 }

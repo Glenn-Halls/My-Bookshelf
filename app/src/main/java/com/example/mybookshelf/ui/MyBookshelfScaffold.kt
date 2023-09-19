@@ -66,11 +66,13 @@ fun MyBookshelfScreen(
             when (uiState.currentScreen) {
                 ScreenSelect.NONE -> Text("hello")
                 ScreenSelect.BEST_SELLERS -> NytBestsellerScreen(
-                    bestsellers = uiState.bestseller!!.results.bestsellerList,
+                    nytUiState = viewModel.nytUiState,
                     onCardClick = { viewModel.selectBestseller(it) },
-                    nytListSelected = "test",
-                    showSearch = false
+                    onTryAgain = viewModel::getBestsellers,
+                    listSelected = uiState.nytListSelected,
+                    hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
                 )
+
                 ScreenSelect.WATCH_LIST -> Text(uiState.bestseller!!.results.bestsellerList.toString())
                 ScreenSelect.BROWSE -> BookSearchScreen(
                     searchStatus = viewModel.searchUiState,
@@ -82,8 +84,6 @@ fun MyBookshelfScreen(
                     ${uiState.selectedBook}
                     ${uiState.selectedBestseller}
                     ${uiState.currentScreen}
-                    ${uiState.searchResult !!.items.size}
-                    ${uiState.bestseller!!.results.bestsellerList[0].title}
                     ${uiState.nytLists}
                 """.trimIndent())
                 else -> Text("null")

@@ -18,6 +18,7 @@ import com.example.mybookshelf.data.BookRepository
 import com.example.mybookshelf.data.NytListRepository
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -67,6 +68,7 @@ class BookshelfViewModel(
     fun searchBooks() {
         viewModelScope.launch {
             searchUiState = SearchUiState.Loading
+            delay(300)
             searchUiState = try {
                 val searchResult = bookRepository.getBooks()
                 _uiState.update {
@@ -88,6 +90,7 @@ class BookshelfViewModel(
     fun getBestsellers() {
         viewModelScope.launch {
             nytUiState = NytUiState.Loading
+            delay(300)
             nytUiState = try {
                 val bestsellerSearch = bestsellerRepository.getBestsellers()
                 _uiState.update {
@@ -177,6 +180,8 @@ class BookshelfViewModel(
         searchBooks()
         getBestsellers()
         getNytLists()
+        selectNytList("testing, 1, 2, 3...")
+        setSearchString("jazz history")
     }
 
     companion object {
