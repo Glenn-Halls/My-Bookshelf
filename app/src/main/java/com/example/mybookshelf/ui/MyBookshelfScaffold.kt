@@ -33,6 +33,7 @@ fun MyBookshelfScreen(
 ) {
     // State Flow accessor to UI State
     val uiState by viewModel.uiState.collectAsState()
+    // State Flow accessor to
     // Define navigation type based on WindowSizeClass dimensions
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
@@ -72,8 +73,9 @@ fun MyBookshelfScreen(
                 )
                 ScreenSelect.WATCH_LIST -> Text(uiState.bestseller!!.results.bestsellerList.toString())
                 ScreenSelect.BROWSE -> BookSearchScreen(
-                    books = uiState.searchResult!!.items,
-                    onCardClick = { viewModel.selectBook(it) }
+                    searchStatus = viewModel.searchUiState,
+                    onCardClick = { viewModel.selectBook(it) },
+                    onTryAgain = { viewModel.searchBooks() },
                 )
                 ScreenSelect.MY_BOOKS -> Text(uiState.searchResult!!.items.toString())
                 ScreenSelect.FAVOURITES -> Text("""

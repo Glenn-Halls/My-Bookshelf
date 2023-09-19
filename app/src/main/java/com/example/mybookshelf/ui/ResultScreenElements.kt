@@ -22,9 +22,13 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -218,6 +222,13 @@ fun BestsellerCard(
 }
 
 @Composable
+fun LoadingScreen(modifier: Modifier = Modifier) {
+    Box(contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()) {
+        LoadingAnimation3()
+    }
+}
+
+@Composable
 fun LoadingAnimation3(
     circleColor: Color = MaterialTheme.colorScheme.primary,
     circleSize: Dp = 36.dp,
@@ -278,6 +289,42 @@ fun LoadingAnimation3(
                             .copy(alpha = animatable.value)
                     )
             ) {
+            }
+        }
+    }
+}
+
+@Composable
+fun ErrorScreen(
+    onTryAgainButton: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null,
+                modifier = Modifier.size(90.dp)
+            )
+            Text(
+                text = "ERROR:\nSomething went wrong...",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            Button(onClick = onTryAgainButton) {
+                Text(
+                    text = "Try Again",
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
     }
