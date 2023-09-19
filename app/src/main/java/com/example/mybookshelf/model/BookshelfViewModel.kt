@@ -126,6 +126,14 @@ class BookshelfViewModel(
         }
     }
 
+    fun setSearchString(search: String) {
+        _uiState.update {
+            it.copy(
+                searchString = search
+            )
+        }
+    }
+
     // Get navigation setup based on window size
     fun getNavigationSetup(windowSize: WindowSizeClass): BookshelfNavigationType {
         return when (windowSize.widthSizeClass) {
