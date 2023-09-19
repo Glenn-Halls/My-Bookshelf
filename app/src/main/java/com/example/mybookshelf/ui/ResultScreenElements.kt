@@ -86,7 +86,7 @@ fun BestsellerGrid(
             items = bestsellers,
             key = { bestseller -> bestseller.isbn13 }
         ) {
-            bestseller -> BestsellerCard(bestseller = bestseller, onCardClick = {})
+            bestseller -> BestsellerCard(bestseller = bestseller, onCardClick = onCardClick)
         }
     }
 }

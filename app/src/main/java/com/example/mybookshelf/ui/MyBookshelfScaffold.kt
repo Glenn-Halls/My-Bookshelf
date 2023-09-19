@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -21,9 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
@@ -68,16 +64,24 @@ fun MyBookshelfScreen(
             // Determine screen to display based on current screen selection
             when (uiState.currentScreen) {
                 ScreenSelect.NONE -> Text("hello")
-                ScreenSelect.BEST_SELLERS -> BestsellerGrid(
-                    bestsellers = uiState.bestSellers!!.results.bestsellerList,
-                    onCardClick = {}
+                ScreenSelect.BEST_SELLERS -> NytBestsellerScreen(
+                    bestsellers = uiState.bestseller!!.results.bestsellerList,
+                    onCardClick = { viewModel.selectBestseller(it) }
                 )
-                ScreenSelect.WATCH_LIST -> Text(uiState.bestSellers!!.results.bestsellerList.toString())
-                ScreenSelect.BROWSE -> BookGrid(
+                ScreenSelect.WATCH_LIST -> Text(uiState.bestseller!!.results.bestsellerList.toString())
+                ScreenSelect.BROWSE -> BookSearchScreen(
                     books = uiState.searchResult!!.items,
-                    onCardClick = {})
+                    onCardClick = { viewModel.selectBook(it) }
+                )
                 ScreenSelect.MY_BOOKS -> Text(uiState.searchResult!!.items.toString())
-                ScreenSelect.FAVOURITES -> Text(uiState.nytLists.toString())
+                ScreenSelect.FAVOURITES -> Text("""
+                    ${uiState.selectedBook}
+                    ${uiState.selectedBestseller}
+                    ${uiState.currentScreen}
+                    ${uiState.searchResult !!.items.size}
+                    ${uiState.bestseller!!.results.bestsellerList[0].title}
+                    ${uiState.nytLists}
+                """.trimIndent())
                 else -> Text("null")
             }
         }
@@ -109,15 +113,4 @@ fun MyBookshelfTopBar(onUpButtonClick: () -> Unit) {
             }
         }
     )
-}
-
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-@Composable
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-)
-fun MyBookshelfScreenPreview(){
-    val windowSize = WindowSizeClass.calculateFromSize(DpSize(450.dp, 800.dp))
-    MyBookshelfApp(windowSize = windowSize)
 }

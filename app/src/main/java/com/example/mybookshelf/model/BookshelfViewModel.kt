@@ -71,7 +71,7 @@ class BookshelfViewModel(
             }
             _uiState.update {
                 it.copy(
-                    bestSellers = bestsellerSearch
+                    bestseller = bestsellerSearch
                 )
             }
         }
@@ -99,6 +99,22 @@ class BookshelfViewModel(
                     nytLists = nytListSearch.results
                 )
             }
+        }
+    }
+
+    fun selectBook(book: Book) {
+        _uiState.update {
+            it.copy(
+                selectedBook = book
+            )
+        }
+    }
+
+    fun selectBestseller(bestseller: Bestseller) {
+        _uiState.update {
+            it.copy(
+                selectedBestseller = bestseller
+            )
         }
     }
 
