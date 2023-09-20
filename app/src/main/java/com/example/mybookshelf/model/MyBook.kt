@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "Bookshelf")
+@Entity(tableName = "BOOKSHELF")
 data class MyBook(
     @PrimaryKey
     val id: String,
@@ -13,8 +13,8 @@ data class MyBook(
     val author: String,
     val description: String,
     val thumbnail: String,
-    val rating: Int = 0,
+    val rating: Int? = null,
     @ColumnInfo(name = "favourite")
-    val isFavourite: Boolean? = false,
+    val isFavourite: Boolean = false,
     val notes: String? = null
 )

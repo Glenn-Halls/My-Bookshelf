@@ -21,7 +21,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .createFromAsset("database/book_database.db")
                     .fallbackToDestructiveMigration()
                     .build()
                     .also {

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.mybookshelf.model.MyBook
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MyBookDao {
@@ -20,6 +21,6 @@ interface MyBookDao {
     suspend fun update(myBook: MyBook)
 
     @Query("SELECT * from bookshelf ORDER BY :orderBy")
-    suspend fun getBooks(orderBy: String? = "title"): List<MyBook>
+    fun getBooks(orderBy: String? = "title"): Flow<List<MyBook>>
 
 }

@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
+import com.example.mybookshelf.data.MyBookRepository
 import com.example.mybookshelf.data.NytListRepository
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
@@ -43,6 +44,7 @@ class BookshelfViewModel(
     private val bookRepository: BookRepository,
     private val bestsellerRepository: BestsellerRepository,
     private val nytListRepository: NytListRepository,
+    private val myBookRepository: MyBookRepository,
 ) : ViewModel() {
 
     // Create observable state holder
@@ -176,12 +178,45 @@ class BookshelfViewModel(
         }
     }
 
+    // TEST method for database
+    suspend fun testSaveItem() {
+        myBookRepository.insertBook(
+            MyBook(
+                id = "id",
+                link = "link",
+                title = "title",
+                author = "author",
+                description = "description",
+                thumbnail = "thumbnail",
+                rating = 1,
+                isFavourite = true,
+                notes = "notes"
+            )
+        )
+    }
+
+    suspend fun testSaveBook(book: Book) {
+        myBookRepository.insertBook(
+            MyBook(
+            id = book.id,
+            link = book.link,
+            title = book.bookDetail.title,
+            author = book.bookDetail.title,
+            description = book.bookDetail.description,
+            thumbnail = book.bookDetail.bookCover.thumbnail
+            )
+        )
+    }
+
     init {
         searchBooks()
         getBestsellers()
         getNytLists()
         selectNytList("testing, 1, 2, 3...")
         setSearchString("jazz history")
+        viewModelScope.launch {
+            testSaveItem()
+        }
     }
 
     companion object {
@@ -191,7 +226,13 @@ class BookshelfViewModel(
                 val bookRepository = application.container.bookRepository
                 val bestsellerRepository = application.container.bestsellerRepository
                 val nytListRepository = application.container.nytListRepository
-                BookshelfViewModel(bookRepository, bestsellerRepository, nytListRepository)
+                val myBookRepository = application.container.myBookRepository
+                BookshelfViewModel(
+                    bookRepository,
+                    bestsellerRepository,
+                    nytListRepository,
+                    myBookRepository
+                    )
             }
         }
     }

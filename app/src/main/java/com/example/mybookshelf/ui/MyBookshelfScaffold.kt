@@ -18,12 +18,14 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.R
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.ScreenSelect
+import kotlinx.coroutines.launch
 
 @Composable
 fun MyBookshelfScreen(
@@ -38,6 +40,9 @@ fun MyBookshelfScreen(
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
     val windowHeight = windowSize.heightSizeClass
+    // Create a coroutine scope event listener
+    val coroutineScope = rememberCoroutineScope()
+
 
     Scaffold(
         // Do not show top bar on compact screens
@@ -73,10 +78,17 @@ fun MyBookshelfScreen(
                     hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
                 )
 
-                ScreenSelect.WATCH_LIST -> Text(uiState.bestseller!!.results.bestsellerList.toString())
+                ScreenSelect.WATCH_LIST -> ErrorScreen(onTryAgainButton = {
+                    coroutineScope.launch {
+                        viewModel.testSaveItem()
+                    }
+                })
                 ScreenSelect.BROWSE -> BookSearchScreen(
                     searchStatus = viewModel.searchUiState,
-                    onCardClick = { viewModel.selectBook(it) },
+                    onCardClick = { coroutineScope.launch {
+                                      viewModel.testSaveBook(it)
+                                  }
+                    },
                     onTryAgain = { viewModel.searchBooks() },
                 )
                 ScreenSelect.MY_BOOKS -> Text(uiState.searchResult!!.items.toString())

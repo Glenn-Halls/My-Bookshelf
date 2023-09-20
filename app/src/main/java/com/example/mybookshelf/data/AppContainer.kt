@@ -1,5 +1,6 @@
 package com.example.mybookshelf.data
 
+import android.content.Context
 import com.example.mybookshelf.network.BookshelfApiService
 import com.example.mybookshelf.network.BookshelfBestsellerApiService
 import com.example.mybookshelf.network.BookshelfNytListApiService
@@ -12,9 +13,10 @@ interface AppContainer {
     val bookRepository: BookRepository
     val bestsellerRepository: BestsellerRepository
     val nytListRepository: NytListRepository
+    val myBookRepository: MyBookRepository
 }
 
-class DefaultAppContainer : AppContainer{
+class DefaultAppContainer(private val context: Context) : AppContainer{
     // Base details for Google's book API
     private val bookBaseUrl = "https://www.googleapis.com"
     private val bookJson = Json { ignoreUnknownKeys = true }
@@ -73,5 +75,9 @@ class DefaultAppContainer : AppContainer{
 
     override val nytListRepository: NytListRepository by lazy {
         NetworkNytListRepository(nytListRetrofitService)
+    }
+
+    override val myBookRepository: MyBookRepository by lazy {
+        OfflineMyBookRepository(AppDatabase.getDatabase(context).myBookDao())
     }
 }
