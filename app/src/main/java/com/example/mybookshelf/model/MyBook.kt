@@ -1,4 +1,4 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
