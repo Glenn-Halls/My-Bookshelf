@@ -12,7 +12,8 @@ fun BookSearchScreen(
     searchStatus: SearchUiState,
     onCardClick: (Book) -> Unit,
     onTryAgain: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bookSelected: Book?,
 ) {
     Column(
         modifier = modifier.fillMaxSize()
@@ -20,10 +21,15 @@ fun BookSearchScreen(
         when (searchStatus) {
             is SearchUiState.Loading -> LoadingScreen()
             is SearchUiState.Error -> ErrorScreen(onTryAgain)
-            is SearchUiState.Success -> BookGrid(
-                books = searchStatus.bookList,
-                onCardClick = onCardClick
-            )
+            is SearchUiState.Success ->
+                if (bookSelected == null) {
+                    BookGrid(
+                        books = searchStatus.bookList,
+                        onCardClick = onCardClick
+                    )
+                } else {
+                    BookDetailScreen(onBackPressed = { /*TODO*/ }, book = bookSelected)
+                }
         }
     }
 }

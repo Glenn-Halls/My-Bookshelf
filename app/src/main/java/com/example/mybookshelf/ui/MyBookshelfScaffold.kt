@@ -84,11 +84,9 @@ fun MyBookshelfScreen(
                 })
                 ScreenSelect.BROWSE -> BookSearchScreen(
                     searchStatus = viewModel.searchUiState,
-                    onCardClick = { coroutineScope.launch {
-                                      viewModel.testSaveBook(it)
-                                  }
-                    },
+                    onCardClick = { viewModel.selectBook(it) },
                     onTryAgain = { viewModel.searchBooks(300) },
+                    bookSelected = uiState.selectedBook,
                 )
                 ScreenSelect.MY_BOOKS -> Text(uiState.searchResult!!.items.toString())
                 ScreenSelect.FAVOURITES -> Text("""
