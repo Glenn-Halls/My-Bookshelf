@@ -67,10 +67,13 @@ class BookshelfViewModel(
         }
     }
 
-    fun searchBooks() {
+    // Search for books with an optional delay to display search attempt to user
+    fun searchBooks(delay: Long? = null) {
         viewModelScope.launch {
             searchUiState = SearchUiState.Loading
-            delay(300)
+            if (delay != null) {
+                delay(delay)
+            }
             searchUiState = try {
                 val searchResult = bookRepository.getBooks()
                 _uiState.update {
@@ -89,10 +92,13 @@ class BookshelfViewModel(
         }
     }
 
-    fun getBestsellers() {
+    // Get Bestsellers with an optional delay to display search attempt to user
+    fun getBestsellers(delay: Long? = null) {
         viewModelScope.launch {
             nytUiState = NytUiState.Loading
-            delay(300)
+            if (delay != null) {
+                delay(delay)
+            }
             nytUiState = try {
                 val bestsellerSearch = bestsellerRepository.getBestsellers()
                 _uiState.update {
