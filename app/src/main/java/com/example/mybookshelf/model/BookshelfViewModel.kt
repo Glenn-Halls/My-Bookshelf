@@ -203,6 +203,15 @@ class BookshelfViewModel(
         }
     }
 
+    fun navigateBack() {
+        _uiState.update {
+            it.copy(
+                selectedBook = null,
+                selectedBestseller = null,
+            )
+        }
+    }
+
     // TEST method for database
     suspend fun testSaveItem() {
         myBookRepository.insertBook(

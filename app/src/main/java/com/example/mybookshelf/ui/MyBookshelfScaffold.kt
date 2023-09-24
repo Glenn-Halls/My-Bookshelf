@@ -65,6 +65,7 @@ fun MyBookshelfScreen(
             if (navigationType == BookshelfNavigationType.NAVIGATION_RAIL) {
                 BookshelfNavigationRail(
                     onTabPressed = { viewModel.navigateToScreen(it) },
+                    onNavigateBack = viewModel::navigateBack,
                     showBackButton = windowHeight == WindowHeightSizeClass.Compact
                 )
             }

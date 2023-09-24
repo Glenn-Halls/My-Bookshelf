@@ -60,6 +60,7 @@ fun BookshelfBottomNavBar(
 @Composable
 fun BookshelfNavigationRail(
     onTabPressed: (NavigationElement) -> Unit,
+    onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     showBackButton: Boolean = false
 ) {
@@ -69,7 +70,7 @@ fun BookshelfNavigationRail(
             val backButton = NavigateBackTab
             NavigationRailItem(
                 selected = false, 
-                onClick = { onTabPressed(backButton) },
+                onClick = onNavigateBack,
                 icon = {
                     Icon(
                         painter = painterResource(backButton.icon),
