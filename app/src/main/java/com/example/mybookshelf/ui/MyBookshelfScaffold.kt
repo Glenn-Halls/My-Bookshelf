@@ -41,6 +41,8 @@ fun MyBookshelfScreen(
     val windowHeight = windowSize.heightSizeClass
     // Create a coroutine scope event listener
     val coroutineScope = rememberCoroutineScope()
+    // Get screen content layout
+    val bookScreenLayout = viewModel.getScreenLayout(windowSize, uiState.selectedBook)
 
 
     Scaffold(
@@ -82,12 +84,15 @@ fun MyBookshelfScreen(
                         viewModel.testSaveItem()
                     }
                 })
-                ScreenSelect.BROWSE -> BookSearchScreen(
-                    searchStatus = viewModel.searchUiState,
-                    onCardClick = { viewModel.selectBook(it) },
-                    onTryAgain = { viewModel.searchBooks(300) },
-                    bookSelected = uiState.selectedBook,
-                )
+                ScreenSelect.BROWSE ->
+                    BookSearchScreen(
+                        searchStatus = viewModel.searchUiState,
+                        layout = bookScreenLayout,
+                        onCardClick = { viewModel.selectBook(it) },
+                        onBackClick = {},
+                        onTryAgain = { viewModel.searchBooks(300) },
+                        bookSelected = uiState.selectedBook,
+                    )
                 ScreenSelect.MY_BOOKS -> Text(uiState.searchResult!!.items.toString())
                 ScreenSelect.FAVOURITES -> Text("""
                     ${uiState.selectedBook}

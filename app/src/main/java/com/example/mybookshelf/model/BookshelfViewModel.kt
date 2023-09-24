@@ -17,6 +17,7 @@ import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
 import com.example.mybookshelf.data.MyBookRepository
 import com.example.mybookshelf.data.NytListRepository
+import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import kotlinx.coroutines.delay
@@ -65,6 +66,24 @@ class BookshelfViewModel(
                 currentScreen = nav.screenSelect
             )
         }
+    }
+
+    // Get screen layout based on window size class and context
+    fun getScreenLayout(
+        windowSize: WindowSizeClass,
+        book: Book? = null,
+        bestseller: Bestseller? = null,
+        myBook: MyBook? = null,
+    ): BookshelfContentLayout {
+        return if (
+            book != null || bestseller != null || myBook != null
+        ) {
+            if (windowSize.widthSizeClass == WindowWidthSizeClass.Compact) {
+                BookshelfContentLayout.DETAILS_ONLY
+            } else {
+                BookshelfContentLayout.LIST_AND_DETAILS
+            }
+        } else BookshelfContentLayout.LIST_ONLY
     }
 
     // Search for books with an optional delay to display search attempt to user
