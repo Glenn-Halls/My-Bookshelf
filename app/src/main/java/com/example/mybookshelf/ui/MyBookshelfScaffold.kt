@@ -1,8 +1,10 @@
 package com.example.mybookshelf.ui
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -16,6 +18,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,7 +47,23 @@ fun MyBookshelfScreen(
     val coroutineScope = rememberCoroutineScope()
     // Get screen content layout
     val bookScreenLayout = viewModel.getScreenLayout(windowSize, uiState.selectedBook)
+    // Define & remember scroll state in order to use Launched Effect to update via coroutine
+    val scrollPosition = rememberScrollState()
 
+
+    // Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes.
+    // NB: viewModel.selectBook(book) will set scroll position to 0px.
+    LaunchedEffect(uiState.selectedBook) {
+        scrollPosition.scrollTo(uiState.scrollPosition)
+        Log.d("Launched Effect", "scroll to ${scrollPosition.value}")
+    }
+    // On Composable destruction, save scroll position to ViewModel.
+    DisposableEffect(true) {
+        onDispose {
+            viewModel.setScrollPosition(scrollPosition.value)
+            Log.d("Disposable Effect", "save scroll position ${scrollPosition.value}")
+        }
+    }
 
     Scaffold(
         // Do not show top bar on compact screens
@@ -89,6 +109,7 @@ fun MyBookshelfScreen(
                     BookSearchScreen(
                         searchStatus = viewModel.searchUiState,
                         layout = bookScreenLayout,
+                        scrollPosition = scrollPosition,
                         onCardClick = { viewModel.selectBook(it) },
                         onBackClick = {},
                         onTryAgain = { viewModel.searchBooks(300) },

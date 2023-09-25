@@ -1,6 +1,7 @@
 package com.example.mybookshelf.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +27,7 @@ import com.example.mybookshelf.model.Book
 
 @Composable
 fun BookDetailScreen(
+    scrollPosition: ScrollState,
     onBackPressed: () -> Unit,
     book: Book,
     modifier: Modifier = Modifier
@@ -41,7 +42,7 @@ fun BookDetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollPosition)
         ) {
             Text(
                 text = book.bookDetail.title,
@@ -59,6 +60,7 @@ fun BookDetailScreen(
                 modifier = Modifier.fillMaxWidth(.45f),
                 alignment = Alignment.Center
             )
+            Text(scrollPosition.value.toString())
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = book.bookDetail.description,

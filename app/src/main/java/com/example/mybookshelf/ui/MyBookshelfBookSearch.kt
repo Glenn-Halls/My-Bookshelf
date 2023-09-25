@@ -1,5 +1,6 @@
 package com.example.mybookshelf.ui
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import com.example.mybookshelf.ui.util.BookshelfContentLayout
 fun BookSearchScreen(
     searchStatus: SearchUiState,
     layout: BookshelfContentLayout,
+    scrollPosition: ScrollState,
     onCardClick: (Book) -> Unit,
     onBackClick: () -> Unit,
     onTryAgain: () -> Unit,
@@ -35,7 +37,10 @@ fun BookSearchScreen(
                         )
                     }
                     BookshelfContentLayout.DETAILS_ONLY -> {
-                        BookDetailScreen(onBackPressed = onBackClick, book = bookSelected!!)
+                        BookDetailScreen(
+                            onBackPressed = onBackClick,
+                            book = bookSelected!!,
+                            scrollPosition = scrollPosition)
                     }
                     BookshelfContentLayout.LIST_AND_DETAILS -> {
                         Row(modifier.fillMaxSize()) {
@@ -44,7 +49,11 @@ fun BookSearchScreen(
                                 onCardClick = onCardClick,
                                 modifier = modifier.fillMaxWidth(.5f)
                             )
-                            BookDetailScreen(onBackPressed = onBackClick, book = bookSelected!!)
+                            BookDetailScreen(
+                                onBackPressed = onBackClick,
+                                book = bookSelected!!,
+                                scrollPosition = scrollPosition,
+                                )
                         }
                     }
                 }

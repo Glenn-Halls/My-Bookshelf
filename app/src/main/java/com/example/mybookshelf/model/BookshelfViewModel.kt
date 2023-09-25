@@ -164,7 +164,8 @@ class BookshelfViewModel(
     fun selectBook(book: Book) {
         _uiState.update {
             it.copy(
-                selectedBook = book
+                selectedBook = book,
+                scrollPosition = 0,
             )
         }
     }
@@ -208,6 +209,14 @@ class BookshelfViewModel(
             it.copy(
                 selectedBook = null,
                 selectedBestseller = null,
+            )
+        }
+    }
+
+    fun setScrollPosition(position: Int) {
+        _uiState.update {
+            it.copy(
+                scrollPosition = position
             )
         }
     }
