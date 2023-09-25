@@ -2,6 +2,7 @@ package com.example.mybookshelf.ui
 
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -49,8 +50,6 @@ fun MyBookshelfScreen(
     val bookScreenLayout = viewModel.getScreenLayout(windowSize, uiState.selectedBook)
     // Define & remember scroll state in order to use Launched Effect to update via coroutine
     val scrollPosition = rememberScrollState()
-
-
     // Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes.
     // NB: viewModel.selectBook(book) will set scroll position to 0px.
     LaunchedEffect(uiState.selectedBook) {
@@ -64,12 +63,12 @@ fun MyBookshelfScreen(
             Log.d("Disposable Effect", "save scroll position ${scrollPosition.value}")
         }
     }
-
+    BackHandler(true, viewModel::navigateBack)
     Scaffold(
         // Do not show top bar on compact screens
         topBar = {
             if (windowHeight != WindowHeightSizeClass.Compact) {
-                MyBookshelfTopBar {}
+                MyBookshelfTopBar(onUpButtonClick = viewModel::navigateBack)
             }
         },
         bottomBar = {
@@ -111,7 +110,6 @@ fun MyBookshelfScreen(
                         layout = bookScreenLayout,
                         scrollPosition = scrollPosition,
                         onCardClick = { viewModel.selectBook(it) },
-                        onBackClick = {},
                         onTryAgain = { viewModel.searchBooks(300) },
                         bookSelected = uiState.selectedBook,
                     )

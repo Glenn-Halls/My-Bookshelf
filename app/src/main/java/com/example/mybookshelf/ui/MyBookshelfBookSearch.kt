@@ -17,7 +17,6 @@ fun BookSearchScreen(
     layout: BookshelfContentLayout,
     scrollPosition: ScrollState,
     onCardClick: (Book) -> Unit,
-    onBackClick: () -> Unit,
     onTryAgain: () -> Unit,
     modifier: Modifier = Modifier,
     bookSelected: Book?,
@@ -38,7 +37,6 @@ fun BookSearchScreen(
                     }
                     BookshelfContentLayout.DETAILS_ONLY -> {
                         BookDetailScreen(
-                            onBackPressed = onBackClick,
                             book = bookSelected!!,
                             scrollPosition = scrollPosition)
                     }
@@ -50,7 +48,6 @@ fun BookSearchScreen(
                                 modifier = modifier.fillMaxWidth(.5f)
                             )
                             BookDetailScreen(
-                                onBackPressed = onBackClick,
                                 book = bookSelected!!,
                                 scrollPosition = scrollPosition,
                                 )

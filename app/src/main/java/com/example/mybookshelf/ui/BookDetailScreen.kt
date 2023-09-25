@@ -1,6 +1,5 @@
 package com.example.mybookshelf.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,6 @@ import com.example.mybookshelf.model.Book
 @Composable
 fun BookDetailScreen(
     scrollPosition: ScrollState,
-    onBackPressed: () -> Unit,
     book: Book,
     modifier: Modifier = Modifier
 ) {
@@ -36,7 +34,6 @@ fun BookDetailScreen(
         contentAlignment = Alignment.TopCenter,
         modifier = modifier.fillMaxSize()
     ) {
-        BackHandler(onBack = onBackPressed)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
