@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.R
 import com.example.mybookshelf.model.Book
@@ -41,6 +42,8 @@ fun MyBookshelfScreen(
     windowSize: WindowSizeClass,
     modifier: Modifier = Modifier
 ) {
+    // Context for use with app container
+    val context = LocalContext.current
     // State Flow accessor to UI State
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
@@ -103,12 +106,16 @@ fun MyBookshelfScreen(
                     if (viewModel.searchUiState == SearchUiState.Loading) {
                         LoadingScreen()
                     } else {
-                        Text("hello")
+                        Text("null")
                     }
                 }
                 ScreenSelect.BEST_SELLERS -> NytBestsellerScreen(
                     nytUiState = viewModel.nytUiState,
-                    onCardClick = { viewModel.selectBestseller(it) },
+                    onCardClick = {
+                        viewModel.updateSearchQuery(it.title + " " + it.author)
+                        viewModel.updateSearch(context)
+                        viewModel.selectBook(null)
+                                  },
                     onTryAgain = { viewModel.getBestsellers(300) },
                     listSelected = uiState.nytListSelected,
                     hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
@@ -128,7 +135,10 @@ fun MyBookshelfScreen(
                         onCardClick = { viewModel.selectBook(it) },
                         isFavourite = viewModel.isBookFavourite(),
                         isBookmarked = false,
-                        onFavouriteClick = { addBookToDb(it) },
+                        onFavouriteClick = {
+                            viewModel.updateSearchQuery(it.bookDetail.title)
+                            viewModel.updateSearch(context)
+                                           },
                         onBookmarkClick = { addBookToDb(it) },
                         onTryAgain = { viewModel.searchBooks(300) },
                         bookSelected = uiState.selectedBook,
@@ -143,7 +153,11 @@ fun MyBookshelfScreen(
                 else -> if (viewModel.searchUiState == SearchUiState.Loading) {
                     LoadingScreen()
                 } else {
-                    Text("null")
+                    CustomSearchScreen(
+                        searchQuery = uiState.searchQuery ?: "",
+                        searchStringUpdate = {viewModel.setSearchString(it)},
+                        onSearchClicked = { viewModel.updateSearch(context) }
+                    )
                 }
             }
         }

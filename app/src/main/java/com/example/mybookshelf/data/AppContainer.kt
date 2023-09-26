@@ -38,7 +38,7 @@ class DefaultAppContainer(
         .baseUrl(bookBaseUrl)
         .build()
 
-    private val bookRetrofitService: BookshelfApiService by lazy {
+    val bookRetrofitService: BookshelfApiService by lazy {
         bookRetrofit.create(BookshelfApiService::class.java)
     }
     override val bookRepository: BookRepository by lazy {

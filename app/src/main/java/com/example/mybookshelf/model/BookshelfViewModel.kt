@@ -1,5 +1,6 @@
 package com.example.mybookshelf.model
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -15,11 +16,14 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
+import com.example.mybookshelf.data.DefaultAppContainer
 import com.example.mybookshelf.data.MyBookRepository
+import com.example.mybookshelf.data.NetworkBookRepository
 import com.example.mybookshelf.data.NytListRepository
 import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
+import com.example.mybookshelf.ui.util.ScreenSelect
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +48,7 @@ sealed interface NytUiState {
 
 
 class BookshelfViewModel(
-    private val bookRepository: BookRepository,
+    private var bookRepository: BookRepository,
     private val bestsellerRepository: BestsellerRepository,
     private val nytListRepository: NytListRepository,
     private val myBookRepository: MyBookRepository,
@@ -124,6 +128,25 @@ class BookshelfViewModel(
         }
     }
 
+    fun updateSearchQuery(query: String) {
+        _uiState.update {
+            it.copy(searchQuery = query)
+        }
+    }
+
+    fun updateSearch(context: Context) {
+        bookRepository = NetworkBookRepository(
+            bookshelfApiService = DefaultAppContainer(context).bookRetrofitService,
+            searchString = uiState.value.searchQuery ?: ""
+        )
+        searchBooks()
+        _uiState.update {
+            it.copy(
+                currentScreen = ScreenSelect.BROWSE
+            )
+        }
+    }
+
     // Get Bestsellers with an optional delay to display search attempt to user
     fun getBestsellers(delay: Long? = null) {
         viewModelScope.launch {
@@ -174,7 +197,7 @@ class BookshelfViewModel(
         }
     }
 
-    fun selectBook(book: Book) {
+    fun selectBook(book: Book?) {
         _uiState.update {
             it.copy(
                 selectedBook = book,
@@ -202,7 +225,7 @@ class BookshelfViewModel(
     fun setSearchString(search: String) {
         _uiState.update {
             it.copy(
-                searchString = search
+                searchQuery = search
             )
         }
     }
