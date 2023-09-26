@@ -15,6 +15,6 @@ data class MyBook(
     val thumbnail: String,
     val rating: Int? = null,
     @ColumnInfo(name = "favourite")
-    val isFavourite: Boolean = false,
+    val isFavourite: Boolean,
     val notes: String? = null
 )

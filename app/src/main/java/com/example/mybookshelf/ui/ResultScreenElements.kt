@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -61,12 +62,14 @@ import kotlinx.coroutines.delay
 fun BookGrid(
     books: List<Book>,
     onCardClick: (Book) -> Unit,
+    listScrollPosition: LazyGridState,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 300.dp),
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(dimensionResource(R.dimen.padding_medium)),
+        state = listScrollPosition,
     ) {
         items(
             items = books,

@@ -22,7 +22,9 @@ import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -52,7 +54,14 @@ class BookshelfViewModel(
     private val _uiState = MutableStateFlow(BookshelfUiState())
     // Accessor to state values
     val uiState: StateFlow<BookshelfUiState> = _uiState
-
+    // Accessor to my book database
+    val myBookDb: StateFlow<List<MyBook>> = myBookRepository
+        .getAllBooksStream()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
     // Create observable search UI state holder
     var searchUiState: SearchUiState by mutableStateOf(SearchUiState.Loading)
         private set
@@ -95,6 +104,10 @@ class BookshelfViewModel(
             }
             searchUiState = try {
                 val searchResult = bookRepository.getBooks()
+                searchResult.myBooksInSearch = myBookDb.value.map { it.id }
+                searchResult.favouritesInSearch = myBookDb.value.map {
+                    it.id
+                }
                 _uiState.update {
                     it.copy(
                         searchResult = searchResult
@@ -194,6 +207,11 @@ class BookshelfViewModel(
         }
     }
 
+    fun isBookFavourite(): Boolean {
+        val bookId = uiState.value.selectedBook?.id ?: "no book id"
+        return uiState.value.searchResult?.favouritesInSearch?.contains(bookId) ?: false
+    }
+
     // Get navigation setup based on window size
     fun getNavigationSetup(windowSize: WindowSizeClass): BookshelfNavigationType {
         return when (windowSize.widthSizeClass) {
@@ -238,7 +256,10 @@ class BookshelfViewModel(
         )
     }
 
-    suspend fun testSaveBook(book: Book) {
+    suspend fun saveBook(
+        book: Book,
+        isFavourite: Boolean = false,
+        ) {
         myBookRepository.insertBook(
             MyBook(
             id = book.id,
@@ -246,9 +267,20 @@ class BookshelfViewModel(
             title = book.bookDetail.title,
             author = book.bookDetail.title,
             description = book.bookDetail.description,
-            thumbnail = book.bookDetail.bookCover.thumbnail
+            thumbnail = book.bookDetail.bookCover.thumbnail,
+            isFavourite = isFavourite,
             )
         )
+        if (searchUiState is SearchUiState.Success) {
+            val searchResult = _uiState.value.searchResult
+            val newList = searchResult!!.myBooksInSearch + book.id
+            searchResult.favouritesInSearch = newList
+            _uiState.update {
+                it.copy(
+                    searchResult = searchResult
+                )
+            }
+        }
     }
 
     init {

@@ -8,4 +8,7 @@
     <string name="favourites">Favourites</string>
     <string name="book_cover">book cover</string>
     <string name="favourite">favourite</string>
+    <string name="not_favourite">not favourite</string>
+    <string name="on_bookshelf">on bookshelf</string>
+    <string name="not_on_bookshelf">not on bookshelf</string>
 </resources>
