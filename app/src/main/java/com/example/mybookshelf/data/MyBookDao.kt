@@ -20,7 +20,10 @@ interface MyBookDao {
     @Update
     suspend fun update(myBook: MyBook)
 
-    @Query("SELECT * from bookshelf ORDER BY :orderBy")
-    fun getBooks(orderBy: String? = "title"): Flow<List<MyBook>>
+    @Query("SELECT * from bookshelf ORDER BY " +
+            "CASE WHEN :orderBy = 'title' THEN title END ASC, " +
+            "CASE WHEN :orderBy = 'titleDESC' THEN title END DESC"
+    )
+    fun getBooks(orderBy: String? = null): Flow<List<MyBook>>
 
 }
