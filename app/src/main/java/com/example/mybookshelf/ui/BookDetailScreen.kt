@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -37,6 +38,7 @@ import com.example.mybookshelf.model.Book
 fun BookDetailScreen(
     scrollPosition: ScrollState,
     book: Book,
+    isMyBook: Boolean,
     isFavourite: Boolean,
     onFavouriteClick: (Book) -> Unit,
     onBookmarkClick: (Book) -> Unit,
@@ -67,9 +69,9 @@ fun BookDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 IconButton(onClick = { onBookmarkClick(book) }) {
-                    if (true) {
+                    if (isMyBook) {
                         Icon(
-                            Icons.Filled.BookmarkBorder,
+                            Icons.Filled.Bookmark,
                             contentDescription = stringResource(R.string.on_bookshelf),
                             tint = Color.Black,
                             modifier = Modifier.size(iconSize),

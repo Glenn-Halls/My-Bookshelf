@@ -48,6 +48,8 @@ fun MyBookshelfScreen(
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
     val bookshelfBooks by viewModel.myBookDb.collectAsState()
+    // Favourite database as subset of book database
+    val favouriteBooks = bookshelfBooks.filter { it.isFavourite }
     // Define navigation type based on WindowSizeClass dimensions
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
@@ -60,16 +62,23 @@ fun MyBookshelfScreen(
     val scrollPosition = rememberScrollState()
     // Separate from scroll position, remember list scroll state
     val listScrollPosition = rememberLazyGridState()
-    // Helper function adds book to database within coroutine scope
-    fun addBookToDb(book: Book) { coroutineScope.launch { viewModel.saveBook(book) } }
+    // Helper function adds / removes book to / from database within coroutine scope
+    fun onBookmarkClick(book: Book) {
+        coroutineScope.launch { viewModel.onBookmarkClick(book, bookshelfBooks) }
+    }
+    // Helper function toggles favourite tag and adds book to database in coroutine scope
+    fun onFavouriteClick(book: Book) {
+        coroutineScope.launch { viewModel.onFavouriteClick(book, bookshelfBooks) }
+    }
+    // Helper function that
     // Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes.
     // NB: viewModel.selectBook(book) will set scroll position to 0px.
-    LaunchedEffect(uiState.selectedBook, bookshelfBooks.size) {
+    LaunchedEffect(uiState.selectedBook, bookshelfBooks) {
         scrollPosition.scrollTo(uiState.scrollPosition)
         Log.d("Launched Effect", "scroll to ${scrollPosition.value}")
     }
     // On Composable destruction, save scroll position to ViewModel.
-    DisposableEffect(bookshelfBooks.size) {
+    DisposableEffect(bookshelfBooks) {
         onDispose {
             viewModel.setScrollPosition(scrollPosition.value)
             Log.d("Disposable Effect", "save scroll position ${scrollPosition.value}")
@@ -121,11 +130,7 @@ fun MyBookshelfScreen(
                     hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
                 )
 
-                ScreenSelect.WATCH_LIST -> ErrorScreen(onTryAgainButton = {
-                    coroutineScope.launch {
-                        viewModel.testSaveItem()
-                    }
-                })
+                ScreenSelect.WATCH_LIST -> ErrorScreen(onTryAgainButton = {})
                 ScreenSelect.BROWSE ->
                     BookSearchScreen(
                         searchStatus = viewModel.searchUiState,
@@ -133,23 +138,15 @@ fun MyBookshelfScreen(
                         scrollPosition = scrollPosition,
                         listScrollPosition = listScrollPosition,
                         onCardClick = { viewModel.selectBook(it) },
+                        isMyBook = viewModel.isBookMyBook(),
                         isFavourite = viewModel.isBookFavourite(),
-                        isBookmarked = false,
-                        onFavouriteClick = {
-                            viewModel.updateSearchQuery(it.bookDetail.title)
-                            viewModel.updateSearch(context)
-                                           },
-                        onBookmarkClick = { addBookToDb(it) },
+                        onFavouriteClick = { onFavouriteClick(it) },
+                        onBookmarkClick = { onBookmarkClick(it) },
                         onTryAgain = { viewModel.searchBooks(300) },
                         bookSelected = uiState.selectedBook,
                     )
-                ScreenSelect.MY_BOOKS -> Text(uiState.searchResult?.items.toString())
-                ScreenSelect.FAVOURITES -> Text("""
-                    ${uiState.selectedBook}
-                    ${uiState.selectedBestseller}
-                    ${uiState.currentScreen}
-                    ${uiState.nytLists}
-                """.trimIndent())
+                ScreenSelect.MY_BOOKS -> MyBookGrid(myBooks = bookshelfBooks, onCardClick = {})
+                ScreenSelect.FAVOURITES -> MyBookGrid(myBooks = favouriteBooks, onCardClick = {})
                 else -> if (viewModel.searchUiState == SearchUiState.Loading) {
                     LoadingScreen()
                 } else {

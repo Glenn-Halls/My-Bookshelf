@@ -51,11 +51,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mybookshelf.R
+import com.example.mybookshelf.data.convertToBook
 import com.example.mybookshelf.data.getCoilUrl
 import com.example.mybookshelf.data.getShortDescription
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.FakeBestseller
+import com.example.mybookshelf.model.MyBook
 import kotlinx.coroutines.delay
 
 @Composable
@@ -96,6 +98,26 @@ fun BestsellerGrid(
             key = { bestseller -> bestseller.isbn13 }
         ) {
             bestseller -> BestsellerCard(bestseller = bestseller, onCardClick = onCardClick)
+        }
+    }
+}
+
+@Composable
+fun MyBookGrid(
+    myBooks: List<MyBook>,
+    onCardClick: (MyBook) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 300.dp),
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(dimensionResource(R.dimen.padding_medium)),
+    ) {
+        items(
+            items = myBooks,
+            key = { myBook -> myBook.id }
+        ) {
+            myBook -> MyBookCard(myBook = myBook, onCardClick = onCardClick)
         }
     }
 }
@@ -219,6 +241,61 @@ fun BestsellerCard(
             }
             Text(
                 text = bestseller.description,
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyBookCard(
+    myBook: MyBook,
+    onCardClick: (MyBook) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val isFavourite = myBook.isFavourite
+    val rating = myBook.rating
+    val notes = myBook.notes
+    val book = myBook.convertToBook()
+    Card(
+        elevation = CardDefaults.cardElevation(),
+        onClick = {onCardClick(myBook)},
+        modifier = modifier.padding(dimensionResource(R.dimen.padding_medium)),
+    ) {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .height(470.dp)
+                .padding(dimensionResource(R.dimen.padding_medium))
+                .fillMaxWidth()
+        ) {
+            AsyncImage(
+                model = book.getCoilUrl(),
+                contentDescription = stringResource(R.string.book_cover),
+                placeholder = painterResource(R.drawable.loading_img),
+                error = painterResource(R.drawable.ic_broken_image),
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.fillMaxWidth(.45f),
+                alignment = Alignment.Center
+            )
+            Text("isFavourite = $isFavourite")
+            Text("rating = $rating")
+            Text("notes = $notes")
+            Text(
+                text = book.bookDetail.title,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.displayMedium
+            )
+            Text(
+                text = book.bookDetail.date,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium
+            )
+            Text(
+                text = book.getShortDescription(),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelMedium
             )

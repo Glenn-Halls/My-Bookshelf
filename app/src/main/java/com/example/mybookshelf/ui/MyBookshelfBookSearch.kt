@@ -32,7 +32,7 @@ fun BookSearchScreen(
     onCardClick: (Book) -> Unit,
     isFavourite: Boolean,
     onFavouriteClick: (Book) -> Unit,
-    isBookmarked: Boolean,
+    isMyBook: Boolean,
     onBookmarkClick: (Book) -> Unit,
     onTryAgain: () -> Unit,
     modifier: Modifier = Modifier,
@@ -56,6 +56,7 @@ fun BookSearchScreen(
                     BookshelfContentLayout.DETAILS_ONLY -> {
                         BookDetailScreen(
                             book = bookSelected!!,
+                            isMyBook = isMyBook,
                             isFavourite = isFavourite,
                             onFavouriteClick = onFavouriteClick,
                             onBookmarkClick = onBookmarkClick,
@@ -71,6 +72,7 @@ fun BookSearchScreen(
                             )
                             BookDetailScreen(
                                 book = bookSelected!!,
+                                isMyBook = isMyBook,
                                 isFavourite = isFavourite,
                                 onFavouriteClick = onFavouriteClick,
                                 onBookmarkClick = onBookmarkClick,

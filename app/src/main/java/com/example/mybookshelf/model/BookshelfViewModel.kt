@@ -108,10 +108,10 @@ class BookshelfViewModel(
             }
             searchUiState = try {
                 val searchResult = bookRepository.getBooks()
-                searchResult.myBooksInSearch = myBookDb.value.map { it.id }
-                searchResult.favouritesInSearch = myBookDb.value.map {
-                    it.id
-                }
+                val myBooks = myBookDb.value
+                val myFavourites = myBooks.filter { it.isFavourite }
+                searchResult.myBooksInSearch = myBooks.map { it.id }
+                searchResult.favouritesInSearch = myFavourites.map { it.id }
                 _uiState.update {
                     it.copy(
                         searchResult = searchResult
@@ -235,6 +235,11 @@ class BookshelfViewModel(
         return uiState.value.searchResult?.favouritesInSearch?.contains(bookId) ?: false
     }
 
+    fun isBookMyBook(): Boolean {
+        val bookId = uiState.value.selectedBook?.id ?: "no book id"
+        return uiState.value.searchResult?.myBooksInSearch?.contains(bookId) ?: false
+    }
+
     // Get navigation setup based on window size
     fun getNavigationSetup(windowSize: WindowSizeClass): BookshelfNavigationType {
         return when (windowSize.widthSizeClass) {
@@ -262,24 +267,58 @@ class BookshelfViewModel(
         }
     }
 
-    // TEST method for database
-    suspend fun testSaveItem() {
-        myBookRepository.insertBook(
-            MyBook(
-                id = "id",
-                link = "link",
-                title = "title",
-                author = "author",
-                description = "description",
-                thumbnail = "thumbnail",
-                rating = 1,
-                isFavourite = true,
-                notes = "notes"
-            )
-        )
+    /*
+        When user clicks on favourite tab:
+            - If book is already in database:
+                - If book is favourite, make favourite = false and remove from favouritesInSearch
+                - If book is not favourite, make favourite = true and add to favouritesInSearch
+            - If book is not in database, add to database with favourite = true
+     */
+    suspend fun onFavouriteClick(book: Book, bookShelfList: List<MyBook>) {
+        val bookIsMyBook: Boolean = book.id in bookShelfList.map {it.id}
+        if (bookIsMyBook) {
+            val myBook = (bookShelfList.filter { it.id == book.id })[0]
+            val searchResult = _uiState.value.searchResult
+            val oldFavouriteList = searchResult!!.favouritesInSearch
+            val bookIsFavourite: Boolean = book.id in oldFavouriteList
+            toggleFavourite(myBook)
+            val newFavouriteList = if (bookIsFavourite) {
+                oldFavouriteList.filter { it != book.id }
+            } else {
+                oldFavouriteList + book.id
+            }
+            searchResult.favouritesInSearch = newFavouriteList
+            _uiState.update {
+                it.copy(
+                    searchResult = searchResult
+                )
+            }
+        } else {
+            saveBook(book, true)
+        }
     }
 
-    suspend fun saveBook(
+    // Toggle favourite: Boolean value of book within database
+    private suspend fun toggleFavourite(myBook: MyBook) {
+        val newBook = myBook.copy(
+            isFavourite = !myBook.isFavourite
+        )
+        myBookRepository.updateBook(newBook)
+    }
+
+    suspend fun onBookmarkClick(book: Book, bookshelfList: List<MyBook>) {
+        val bookIsMyBook: Boolean = book.id in bookshelfList.map {it.id}
+        if (bookIsMyBook) {
+            val myBook = bookshelfList.find { it.id == book.id }
+            deleteBook(myBook!!)
+        } else {
+            saveBook(book)
+        }
+    }
+
+    // Add book to MyBook database with isFavourite flag by converting book -> MyBook.
+    // Update _uiState values for myBooksInSearch and favouritesInSearch, accordingly
+    private suspend fun saveBook(
         book: Book,
         isFavourite: Boolean = false,
         ) {
@@ -296,13 +335,31 @@ class BookshelfViewModel(
         )
         if (searchUiState is SearchUiState.Success) {
             val searchResult = _uiState.value.searchResult
-            val newList = searchResult!!.myBooksInSearch + book.id
-            searchResult.favouritesInSearch = newList
+            val newMyBookList = searchResult!!.myBooksInSearch + book.id
+            searchResult.myBooksInSearch = newMyBookList
+            if (isFavourite) {
+                val newFavouriteList = searchResult.favouritesInSearch + book.id
+                searchResult.favouritesInSearch = newFavouriteList
+            }
             _uiState.update {
                 it.copy(
                     searchResult = searchResult
                 )
             }
+        }
+    }
+
+    private suspend fun deleteBook(mybook: MyBook) {
+        val searchResult = _uiState.value.searchResult
+        val newMyBookList = searchResult!!.myBooksInSearch.filter { it != mybook.id }
+        val newFavouriteList = searchResult.favouritesInSearch.filter { it != mybook.id }
+        searchResult.myBooksInSearch = newMyBookList
+        searchResult.favouritesInSearch = newFavouriteList
+        myBookRepository.deleteBook(mybook)
+        _uiState.update {
+            it.copy(
+                searchResult = searchResult
+            )
         }
     }
 
@@ -312,9 +369,6 @@ class BookshelfViewModel(
         getNytLists()
         selectNytList("testing, 1, 2, 3...")
         setSearchString("jazz history")
-        viewModelScope.launch {
-            testSaveItem()
-        }
     }
 
     companion object {
