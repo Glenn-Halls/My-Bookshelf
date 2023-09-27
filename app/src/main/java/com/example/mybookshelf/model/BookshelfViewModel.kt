@@ -147,7 +147,7 @@ class BookshelfViewModel(
         }
     }
 
-    // Get Bestsellers with an optional delay to display search attempt to user
+    // Get Bestsellers with an optional delay to display network search attempt to user
     fun getBestsellers(delay: Long? = null) {
         viewModelScope.launch {
             nytUiState = NytUiState.Loading
@@ -230,11 +230,13 @@ class BookshelfViewModel(
         }
     }
 
+    // When book selected from book search, verify if selected book is favourite in database
     fun isBookFavourite(): Boolean {
         val bookId = uiState.value.selectedBook?.id ?: "no book id"
         return uiState.value.searchResult?.favouritesInSearch?.contains(bookId) ?: false
     }
 
+    // When book has been selected from book search, verify if book exists in database
     fun isBookMyBook(): Boolean {
         val bookId = uiState.value.selectedBook?.id ?: "no book id"
         return uiState.value.searchResult?.myBooksInSearch?.contains(bookId) ?: false
@@ -250,6 +252,7 @@ class BookshelfViewModel(
         }
     }
 
+    // Temporary navigation handler
     fun navigateBack() {
         _uiState.update {
             it.copy(
@@ -268,11 +271,11 @@ class BookshelfViewModel(
     }
 
     /*
-        When user clicks on favourite tab:
-            - If book is already in database:
-                - If book is favourite, make favourite = false and remove from favouritesInSearch
-                - If book is not favourite, make favourite = true and add to favouritesInSearch
-            - If book is not in database, add to database with favourite = true
+     *   When user clicks on favourite tab:
+     *      - If book is already in database:
+     *          - If book is favourite, make favourite = false and remove from favouritesInSearch
+     *          - If book is not favourite, make favourite = true and add to favouritesInSearch
+     *      - If book is not in database, add to database with favourite = true
      */
     suspend fun onFavouriteClick(book: Book, bookShelfList: List<MyBook>) {
         val bookIsMyBook: Boolean = book.id in bookShelfList.map {it.id}
@@ -306,6 +309,7 @@ class BookshelfViewModel(
         myBookRepository.updateBook(newBook)
     }
 
+    // If book is in database, remove, if not, add to database
     suspend fun onBookmarkClick(book: Book, bookshelfList: List<MyBook>) {
         val bookIsMyBook: Boolean = book.id in bookshelfList.map {it.id}
         if (bookIsMyBook) {
@@ -349,6 +353,8 @@ class BookshelfViewModel(
         }
     }
 
+    // Delete MyBook from database.
+    // Update _uiState values for myBooksInSearch and favouritesInSearch accordingly.
     private suspend fun deleteBook(mybook: MyBook) {
         val searchResult = _uiState.value.searchResult
         val newMyBookList = searchResult!!.myBooksInSearch.filter { it != mybook.id }
@@ -363,6 +369,7 @@ class BookshelfViewModel(
         }
     }
 
+    // On viewModel initiation, get search results to populate data
     init {
         searchBooks()
         getBestsellers()

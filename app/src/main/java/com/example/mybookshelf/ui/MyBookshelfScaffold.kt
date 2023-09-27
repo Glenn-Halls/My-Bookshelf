@@ -70,9 +70,11 @@ fun MyBookshelfScreen(
     fun onFavouriteClick(book: Book) {
         coroutineScope.launch { viewModel.onFavouriteClick(book, bookshelfBooks) }
     }
-    // Helper function that
-    // Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes.
-    // NB: viewModel.selectBook(book) will set scroll position to 0px.
+    /*
+     *  Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes
+     *  OR when database is updated as reflected by bookshelfBooks: List<MyBook>.
+     *  NB: viewModel.selectBook(book) will set scroll position to 0px.
+     */
     LaunchedEffect(uiState.selectedBook, bookshelfBooks) {
         scrollPosition.scrollTo(uiState.scrollPosition)
         Log.d("Launched Effect", "scroll to ${scrollPosition.value}")
@@ -84,6 +86,7 @@ fun MyBookshelfScreen(
             Log.d("Disposable Effect", "save scroll position ${scrollPosition.value}")
         }
     }
+    // Enable back navigation via viewModel's up navigation logic
     BackHandler(true, viewModel::navigateBack)
     Scaffold(
         // Do not show top bar on compact screens
@@ -130,7 +133,15 @@ fun MyBookshelfScreen(
                     hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
                 )
 
-                ScreenSelect.WATCH_LIST -> ErrorScreen(onTryAgainButton = {})
+                ScreenSelect.WATCH_LIST -> {
+                    if (viewModel.searchUiState == SearchUiState.Loading) {
+                        LoadingScreen()
+                    } else {
+                        ErrorScreen(onTryAgainButton = {
+                            viewModel.searchBooks(300)
+                        })
+                    }
+                }
                 ScreenSelect.BROWSE ->
                     BookSearchScreen(
                         searchStatus = viewModel.searchUiState,
