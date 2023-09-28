@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.R
+import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.model.SearchUiState
@@ -69,6 +70,14 @@ fun MyBookshelfScreen(
     // Helper function toggles favourite tag and adds book to database in coroutine scope
     fun onFavouriteClick(book: Book) {
         coroutineScope.launch { viewModel.onFavouriteClick(book, bookshelfBooks) }
+    }
+    // Helper function when bestseller selected updates search, reset selected book and scroll.
+    fun onBestsellerClick(bestseller: Bestseller) {
+        viewModel.updateSearchQuery("${bestseller.title} ${bestseller.author}")
+        viewModel.updateSearch(context)
+        viewModel.selectBook(null)
+        coroutineScope.launch {
+            listScrollPosition.scrollToItem(0,0) }
     }
     /*
      *  Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes
@@ -123,11 +132,7 @@ fun MyBookshelfScreen(
                 }
                 ScreenSelect.BEST_SELLERS -> NytBestsellerScreen(
                     nytUiState = viewModel.nytUiState,
-                    onCardClick = {
-                        viewModel.updateSearchQuery(it.title + " " + it.author)
-                        viewModel.updateSearch(context)
-                        viewModel.selectBook(null)
-                                  },
+                    onCardClick = { onBestsellerClick(it) },
                     onTryAgain = { viewModel.getBestsellers(300) },
                     listSelected = uiState.nytListSelected,
                     hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
@@ -137,9 +142,17 @@ fun MyBookshelfScreen(
                     if (viewModel.searchUiState == SearchUiState.Loading) {
                         LoadingScreen()
                     } else {
-                        ErrorScreen(onTryAgainButton = {
-                            viewModel.searchBooks(300)
-                        })
+                        CustomSearchScreen(
+                            searchQuery = uiState.searchQuery ?: "",
+                            searchStringUpdate = {viewModel.setSearchString(it)},
+                            onSearchClicked = {
+                                viewModel.navigateBack()
+                                viewModel.updateSearch(context)
+                                coroutineScope.launch {
+                                    listScrollPosition.scrollToItem(0,0)
+                                }
+                            }
+                        )
                     }
                 }
                 ScreenSelect.BROWSE ->
