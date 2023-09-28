@@ -3,12 +3,15 @@ package com.example.mybookshelf.ui
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,12 +29,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.R
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
+import com.example.mybookshelf.model.NytUiState
 import com.example.mybookshelf.model.SearchUiState
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.ScreenSelect
@@ -79,6 +84,7 @@ fun MyBookshelfScreen(
         coroutineScope.launch {
             listScrollPosition.scrollToItem(0,0) }
     }
+    val actionButton = viewModel.getActionButton()
     /*
      *  Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes
      *  OR when database is updated as reflected by bookshelfBooks: List<MyBook>.
@@ -101,7 +107,13 @@ fun MyBookshelfScreen(
         // Do not show top bar on compact screens
         topBar = {
             if (windowHeight != WindowHeightSizeClass.Compact) {
-                MyBookshelfTopBar(onUpButtonClick = viewModel::navigateBack)
+                MyBookshelfTopBar(
+                    onUpButtonClick = viewModel::navigateBack,
+                    showActionButton = actionButton.showButton,
+                    actionButtonVector = actionButton.icon,
+                    onActionButtonClick = actionButton.action,
+                    contentDescription = actionButton.contentDescription
+                )
             }
         },
         bottomBar = {
@@ -171,20 +183,20 @@ fun MyBookshelfScreen(
                     )
                 ScreenSelect.MY_BOOKS -> MyBookGrid(myBooks = bookshelfBooks, onCardClick = {})
                 ScreenSelect.FAVOURITES -> MyBookGrid(myBooks = favouriteBooks, onCardClick = {})
-                else -> if (viewModel.searchUiState == SearchUiState.Loading) {
+                else -> if (
+                    viewModel.searchUiState == SearchUiState.Loading ||
+                    viewModel.nytUiState == NytUiState.Loading
+                    ) {
                     LoadingScreen()
                 } else {
-                    CustomSearchScreen(
-                        searchQuery = uiState.searchQuery ?: "",
-                        searchStringUpdate = {viewModel.setSearchString(it)},
-                        onSearchClicked = {
-                            viewModel.navigateBack()
-                            viewModel.updateSearch(context)
-                            coroutineScope.launch {
-                                listScrollPosition.scrollToItem(0,0)
-                            }
+                    Text("NYT Lists Downloaded: ${uiState.nytLists?.size ?: 0}")
+                    Column(
+                        modifier = modifier.fillMaxSize()
+                    ) {
+                        uiState.nytLists?.forEach {
+                            Text(it.listName)
                         }
-                    )
+                    }
                 }
             }
         }
@@ -193,7 +205,13 @@ fun MyBookshelfScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyBookshelfTopBar(onUpButtonClick: () -> Unit) {
+fun MyBookshelfTopBar(
+    onUpButtonClick: () -> Unit,
+    showActionButton: Boolean,
+    actionButtonVector: ImageVector?,
+    onActionButtonClick: () -> Unit,
+    contentDescription: String?,
+) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -214,6 +232,16 @@ fun MyBookshelfTopBar(onUpButtonClick: () -> Unit) {
                     contentDescription = stringResource(R.string.back_button),
                 )
             }
-        }
+        },
+        actions = {
+                  if (showActionButton) {
+                      IconButton(onClick = onActionButtonClick) {
+                          Icon(
+                              imageVector = actionButtonVector ?: Icons.Default.BrokenImage,
+                              contentDescription = contentDescription
+                          )
+                      }
+                  }
+        },
     )
 }

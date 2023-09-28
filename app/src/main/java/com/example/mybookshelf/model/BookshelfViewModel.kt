@@ -2,6 +2,10 @@ package com.example.mybookshelf.model
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SortByAlpha
+import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.getValue
@@ -20,6 +24,7 @@ import com.example.mybookshelf.data.DefaultAppContainer
 import com.example.mybookshelf.data.MyBookRepository
 import com.example.mybookshelf.data.NetworkBookRepository
 import com.example.mybookshelf.data.NytListRepository
+import com.example.mybookshelf.ui.util.ActionButton
 import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
@@ -317,6 +322,38 @@ class BookshelfViewModel(
             deleteBook(myBook!!)
         } else {
             saveBook(book)
+        }
+    }
+
+    fun getActionButton(): ActionButton {
+        return when (uiState.value.currentScreen) {
+            ScreenSelect.NONE -> ActionButton(false,)
+            ScreenSelect.BEST_SELLERS -> ActionButton(
+                true,
+                Icons.Filled.Whatshot,
+                { searchBooks(300) },
+                "select bestseller list",
+            )
+
+            ScreenSelect.WATCH_LIST -> ActionButton(
+                true,
+                Icons.Filled.SortByAlpha,
+                {searchBooks(300)},
+                contentDescription = "sort by alphabetical order"
+            )
+            ScreenSelect.BROWSE -> ActionButton(
+                showButton = true,
+                icon = Icons.Filled.Search,
+                action = {
+                    selectBook(null)
+                    searchBooks(300)
+                         },
+                contentDescription = "search",
+            )
+
+            ScreenSelect.MY_BOOKS -> ActionButton(false)
+            ScreenSelect.FAVOURITES -> ActionButton(false)
+            null -> ActionButton(false)
         }
     }
 
