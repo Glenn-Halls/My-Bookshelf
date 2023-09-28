@@ -177,7 +177,13 @@ fun MyBookshelfScreen(
                     CustomSearchScreen(
                         searchQuery = uiState.searchQuery ?: "",
                         searchStringUpdate = {viewModel.setSearchString(it)},
-                        onSearchClicked = { viewModel.updateSearch(context) }
+                        onSearchClicked = {
+                            viewModel.navigateBack()
+                            viewModel.updateSearch(context)
+                            coroutineScope.launch {
+                                listScrollPosition.scrollToItem(0,0)
+                            }
+                        }
                     )
                 }
             }

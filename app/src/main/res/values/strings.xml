@@ -11,4 +11,5 @@
     <string name="not_favourite">not favourite</string>
     <string name="on_bookshelf">on bookshelf</string>
     <string name="not_on_bookshelf">not on bookshelf</string>
+    <string name="clear_text">clear text</string>
 </resources>
