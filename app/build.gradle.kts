@@ -84,6 +84,8 @@ dependencies {
     // Extended Material Icon Library
     implementation("androidx.compose.material:material-icons-extended:1.5.1")
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+    // Compose Rating Bar
+    implementation("com.github.a914-gowtham:compose-ratingbar:1.3.6")
     // J Unit test implementation
     testImplementation("junit:junit:4.13.2")
     // Kotlin CoRoutines implementation

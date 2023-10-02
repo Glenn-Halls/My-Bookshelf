@@ -1,5 +1,6 @@
 package com.example.mybookshelf.ui
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
@@ -58,6 +59,8 @@ import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.FakeBestseller
 import com.example.mybookshelf.model.MyBook
+import com.gowtham.ratingbar.RatingBar
+import com.gowtham.ratingbar.RatingBarStyle
 import kotlinx.coroutines.delay
 
 @Composable
@@ -281,9 +284,13 @@ fun MyBookCard(
                 modifier = Modifier.fillMaxWidth(.45f),
                 alignment = Alignment.Center
             )
-            Text("isFavourite = $isFavourite")
-            Text("rating = $rating")
-            Text("notes = $notes")
+            RatingBar(
+                value = rating?.toFloat() ?: 0f,
+                style = RatingBarStyle.Fill(),
+                onValueChange = { /* TODO */ },
+                onRatingChanged = { Log.d("Rating", "changed to $rating") }
+            )
+            Text(text = notes ?: "")
             Text(
                 text = book.bookDetail.title,
                 textAlign = TextAlign.Center,
