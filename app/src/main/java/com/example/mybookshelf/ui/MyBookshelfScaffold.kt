@@ -269,7 +269,7 @@ fun MyBookshelfTopBar(
         title = {
             Text(
                 text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.displayLarge
+                style = MaterialTheme.typography.displayLarge,
             )
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(

@@ -22,8 +22,8 @@ val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = GoudyBookletter,
         fontWeight = FontWeight.Bold,
-        fontSize = 40.sp,
-        letterSpacing = .09.em,
+        fontSize = 35.sp,
+        letterSpacing = .085.em,
     ),
     displayMedium = TextStyle(
         fontFamily = Montserrat,
