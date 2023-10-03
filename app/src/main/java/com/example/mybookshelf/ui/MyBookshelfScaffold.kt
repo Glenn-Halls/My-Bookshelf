@@ -83,7 +83,6 @@ fun MyBookshelfScreen(
         coroutineScope.launch {
             viewModel.reviewMyBook()
             viewModel.toggleEditState()
-            viewModel.userReviewUpdate(null, null, null)
         }
     }
     // Helper function removes current review state
@@ -125,7 +124,7 @@ fun MyBookshelfScreen(
         topBar = {
             if (windowHeight != WindowHeightSizeClass.Compact) {
                 MyBookshelfTopBar(
-                    onUpButtonClick = viewModel::navigateBack,
+                    onUpButtonClick = { viewModel.navigateBack() },
                     showActionButton = actionButton.showButton,
                     actionButtonVector = actionButton.icon,
                     onActionButtonClick = actionButton.action,
@@ -208,17 +207,32 @@ fun MyBookshelfScreen(
                             onEdit ={ viewModel.userReviewUpdate(userNotes = it) },
                             onCompletion = { onReviewCompletion() },
                             userReview = uiState.userReview,
-                            onCancel = { onReviewCancelled() },
+                            onCancel = {
+                                onReviewCancelled()
+                                       },
                             onDismiss = { viewModel.toggleEditState() },
                         )
                     } else {
-                        MyBookGrid(
-                            myBooks = bookshelfBooks,
-                            onCardClick = {
-                                viewModel.selectMyBook(it)
-                                viewModel.toggleEditState()
-                            }
-                        )
+                        if (uiState.selectedMyBook == null) {
+                            MyBookGrid(
+                                myBooks = bookshelfBooks,
+                                onCardClick = {
+                                    viewModel.selectMyBook(it)
+                                }
+                            )
+                        } else {
+                            MyBookDetailScreen(
+                                scrollPosition = scrollPosition,
+                                myBook = uiState.selectedMyBook!!,
+                                onEditClick = { viewModel.toggleEditState() },
+                                isFavourite = uiState.selectedMyBook!!.isFavourite,
+                                onFavouriteClick = {
+                                    coroutineScope.launch {
+                                        viewModel.toggleMyBookFavourite()
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
                 ScreenSelect.FAVOURITES -> MyBookGrid(myBooks = favouriteBooks, onCardClick = {})

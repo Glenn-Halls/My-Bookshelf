@@ -223,7 +223,7 @@ class BookshelfViewModel(
         }
     }
 
-    fun selectMyBook(myBook: MyBook) {
+    fun selectMyBook(myBook: MyBook?) {
         _uiState.update {
             it.copy(
                 selectedMyBook = myBook
@@ -302,6 +302,7 @@ class BookshelfViewModel(
             it.copy(
                 selectedBook = null,
                 selectedBestseller = null,
+                selectedMyBook = null,
             )
         }
     }
@@ -346,7 +347,7 @@ class BookshelfViewModel(
     }
 
     // Toggle favourite: Boolean value of book within database
-    private suspend fun toggleFavourite(myBook: MyBook) {
+    suspend fun toggleFavourite(myBook: MyBook) {
         val newBook = myBook.copy(
             isFavourite = !myBook.isFavourite
         )
@@ -364,8 +365,14 @@ class BookshelfViewModel(
         }
     }
 
-    suspend fun reviewMyBook() {
-        val userReview = uiState.value.userReview
+    suspend fun toggleMyBookFavourite() {
+        reviewMyBook(
+            UserReview(isFavourite = !uiState.value.selectedMyBook!!.isFavourite)
+        )
+    }
+
+    suspend fun reviewMyBook(review: UserReview? = null) {
+        val userReview = review ?: uiState.value.userReview
         val myBook = uiState.value.selectedMyBook!!
         val newBook = myBook.copy(
             isFavourite = userReview?.isFavourite ?: myBook.isFavourite,
@@ -373,6 +380,12 @@ class BookshelfViewModel(
             notes = userReview?.userNotes ?: myBook.notes
         )
         myBookRepository.updateBook(newBook)
+        _uiState.update {
+            it.copy(
+                userReview = null,
+                selectedMyBook = newBook
+            )
+        }
     }
 
     fun getActionButton(): ActionButton {
