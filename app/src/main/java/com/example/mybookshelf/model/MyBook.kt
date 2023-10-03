@@ -18,3 +18,10 @@ data class MyBook(
     val isFavourite: Boolean,
     val notes: String? = null
 )
+
+data class UserReview(
+    val userNotes: String? = null,
+    val userRating: Float? = null,
+    val isFavourite: Boolean? = null,
+    val deletePrompt: Boolean? = null,
+)

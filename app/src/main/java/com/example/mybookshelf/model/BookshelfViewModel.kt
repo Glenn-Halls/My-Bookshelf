@@ -61,8 +61,10 @@ class BookshelfViewModel(
 
     // Create observable state holder
     private val _uiState = MutableStateFlow(BookshelfUiState())
+
     // Accessor to state values
     val uiState: StateFlow<BookshelfUiState> = _uiState
+
     // Accessor to my book database
     val myBookDb: StateFlow<List<MyBook>> = myBookRepository
         .getAllBooksStream()
@@ -71,9 +73,11 @@ class BookshelfViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
+
     // Create observable search UI state holder
     var searchUiState: SearchUiState by mutableStateOf(SearchUiState.Loading)
         private set
+
     // Create observable NYT search UI state holder
     var nytUiState: NytUiState by mutableStateOf(NytUiState.Loading)
 
@@ -219,6 +223,14 @@ class BookshelfViewModel(
         }
     }
 
+    fun selectMyBook(myBook: MyBook) {
+        _uiState.update {
+            it.copy(
+                selectedMyBook = myBook
+            )
+        }
+    }
+
     fun selectNytList(nytList: String) {
         _uiState.update {
             it.copy(
@@ -234,6 +246,33 @@ class BookshelfViewModel(
             )
         }
     }
+
+    fun toggleEditState() {
+        val currentState = uiState.value.editInProgress
+        _uiState.update {
+            it.copy(
+                editInProgress = !currentState
+            )
+        }
+    }
+
+    // Update UI state user review to survive recomposition
+    fun userReviewUpdate(
+        isFavourite: Boolean? = uiState.value.userReview?.isFavourite,
+        userRating: Float? = uiState.value.userReview?.userRating,
+        userNotes: String? = uiState.value.userReview?.userNotes,
+    ) {
+        _uiState.update {
+            it.copy(
+                userReview = UserReview(
+                    userNotes = userNotes,
+                    userRating = userRating,
+                    isFavourite = isFavourite,
+                )
+            )
+        }
+    }
+
 
     // When book selected from book search, verify if selected book is favourite in database
     fun isBookFavourite(): Boolean {
@@ -323,6 +362,17 @@ class BookshelfViewModel(
         } else {
             saveBook(book)
         }
+    }
+
+    suspend fun reviewMyBook() {
+        val userReview = uiState.value.userReview
+        val myBook = uiState.value.selectedMyBook!!
+        val newBook = myBook.copy(
+            isFavourite = userReview?.isFavourite ?: myBook.isFavourite,
+            rating = userReview?.userRating?.toInt() ?: myBook.rating,
+            notes = userReview?.userNotes ?: myBook.notes
+        )
+        myBookRepository.updateBook(newBook)
     }
 
     fun getActionButton(): ActionButton {

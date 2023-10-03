@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +43,7 @@ import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.ScreenSelect
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MyBookshelfScreen(
     viewModel: BookshelfViewModel,
@@ -75,6 +77,21 @@ fun MyBookshelfScreen(
     // Helper function toggles favourite tag and adds book to database in coroutine scope
     fun onFavouriteClick(book: Book) {
         coroutineScope.launch { viewModel.onFavouriteClick(book, bookshelfBooks) }
+    }
+    // Helper function adds custom review to MyBook
+    fun onReviewCompletion() {
+        coroutineScope.launch {
+            viewModel.reviewMyBook()
+            viewModel.toggleEditState()
+            viewModel.userReviewUpdate(null, null, null)
+        }
+    }
+    // Helper function removes current review state
+    fun onReviewCancelled() {
+        coroutineScope.launch {
+            viewModel.userReviewUpdate(null, null, null)
+            viewModel.toggleEditState()
+        }
     }
     // Helper function when bestseller selected updates search, reset selected book and scroll.
     fun onBestsellerClick(bestseller: Bestseller) {
@@ -181,7 +198,29 @@ fun MyBookshelfScreen(
                         onTryAgain = { viewModel.searchBooks(300) },
                         bookSelected = uiState.selectedBook,
                     )
-                ScreenSelect.MY_BOOKS -> MyBookGrid(myBooks = bookshelfBooks, onCardClick = {})
+                ScreenSelect.MY_BOOKS -> {
+                    val editInProgress = uiState.editInProgress
+                    if (editInProgress) {
+                        EditMyBookScreen(
+                            myBook = uiState.selectedMyBook!!,
+                            onFavouriteChange = { viewModel.userReviewUpdate(isFavourite = it) },
+                            onRatingChange = { viewModel.userReviewUpdate(userRating = it.toFloat()) },
+                            onEdit ={ viewModel.userReviewUpdate(userNotes = it) },
+                            onCompletion = { onReviewCompletion() },
+                            userReview = uiState.userReview,
+                            onCancel = { onReviewCancelled() },
+                            onDismiss = { viewModel.toggleEditState() },
+                        )
+                    } else {
+                        MyBookGrid(
+                            myBooks = bookshelfBooks,
+                            onCardClick = {
+                                viewModel.selectMyBook(it)
+                                viewModel.toggleEditState()
+                            }
+                        )
+                    }
+                }
                 ScreenSelect.FAVOURITES -> MyBookGrid(myBooks = favouriteBooks, onCardClick = {})
                 else -> if (
                     viewModel.searchUiState == SearchUiState.Loading ||
