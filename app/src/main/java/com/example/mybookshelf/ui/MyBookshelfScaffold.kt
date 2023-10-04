@@ -52,6 +52,8 @@ fun MyBookshelfScreen(
 ) {
     // Context for use with app container
     val context = LocalContext.current
+    // Network status does not need to be collected as it will be refreshed with recomposition
+    val networkStatus = viewModel.searchUiState
     // State Flow accessor to UI State
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
@@ -162,7 +164,7 @@ fun MyBookshelfScreen(
                     nytUiState = viewModel.nytUiState,
                     onCardClick = { onBestsellerClick(it) },
                     onTryAgain = { viewModel.getBestsellers(300) },
-                    listSelected = uiState.nytListSelected,
+                    listSelected = uiState.selectedNytList,
                     hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
                 )
 
@@ -183,20 +185,41 @@ fun MyBookshelfScreen(
                         )
                     }
                 }
-                ScreenSelect.BROWSE ->
-                    BookSearchScreen(
-                        searchStatus = viewModel.searchUiState,
-                        layout = bookScreenLayout,
-                        scrollPosition = scrollPosition,
-                        listScrollPosition = listScrollPosition,
-                        onCardClick = { viewModel.selectBook(it) },
-                        isMyBook = viewModel.isBookMyBook(),
-                        isFavourite = viewModel.isBookFavourite(),
-                        onFavouriteClick = { onFavouriteClick(it) },
-                        onBookmarkClick = { onBookmarkClick(it) },
-                        onTryAgain = { viewModel.searchBooks(300) },
-                        bookSelected = uiState.selectedBook,
-                    )
+                ScreenSelect.BROWSE -> {
+                    when (networkStatus) {
+                        SearchUiState.Loading -> LoadingScreen()
+                        SearchUiState.Error -> ErrorScreen({ viewModel.searchBooks(300) })
+                        else -> {
+                            if (uiState.searchResult == null) {
+                                CustomSearchScreen(
+                                    searchQuery = uiState.searchQuery ?: "",
+                                    searchStringUpdate = { viewModel.setSearchString(it) },
+                                    onSearchClicked = {
+                                        viewModel.navigateBack()
+                                        viewModel.updateSearch(context)
+                                        coroutineScope.launch {
+                                            listScrollPosition.scrollToItem(0, 0)
+                                        }
+                                    }
+                                )
+                            } else {
+                                BookSearchScreen(
+                                    searchStatus = viewModel.searchUiState,
+                                    layout = bookScreenLayout,
+                                    scrollPosition = scrollPosition,
+                                    listScrollPosition = listScrollPosition,
+                                    onCardClick = { viewModel.selectBook(it) },
+                                    isMyBook = viewModel.isBookMyBook(),
+                                    isFavourite = viewModel.isBookFavourite(),
+                                    onFavouriteClick = { onFavouriteClick(it) },
+                                    onBookmarkClick = { onBookmarkClick(it) },
+                                    onTryAgain = { viewModel.searchBooks(300) },
+                                    bookSelected = uiState.selectedBook,
+                                )
+                            }
+                        }
+                    }
+                }
                 ScreenSelect.MY_BOOKS -> {
                     val editInProgress = uiState.editInProgress
                     if (editInProgress) {

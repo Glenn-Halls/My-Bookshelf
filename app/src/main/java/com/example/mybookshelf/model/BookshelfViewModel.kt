@@ -143,6 +143,12 @@ class BookshelfViewModel(
         }
     }
 
+    private fun resetSearchResults() {
+        _uiState.update {
+            it.copy(searchResult = null)
+        }
+    }
+
     fun updateSearch(context: Context) {
         bookRepository = NetworkBookRepository(
             bookshelfApiService = DefaultAppContainer(context).bookRetrofitService,
@@ -234,7 +240,7 @@ class BookshelfViewModel(
     fun selectNytList(nytList: String) {
         _uiState.update {
             it.copy(
-                nytListSelected = nytList
+                selectedNytList = nytList
             )
         }
     }
@@ -409,7 +415,7 @@ class BookshelfViewModel(
                 icon = Icons.Filled.Search,
                 action = {
                     selectBook(null)
-                    searchBooks(300)
+                    resetSearchResults()
                          },
                 contentDescription = "search",
             )
