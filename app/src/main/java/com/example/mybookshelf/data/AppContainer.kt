@@ -15,11 +15,13 @@ interface AppContainer {
     val nytListRepository: NytListRepository
     val myBookRepository: MyBookRepository
     var searchString: String
+    var nytListAddress: String
 }
 
 class DefaultAppContainer(
     private val context: Context,
-    override var searchString: String = "Jazz"
+    override var searchString: String = "Jazz",
+    override var nytListAddress: String = "hardcover-fiction"
 ) : AppContainer{
     // Base details for Google's book API
     private val bookBaseUrl = "https://www.googleapis.com"
@@ -55,12 +57,12 @@ class DefaultAppContainer(
         .baseUrl(bestsellerBaseUrl)
         .build()
 
-    private val bestsellerRetrofitService: BookshelfBestsellerApiService by lazy {
+    val bestsellerRetrofitService: BookshelfBestsellerApiService by lazy {
         bestsellerRetrofit.create(BookshelfBestsellerApiService::class.java)
     }
 
     override val bestsellerRepository: BestsellerRepository by lazy {
-        NetworkBestsellerRepository(bestsellerRetrofitService)
+        NetworkBestsellerRepository(bestsellerRetrofitService, nytListAddress)
     }
 
     /**

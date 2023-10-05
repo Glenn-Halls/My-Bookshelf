@@ -22,6 +22,7 @@ import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
 import com.example.mybookshelf.data.DefaultAppContainer
 import com.example.mybookshelf.data.MyBookRepository
+import com.example.mybookshelf.data.NetworkBestsellerRepository
 import com.example.mybookshelf.data.NetworkBookRepository
 import com.example.mybookshelf.data.NytListRepository
 import com.example.mybookshelf.ui.util.ActionButton
@@ -54,8 +55,8 @@ sealed interface NytUiState {
 
 class BookshelfViewModel(
     private var bookRepository: BookRepository,
-    private val bestsellerRepository: BestsellerRepository,
-    private var nytListRepository: NytListRepository,
+    private var bestsellerRepository: BestsellerRepository,
+    private val nytListRepository: NytListRepository,
     private val myBookRepository: MyBookRepository,
 ) : ViewModel() {
 
@@ -162,8 +163,21 @@ class BookshelfViewModel(
         }
     }
 
+    fun updateBestsellerList(context: Context) {
+        bestsellerRepository = NetworkBestsellerRepository(
+            bestsellerApiService = DefaultAppContainer(context = context).bestsellerRetrofitService,
+            nytList = uiState.value.selectedNytList?.listLocation ?: ""
+        )
+        getBestsellers(100)
+        _uiState.update {
+            it.copy(
+                currentScreen = ScreenSelect.BEST_SELLERS
+            )
+        }
+    }
+
     // Get Bestsellers with an optional delay to display network search attempt to user
-    fun getBestsellers(delay: Long? = null) {
+    fun getBestsellers(delay: Long? = 100) {
         viewModelScope.launch {
             nytUiState = NytUiState.Loading
             if (delay != null) {
@@ -221,6 +235,7 @@ class BookshelfViewModel(
                     listOf(
                         NytBestsellerList(
                             listName = "No Lists Found...",
+                            listLocation = "",
                             publishedDate = "",
                             firstPublished = "",
                             frequency = "",
@@ -261,7 +276,7 @@ class BookshelfViewModel(
         }
     }
 
-    fun selectNytList(nytList: String?) {
+    fun selectNytList(nytList: NytBestsellerList?) {
         _uiState.update {
             it.copy(
                 selectedNytList = nytList

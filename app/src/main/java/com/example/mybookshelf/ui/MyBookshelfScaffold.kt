@@ -52,14 +52,10 @@ fun MyBookshelfScreen(
 ) {
     // Context for use with app container
     val context = LocalContext.current
-    // Network status does not need to be collected as it will be refreshed with recomposition
-    val networkStatus = viewModel.searchUiState
     // State Flow accessor to UI State
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
     val bookshelfBooks by viewModel.myBookDb.collectAsState()
-    // Favourite database as subset of book database
-    val favouriteBooks = bookshelfBooks.filter { it.isFavourite }
     // Define navigation type based on WindowSizeClass dimensions
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
@@ -164,19 +160,19 @@ fun MyBookshelfScreen(
                     nytUiState = viewModel.nytUiState,
                     onCardClick = { onBestsellerClick(it) },
                     onTryAgain = { viewModel.getBestsellers(300) },
-                    listSelected = uiState.selectedNytList,
+                    listSelected = uiState.selectedNytList?.listName ?: "null",
                     hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
                 )
 
                 ScreenSelect.WATCH_LIST -> {
-                    if (viewModel.searchUiState == SearchUiState.Loading) {
+                    if (viewModel.nytUiState == NytUiState.Loading) {
                         LoadingScreen()
                     } else if (uiState.selectedNytList == null) {
                         NytListList(
                             nytListList = uiState.nytLists!!,
                             onListClick = {
-                                viewModel.selectNytList(it.listName)
-                                viewModel.getBestsellers(300)
+                                viewModel.selectNytList(it)
+                                viewModel.updateBestsellerList(context)
                             }
                         )
                     } else {
@@ -187,7 +183,7 @@ fun MyBookshelfScreen(
                     }
                 }
                 ScreenSelect.BROWSE -> {
-                    when (networkStatus) {
+                    when (viewModel.searchUiState) {
                         SearchUiState.Loading -> LoadingScreen()
                         SearchUiState.Error -> ErrorScreen({ viewModel.searchBooks(300) })
                         else -> {
@@ -259,7 +255,45 @@ fun MyBookshelfScreen(
                         }
                     }
                 }
-                ScreenSelect.FAVOURITES -> MyBookGrid(myBooks = favouriteBooks, onCardClick = {})
+                ScreenSelect.FAVOURITES -> {
+                    val favouriteList = bookshelfBooks.filter { it.isFavourite }
+                    val editInProgress = uiState.editInProgress
+                    if (editInProgress) {
+                        EditMyBookScreen(
+                            myBook = uiState.selectedMyBook!!,
+                            onFavouriteChange = { viewModel.userReviewUpdate(isFavourite = it) },
+                            onRatingChange = { viewModel.userReviewUpdate(userRating = it.toFloat()) },
+                            onEdit ={ viewModel.userReviewUpdate(userNotes = it) },
+                            onCompletion = { onReviewCompletion() },
+                            userReview = uiState.userReview,
+                            onCancel = {
+                                onReviewCancelled()
+                            },
+                            onDismiss = { viewModel.toggleEditState() },
+                        )
+                    } else {
+                        if (uiState.selectedMyBook == null) {
+                            MyBookGrid(
+                                myBooks = favouriteList,
+                                onCardClick = {
+                                    viewModel.selectMyBook(it)
+                                }
+                            )
+                        } else {
+                            MyBookDetailScreen(
+                                scrollPosition = scrollPosition,
+                                myBook = uiState.selectedMyBook!!,
+                                onEditClick = { viewModel.toggleEditState() },
+                                isFavourite = uiState.selectedMyBook!!.isFavourite,
+                                onFavouriteClick = {
+                                    coroutineScope.launch {
+                                        viewModel.toggleMyBookFavourite()
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
                 else -> if (
                     viewModel.searchUiState == SearchUiState.Loading ||
                     viewModel.nytUiState == NytUiState.Loading

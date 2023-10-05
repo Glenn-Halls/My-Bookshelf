@@ -11,7 +11,7 @@ private const val API_KEY = "Y1dmz28FXM3bGGP8dD48kU617uOzGYdt"
 interface BookshelfBestsellerApiService {
     @GET("svc/books/v3/lists/current/{list}.json")
     suspend fun getBestsellers(
-        @Path("list", encoded = true) nytList: String = "hardcover-fiction",
+        @Path("list", encoded = true) nytList: String,
         @Query("api-key") key: String = API_KEY,
     ): BestsellerSearch
 }

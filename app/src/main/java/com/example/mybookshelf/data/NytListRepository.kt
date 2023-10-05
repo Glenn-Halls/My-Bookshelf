@@ -8,7 +8,7 @@ interface NytListRepository {
 }
 
 class NetworkNytListRepository(
-    private val nytListApiService: BookshelfNytListApiService
+    private val nytListApiService: BookshelfNytListApiService,
 ) : NytListRepository {
     override suspend fun getNytLists(): NytListSearch =
         nytListApiService.getNytBestsellerLists()

@@ -8,9 +8,10 @@ interface BestsellerRepository {
 }
 
 class NetworkBestsellerRepository(
-    private val bestsellerApiService: BookshelfBestsellerApiService
+    private val bestsellerApiService: BookshelfBestsellerApiService,
+    private val nytList: String
 ) : BestsellerRepository {
     override suspend fun getBestsellers(): BestsellerSearch =
-        bestsellerApiService.getBestsellers()
+        bestsellerApiService.getBestsellers(nytList)
 
 }

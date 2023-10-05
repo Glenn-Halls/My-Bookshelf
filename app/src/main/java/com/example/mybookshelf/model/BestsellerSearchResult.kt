@@ -32,6 +32,8 @@ data class NytListSearch(
 data class NytBestsellerList(
     @SerialName(value = "list_name")
     val listName: String,
+    @SerialName(value = "list_name_encoded")
+    val listLocation: String,
     @SerialName(value = "newest_published_date")
     val publishedDate: String,
     @SerialName(value = "oldest_published_date")
