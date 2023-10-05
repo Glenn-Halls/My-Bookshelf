@@ -504,7 +504,6 @@ class BookshelfViewModel(
         searchBooks()
         getBestsellers()
         getNytLists()
-        selectNytList("testing, 1, 2, 3...")
         setSearchString("jazz history")
     }
 

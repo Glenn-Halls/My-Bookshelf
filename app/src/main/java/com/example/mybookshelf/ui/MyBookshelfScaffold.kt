@@ -266,7 +266,7 @@ fun MyBookshelfScreen(
                     ) {
                     LoadingScreen()
                 } else {
-                    Text("NYT Lists Downloaded: ${uiState.nytLists?.size ?: 0}")
+                    Text("NYT Lists selected: ${uiState.selectedNytList}")
                     Column(
                         modifier = modifier.fillMaxSize()
                     ) {
