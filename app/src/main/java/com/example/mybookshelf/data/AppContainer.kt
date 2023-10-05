@@ -73,7 +73,7 @@ class DefaultAppContainer(
         .baseUrl(bestsellerBaseUrl)
         .build()
 
-    private val nytListRetrofitService: BookshelfNytListApiService by lazy {
+    val nytListRetrofitService: BookshelfNytListApiService by lazy {
         nytListRetrofit.create(BookshelfNytListApiService::class.java)
     }
 

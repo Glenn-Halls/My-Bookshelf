@@ -171,17 +171,18 @@ fun MyBookshelfScreen(
                 ScreenSelect.WATCH_LIST -> {
                     if (viewModel.searchUiState == SearchUiState.Loading) {
                         LoadingScreen()
-                    } else {
-                        CustomSearchScreen(
-                            searchQuery = uiState.searchQuery ?: "",
-                            searchStringUpdate = {viewModel.setSearchString(it)},
-                            onSearchClicked = {
-                                viewModel.navigateBack()
-                                viewModel.updateSearch(context)
-                                coroutineScope.launch {
-                                    listScrollPosition.scrollToItem(0,0)
-                                }
+                    } else if (uiState.selectedNytList == null) {
+                        NytListList(
+                            nytListList = uiState.nytLists!!,
+                            onListClick = {
+                                viewModel.selectNytList(it.listName)
+                                viewModel.getBestsellers(300)
                             }
+                        )
+                    } else {
+                        BestsellerGrid(
+                            bestsellers = uiState.bestseller!!.results.bestsellerList,
+                            onCardClick = {}
                         )
                     }
                 }

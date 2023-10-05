@@ -6,6 +6,7 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +26,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
@@ -59,6 +62,7 @@ import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.FakeBestseller
 import com.example.mybookshelf.model.MyBook
+import com.example.mybookshelf.model.NytBestsellerList
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 import kotlinx.coroutines.delay
@@ -121,6 +125,35 @@ fun MyBookGrid(
             key = { myBook -> myBook.id }
         ) {
             myBook -> MyBookCard(myBook = myBook, onCardClick = onCardClick)
+        }
+    }
+}
+
+@Composable
+fun NytListList(
+    nytListList: List<NytBestsellerList>,
+    onListClick: (NytBestsellerList) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(1),
+        contentPadding = PaddingValues(0.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        items(
+            items = nytListList,
+            key = { nytList -> nytList.toString() }
+        ) {
+            nytList -> BestSellerListItem(
+            nytList = nytList,
+            onListClick = onListClick,
+            modifier = Modifier
+                .padding(0.dp)
+                .border(Dp.Hairline, Color.Black)
+            )
         }
     }
 }
@@ -306,6 +339,37 @@ fun MyBookCard(
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelMedium
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BestSellerListItem(
+    nytList: NytBestsellerList,
+    onListClick: (NytBestsellerList) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = {onListClick(nytList)},
+        shape = RoundedCornerShape(0),
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp)
+                .padding(dimensionResource(R.dimen.padding_medium))
+        ) {
+            Text(
+                text = nytList.listName,
+                style = MaterialTheme.typography.labelMedium
+            )
+            Text("STAR")
         }
     }
 }

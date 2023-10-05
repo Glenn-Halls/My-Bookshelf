@@ -3,8 +3,8 @@ package com.example.mybookshelf.model
 import android.content.Context
 import android.util.Log
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -55,7 +55,7 @@ sealed interface NytUiState {
 class BookshelfViewModel(
     private var bookRepository: BookRepository,
     private val bestsellerRepository: BestsellerRepository,
-    private val nytListRepository: NytListRepository,
+    private var nytListRepository: NytListRepository,
     private val myBookRepository: MyBookRepository,
 ) : ViewModel() {
 
@@ -176,7 +176,9 @@ class BookshelfViewModel(
                         bestseller = bestsellerSearch
                     )
                 }
-                NytUiState.Success(bestsellerSearch.results.bestsellerList)
+                NytUiState.Success(
+                    bestsellerSearch.results.bestsellerList
+                )
             } catch (e: IOException) {
                 Log.d("ViewModel", "IO Exception")
                 NytUiState.Error
@@ -187,8 +189,30 @@ class BookshelfViewModel(
         }
     }
 
-    private fun getNytLists() {
+    private fun getNytLists(delay: Long? = null) {
         viewModelScope.launch {
+            nytUiState = NytUiState.Loading
+            if (delay != null) {
+                delay(delay)
+            }
+            nytUiState = try {
+                val nytSearchResult = nytListRepository.getNytLists()
+                val nytListList = nytSearchResult.results
+                _uiState.update {
+                    it.copy(
+                        nytLists = nytListList
+                    )
+                }
+                NytUiState.Success(emptyList())
+            } catch (e: IOException) {
+                Log.d("ViewModel NYT Network State", "IO Exception")
+                NytUiState.Error
+            } catch (e: HttpException) {
+                Log.d("ViewModel NYT Network State", "HTTP Exception")
+                NytUiState.Error
+            }
+
+
             val nytListSearch: NytListSearch = try {
                 nytListRepository.getNytLists()
             } catch (e: Exception) {
@@ -237,7 +261,7 @@ class BookshelfViewModel(
         }
     }
 
-    fun selectNytList(nytList: String) {
+    fun selectNytList(nytList: String?) {
         _uiState.update {
             it.copy(
                 selectedNytList = nytList
@@ -406,8 +430,8 @@ class BookshelfViewModel(
 
             ScreenSelect.WATCH_LIST -> ActionButton(
                 true,
-                Icons.Filled.SortByAlpha,
-                {searchBooks(300)},
+                Icons.Filled.Remove,
+                { selectNytList(null) },
                 contentDescription = "sort by alphabetical order"
             )
             ScreenSelect.BROWSE -> ActionButton(
