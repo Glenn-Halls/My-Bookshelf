@@ -34,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -81,6 +82,41 @@ class BookshelfViewModel(
 
     // Create observable NYT search UI state holder
     var nytUiState: NytUiState by mutableStateOf(NytUiState.Loading)
+
+    // Cooldown timer to restrict access to NYT API. Call limit: 500/day OR 5/min as of 10/10/2023
+    private val nytApiCooldown = flow<Int> {
+        val startingValue = 12
+        var currentValue = startingValue
+        emit(currentValue)
+        while (currentValue > 0) {
+            delay(1000L)
+            currentValue--
+            emit(currentValue)
+        }
+    }
+
+    private fun startNytApiCooldown() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    nytApiOnCooldown = true
+                )
+            }
+            nytApiCooldown.collect { time ->
+                _uiState.update {
+                    it.copy(
+                        nytApiCooldown = time
+                    )
+                }
+            }
+            _uiState.update {
+                it.copy(
+                    nytApiOnCooldown = false
+                )
+            }
+        }
+    }
+
 
     // Navigate to selected screen
     fun navigateToScreen(nav: NavigationElement) {
@@ -190,6 +226,7 @@ class BookshelfViewModel(
                         bestseller = bestsellerSearch
                     )
                 }
+                startNytApiCooldown()
                 NytUiState.Success(
                     bestsellerSearch.results.bestsellerList
                 )

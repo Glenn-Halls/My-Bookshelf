@@ -3,6 +3,7 @@ package com.example.mybookshelf.ui
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -300,12 +302,20 @@ fun MyBookshelfScreen(
                     ) {
                     LoadingScreen()
                 } else {
-                    Text("NYT Lists selected: ${uiState.selectedNytList}")
-                    Column(
-                        modifier = modifier.fillMaxSize()
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        uiState.nytLists?.forEach {
-                            Text(it.listName)
+                        Column(
+                        ) {
+                            Text(
+                                text = uiState.nytApiOnCooldown.toString(),
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                            Text(
+                                text = uiState.nytApiCooldown.toString(),
+                                style = MaterialTheme.typography.headlineLarge
+                            )
                         }
                     }
                 }

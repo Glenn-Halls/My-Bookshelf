@@ -15,4 +15,6 @@ data class BookshelfUiState(
     var userReview: UserReview? = null,
     val scrollPosition: Int = 0,
     val editInProgress: Boolean = false,
+    val nytApiOnCooldown: Boolean = false,
+    val nytApiCooldown: Int = 0,
 )
