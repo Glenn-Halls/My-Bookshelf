@@ -4,10 +4,12 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.example.mybookshelf.rules.TestDispatcherRule
+import com.example.mybookshelf.fake.FakeMyBookRepository
 import com.example.mybookshelf.fake.FakeNetworkBestsellerRepository
 import com.example.mybookshelf.fake.FakeNetworkBookRepository
+import com.example.mybookshelf.fake.FakeNytListRepository
 import com.example.mybookshelf.model.BookshelfViewModel
+import com.example.mybookshelf.rules.TestDispatcherRule
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationTabs
 import com.example.mybookshelf.ui.util.ScreenSelect
@@ -25,7 +27,9 @@ class BookshelfViewModelTest {
     private lateinit var viewModel: BookshelfViewModel
     private val newViewModel = { BookshelfViewModel(
         bookRepository = FakeNetworkBookRepository(),
-        bestsellerRepository = FakeNetworkBestsellerRepository()
+        bestsellerRepository = FakeNetworkBestsellerRepository(),
+        nytListRepository = FakeNytListRepository(),
+        myBookRepository = FakeMyBookRepository(),
     ) }
 
     // Instances of window size classes representing common device configurations

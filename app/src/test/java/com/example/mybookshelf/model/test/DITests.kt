@@ -1,7 +1,9 @@
 package com.example.mybookshelf.model.test
 
+import com.example.mybookshelf.fake.FakeMyBookRepository
 import com.example.mybookshelf.fake.FakeNetworkBestsellerRepository
 import com.example.mybookshelf.fake.FakeNetworkBookRepository
+import com.example.mybookshelf.fake.FakeNytListRepository
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.rules.TestDispatcherRule
 import kotlinx.coroutines.test.runTest
@@ -14,7 +16,9 @@ class DITests {
     val createViewModel = {
         BookshelfViewModel(
             bookRepository = FakeNetworkBookRepository(),
-            bestsellerRepository = FakeNetworkBestsellerRepository()
+            bestsellerRepository = FakeNetworkBestsellerRepository(),
+            nytListRepository = FakeNytListRepository(),
+            myBookRepository = FakeMyBookRepository(),
         )
     }
 
@@ -33,8 +37,8 @@ class DITests {
         runTest {
             val viewModel = createViewModel()
             assertEquals(
-                viewModel.uiState.value.searchResult,
-                "Success, 3 books found."
+                viewModel.uiState.value.searchResult?.items?.size,
+                3
             )
         }
 
@@ -44,11 +48,13 @@ class DITests {
         runTest {
             val viewModel = BookshelfViewModel(
                 FakeNetworkBookRepository(),
-                FakeNetworkBestsellerRepository()
+                FakeNetworkBestsellerRepository(),
+                FakeNytListRepository(),
+                FakeMyBookRepository()
             )
             assertEquals(
-                viewModel.uiState.value.searchResult,
-                "Success, 3 books found."
+                viewModel.uiState.value.searchResult?.items?.size,
+                3
             )
         }
 }

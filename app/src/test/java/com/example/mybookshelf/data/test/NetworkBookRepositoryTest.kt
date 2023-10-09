@@ -12,7 +12,8 @@ class NetworkBookRepositoryTest {
     fun networkBookRepository_getBooks_verifyBookList() =
         runTest {
         val repository = NetworkBookRepository(
-            bookshelfApiService = FakeBookApiService()
+            bookshelfApiService = FakeBookApiService(),
+            searchString = ""
         )
         assertEquals(FakeBookDataSource.items, repository.getBooks().items)
     }

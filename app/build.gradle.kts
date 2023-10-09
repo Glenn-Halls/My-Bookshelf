@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.mybookshelf"
-        minSdk = 28
+        minSdk = 30
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -88,8 +88,10 @@ dependencies {
     implementation("com.github.a914-gowtham:compose-ratingbar:1.3.6")
     // J Unit test implementation
     testImplementation("junit:junit:4.13.2")
-    // Kotlin CoRoutines implementation
+    // Kotlin CoRoutines test implementation
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    // Konsist Dependency
+    testImplementation("com.lemonappdev:konsist:0.12.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     // Compose BOM test implementation
