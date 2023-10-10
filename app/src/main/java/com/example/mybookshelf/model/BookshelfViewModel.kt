@@ -478,7 +478,7 @@ class BookshelfViewModel(
             ScreenSelect.BEST_SELLERS -> ActionButton(
                 true,
                 Icons.Filled.Whatshot,
-                { searchBooks(300) },
+                { selectNytList(null) },
                 "select bestseller list",
             )
 
