@@ -28,7 +28,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -382,6 +382,48 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun NytWaitScreen(
+    timeToWait: Int,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.WifiOff,
+                tint = MaterialTheme.colorScheme.secondary,
+                contentDescription = null,
+                modifier = Modifier.size(90.dp)
+            )
+            Text(
+                text = "Too Many Requests",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = "The NYT server limits repeated requests."
+            )
+            Text(
+                text = "Please wait a moment and try again."
+            )
+            Spacer(modifier = Modifier.size(16.dp))
+            Button(onClick = {}) {
+                Text(
+                    text = "Wait $timeToWait seconds",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun LoadingAnimation3(
     circleColor: Color = MaterialTheme.colorScheme.primary,
     circleSize: Dp = 36.dp,
@@ -462,7 +504,7 @@ fun ErrorScreen(
             verticalArrangement = Arrangement.Center,
         ) {
             Icon(
-                imageVector = Icons.Default.Notifications,
+                imageVector = Icons.Filled.WifiOff,
                 tint = MaterialTheme.colorScheme.secondary,
                 contentDescription = null,
                 modifier = Modifier.size(90.dp)
@@ -521,4 +563,10 @@ fun BookCardPreview() {
 @Preview
 fun BestsellerCardPreview() {
     BestsellerCard(bestseller = FakeBestseller, onCardClick = {})
+}
+
+@Composable
+@Preview
+fun NytWaitScreenPreview() {
+    NytWaitScreen(5)
 }

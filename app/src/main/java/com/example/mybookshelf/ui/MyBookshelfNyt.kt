@@ -13,6 +13,8 @@ import com.example.mybookshelf.model.NytUiState
 @Composable
 fun NytBestsellerScreen(
     nytUiState: NytUiState,
+    nytApiOnCooldown: Boolean,
+    nytApiCooldown: Int,
     onCardClick: (Bestseller) -> Unit,
     onTryAgain: () -> Unit,
     hideTopBar: Boolean,
@@ -27,7 +29,13 @@ fun NytBestsellerScreen(
             Text("no NYT list selected")
         } else when (nytUiState) {
             is NytUiState.Loading -> LoadingScreen()
-            is NytUiState.Error -> ErrorScreen(onTryAgain)
+            is NytUiState.Error -> {
+                if (nytApiOnCooldown) {
+                    NytWaitScreen(timeToWait = nytApiCooldown)
+                } else {
+                    ErrorScreen(onTryAgain)
+                }
+            }
             is NytUiState.Success ->
                 Scaffold(
                     topBar = {

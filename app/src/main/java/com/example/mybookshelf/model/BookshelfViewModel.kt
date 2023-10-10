@@ -30,11 +30,16 @@ import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import com.example.mybookshelf.ui.util.ScreenSelect
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,6 +59,7 @@ sealed interface NytUiState {
 }
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BookshelfViewModel(
     private var bookRepository: BookRepository,
     private var bestsellerRepository: BestsellerRepository,
@@ -83,40 +89,33 @@ class BookshelfViewModel(
     // Create observable NYT search UI state holder
     var nytUiState: NytUiState by mutableStateOf(NytUiState.Loading)
 
-    // Cooldown timer to restrict access to NYT API. Call limit: 500/day OR 5/min as of 10/10/2023
-    private val nytApiCooldown = flow<Int> {
-        val startingValue = 12
-        var currentValue = startingValue
-        emit(currentValue)
-        while (currentValue > 0) {
-            delay(1000L)
-            currentValue--
-            emit(currentValue)
-        }
+    private val _nytQueryState = MutableStateFlow(NytQueryStatus.READY)
+
+    //Temporary function to test cooldown timer flow
+    fun testTimer() {
+        startNytCountdownTimer()
     }
 
-    private fun startNytApiCooldown() {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    nytApiOnCooldown = true
-                )
-            }
-            nytApiCooldown.collect { time ->
-                _uiState.update {
-                    it.copy(
-                        nytApiCooldown = time
-                    )
+    private fun getNytCountdownFlow(isRunning: Boolean): Flow<Int> {
+        return flow {
+            val startValue = 12
+            var currentValue = startValue
+            while (isRunning) {
+                emit(currentValue)
+                while (currentValue >= 0) {
+                    delay(1000L)
+                    currentValue--
+                    emit(currentValue)
                 }
             }
-            _uiState.update {
-                it.copy(
-                    nytApiOnCooldown = false
-                )
-            }
         }
     }
 
+    private fun startNytCountdownTimer() {
+        _nytQueryState.update { NytQueryStatus.RESET }
+        _nytQueryState.update { NytQueryStatus.WAITING }
+        _uiState.update { it.copy(nytApiOnCooldown = true) }
+    }
 
     // Navigate to selected screen
     fun navigateToScreen(nav: NavigationElement) {
@@ -226,7 +225,6 @@ class BookshelfViewModel(
                         bestseller = bestsellerSearch
                     )
                 }
-                startNytApiCooldown()
                 NytUiState.Success(
                     bestsellerSearch.results.bestsellerList
                 )
@@ -235,6 +233,10 @@ class BookshelfViewModel(
                 NytUiState.Error
             } catch (e: HttpException) {
                 Log.d("ViewModel", "HTTP Exception")
+                Log.d("message", e.message())
+                if (e.message().equals("Too Many Requests")) {
+                    startNytCountdownTimer()
+                }
                 NytUiState.Error
             }
         }
@@ -551,8 +553,27 @@ class BookshelfViewModel(
         }
     }
 
-    // On viewModel initiation, get search results to populate data
+    // On viewModel initiation, get search results to populate data and set timer function
     init {
+        // Set API cooldown to true for testing purposes
+        _uiState.update { it.copy(nytApiOnCooldown = true) }
+        // When triggered, start countdown flow and once time = 0, set status to ready
+        _nytQueryState
+            .flatMapLatest {
+                getNytCountdownFlow(
+                    isRunning = it == NytQueryStatus.WAITING
+                )
+            }
+            .onEach { timerUpdate ->
+                _uiState.update { it.copy(nytApiCooldown = timerUpdate) }
+                if (timerUpdate == 0) {
+                    _uiState.update {
+                        it.copy(nytApiOnCooldown = false)
+                    }
+                    _nytQueryState.update { NytQueryStatus.READY }
+                }
+            }
+            .launchIn(viewModelScope)
         searchBooks()
         getBestsellers()
         getNytLists()

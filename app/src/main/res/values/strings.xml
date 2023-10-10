@@ -13,4 +13,7 @@
     <string name="not_on_bookshelf">not on bookshelf</string>
     <string name="clear_text">clear text</string>
     <string name="delete_from_library">delete from library</string>
+    <string name="connection_error">connection error</string>
+    <string name="wait_try_again">Please wait %1$s seconds and try again.</string>
+    <string name="repeated_api_requests">I\'m sorry, the NYT server does not like repeated requests.</string>
 </resources>

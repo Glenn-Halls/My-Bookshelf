@@ -13,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -160,6 +161,8 @@ fun MyBookshelfScreen(
                 }
                 ScreenSelect.BEST_SELLERS -> NytBestsellerScreen(
                     nytUiState = viewModel.nytUiState,
+                    nytApiOnCooldown = uiState.nytApiOnCooldown,
+                    nytApiCooldown = uiState.nytApiCooldown,
                     onCardClick = { onBestsellerClick(it) },
                     onTryAgain = { viewModel.getBestsellers(300) },
                     listSelected = uiState.selectedNytList?.listName ?: "null",
@@ -316,6 +319,11 @@ fun MyBookshelfScreen(
                                 text = uiState.nytApiCooldown.toString(),
                                 style = MaterialTheme.typography.headlineLarge
                             )
+                            Button(
+                                onClick = { viewModel.testTimer() }
+                            ) {
+                                Text("TEST")
+                            }
                         }
                     }
                 }
