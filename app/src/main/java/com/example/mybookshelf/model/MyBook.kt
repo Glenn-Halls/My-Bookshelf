@@ -11,12 +11,14 @@ data class MyBook(
     val link: String,
     val title: String,
     val author: String,
+    val date: String,
     val description: String,
     val thumbnail: String,
     val rating: Int? = null,
     @ColumnInfo(name = "favourite")
     val isFavourite: Boolean,
-    val notes: String? = null
+    val notes: String? = null,
+    val lastUpdated: Long,
 )
 
 data class UserReview(

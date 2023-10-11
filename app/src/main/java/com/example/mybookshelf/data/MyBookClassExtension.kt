@@ -11,10 +11,10 @@ fun MyBook.convertToBook(): Book {
         link = link,
         bookDetail = BookDetail(
             title = title,
-            date = "NOT IMPLEMENTED",
+            date = date,
             description = description,
             bookCover = BookCover(
-                thumbnail = thumbnail
+            thumbnail = thumbnail
             )
         )
     )

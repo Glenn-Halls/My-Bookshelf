@@ -435,7 +435,8 @@ class BookshelfViewModel(
     // Toggle favourite: Boolean value of book within database
     suspend fun toggleFavourite(myBook: MyBook) {
         val newBook = myBook.copy(
-            isFavourite = !myBook.isFavourite
+            isFavourite = !myBook.isFavourite,
+            lastUpdated = System.currentTimeMillis()
         )
         myBookRepository.updateBook(newBook)
     }
@@ -463,7 +464,8 @@ class BookshelfViewModel(
         val newBook = myBook.copy(
             isFavourite = userReview?.isFavourite ?: myBook.isFavourite,
             rating = userReview?.userRating?.toInt() ?: myBook.rating,
-            notes = userReview?.userNotes ?: myBook.notes
+            notes = userReview?.userNotes ?: myBook.notes,
+            lastUpdated = System.currentTimeMillis()
         )
         myBookRepository.updateBook(newBook)
         _uiState.update {
@@ -528,9 +530,11 @@ class BookshelfViewModel(
             link = book.link,
             title = book.bookDetail.title,
             author = book.bookDetail.authors[0],
+            date = book.bookDetail.date,
             description = book.bookDetail.description,
             thumbnail = book.bookDetail.bookCover.thumbnail,
             isFavourite = isFavourite,
+            lastUpdated = System.currentTimeMillis(),
             )
         )
         if (searchUiState is SearchUiState.Success) {

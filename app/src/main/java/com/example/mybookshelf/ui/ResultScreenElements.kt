@@ -296,7 +296,6 @@ fun MyBookCard(
     onCardClick: (MyBook) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isFavourite = myBook.isFavourite
     val rating = myBook.rating
     val notes = myBook.notes
     val book = myBook.convertToBook()
@@ -328,7 +327,7 @@ fun MyBookCard(
                 onValueChange = { /* TODO */ },
                 onRatingChanged = { Log.d("Rating", "changed to $rating") }
             )
-            Text(text = notes ?: "")
+            Text(text = notes ?: myBook.lastUpdated.toString())
             Text(
                 text = book.bookDetail.title,
                 textAlign = TextAlign.Center,
