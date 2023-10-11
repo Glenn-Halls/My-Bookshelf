@@ -175,7 +175,7 @@ fun BookCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .height(470.dp)
-                .padding(dimensionResource(R.dimen.padding_medium))
+                .padding(dimensionResource(R.dimen.padding_small))
                 .fillMaxWidth()
         ) {
             AsyncImage(
@@ -191,6 +191,11 @@ fun BookCard(
                 text = book.bookDetail.title,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.displayMedium
+            )
+            Text(
+                text = book.bookDetail.authors[0],
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium
             )
             Text(
                 text = book.bookDetail.date,

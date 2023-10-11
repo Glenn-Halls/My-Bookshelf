@@ -9,5 +9,5 @@ data class Book(
     @SerialName(value = "selfLink")
     val link: String,
     @SerialName(value = "volumeInfo")
-    val bookDetail: BookDetail = BookDetail()
+    val bookDetail: BookDetail = BookDetail(),
 )

@@ -517,7 +517,7 @@ class BookshelfViewModel(
             id = book.id,
             link = book.link,
             title = book.bookDetail.title,
-            author = book.bookDetail.title,
+            author = book.bookDetail.authors[0],
             description = book.bookDetail.description,
             thumbnail = book.bookDetail.bookCover.thumbnail,
             isFavourite = isFavourite,
