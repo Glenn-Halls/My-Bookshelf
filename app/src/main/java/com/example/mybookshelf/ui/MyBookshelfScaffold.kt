@@ -238,6 +238,9 @@ fun MyBookshelfScreen(
                             onEdit ={ viewModel.userReviewUpdate(userNotes = it) },
                             onCompletion = { onReviewCompletion() },
                             userReview = uiState.userReview,
+                            onDelete = {coroutineScope.launch {
+                                viewModel.deleteMyBook(it)
+                            }},
                             onCancel = {
                                 onReviewCancelled()
                                        },
@@ -277,6 +280,9 @@ fun MyBookshelfScreen(
                             onEdit ={ viewModel.userReviewUpdate(userNotes = it) },
                             onCompletion = { onReviewCompletion() },
                             userReview = uiState.userReview,
+                            onDelete = { coroutineScope.launch {
+                                viewModel.deleteMyBook(it)
+                            } },
                             onCancel = {
                                 onReviewCancelled()
                             },

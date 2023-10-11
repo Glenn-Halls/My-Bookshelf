@@ -474,6 +474,16 @@ class BookshelfViewModel(
         }
     }
 
+    suspend fun deleteMyBook(myBook: MyBook) {
+        _uiState.update {
+            it.copy(
+                selectedMyBook = null,
+                editInProgress = false,
+            )
+        }
+        myBookRepository.deleteBook(myBook)
+    }
+
     fun getActionButton(): ActionButton {
         return when (uiState.value.currentScreen) {
             ScreenSelect.NONE -> ActionButton(false,)

@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +25,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -52,12 +57,14 @@ fun EditMyBookScreen(
     onCompletion: () -> Unit,
     onCancel: () -> Unit,
     onDismiss: () -> Unit,
+    onDelete:(MyBook) -> Unit,
     modifier: Modifier = Modifier,
     userReview: UserReview?,
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = modifier.clickable {  }
+        modifier = modifier
+            .clickable { }
             .fillMaxSize()
     ) {
         AsyncImage(
@@ -79,6 +86,7 @@ fun EditMyBookScreen(
             onCompletion = onCompletion,
             onCancel = onCancel,
             onDismiss = onDismiss,
+            onDelete = onDelete,
             userReview = userReview,
         )
     }
@@ -94,86 +102,106 @@ fun EditMyBookPopup(
     onCompletion: () -> Unit,
     onCancel: () -> Unit,
     onDismiss: () -> Unit,
+    onDelete: (MyBook) -> Unit,
     modifier: Modifier = Modifier,
     userReview: UserReview?,
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val favouriteIconSize = 40.dp
     val userNotes = userReview?.userNotes ?: myBook.notes ?: ""
     val userFavourite = userReview?.isFavourite ?: myBook.isFavourite
     val scrollState = rememberScrollState()
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(dismissOnClickOutside = true)
-    ) {
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .verticalScroll(scrollState)
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Are you sure you want to delete this book?") },
+            text = { Text("Any user notes or ratings will be lost forever.") },
+            confirmButton = {
+                TextButton(onClick = { onDelete(myBook) }) {
+                    Text("DELETE")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("CANCEL")
+                }
+            }
+        )
+    } else {
+        Dialog(
+            onDismissRequest = onDismiss,
+            properties = DialogProperties(dismissOnClickOutside = true)
         ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(16.dp)
+                    .verticalScroll(scrollState)
             ) {
-                Text(
-                    text = myBook.title,
-                    style = MaterialTheme.typography.labelLarge,
-                    )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 ) {
-                    IconButton(onClick = { onFavouriteChange(!userFavourite) }) {
-                        Icon(
-                            Icons.Filled.DeleteForever,
-                            contentDescription = stringResource(R.string.delete_from_library),
-                            modifier = Modifier.size(favouriteIconSize)
-                        )
-                    }
-                    IconButton(onClick = { onFavouriteChange(!userFavourite) }) {
-                        if (userFavourite) {
+                    Text(
+                        text = myBook.title,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(
-                                Icons.Filled.Favorite,
-                                contentDescription = stringResource(R.string.favourite),
-                                modifier = Modifier.size(favouriteIconSize),
-                            )
-                        } else {
-                            Icon(
-                                Icons.Filled.FavoriteBorder,
-                                contentDescription = stringResource(R.string.not_favourite),
-                                modifier = Modifier.size(favouriteIconSize),
+                                Icons.Filled.DeleteForever,
+                                contentDescription = stringResource(R.string.delete_from_library),
+                                modifier = Modifier.size(favouriteIconSize)
                             )
                         }
+                        IconButton(onClick = { onFavouriteChange(!userFavourite) }) {
+                            if (userFavourite) {
+                                Icon(
+                                    Icons.Filled.Favorite,
+                                    contentDescription = stringResource(R.string.favourite),
+                                    modifier = Modifier.size(favouriteIconSize),
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Filled.FavoriteBorder,
+                                    contentDescription = stringResource(R.string.not_favourite),
+                                    modifier = Modifier.size(favouriteIconSize),
+                                )
+                            }
+                        }
                     }
-                }
-                RatingBar(
-                    value = userReview?.userRating ?: myBook.rating?.toFloat() ?: 0f,
-                    style = RatingBarStyle.Default,
-                    onRatingChanged = {onRatingChange(it.toInt())},
-                    onValueChange = {onRatingChange(it.toInt())},
-                )
-                OutlinedTextField(
-                    label = {
-                        Text(
-                            text = "My Reading Notes",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    },
-                    value = userNotes,
-                    onValueChange = onEdit,
-                    modifier = Modifier
-                        .fillMaxWidth(.9f)
-                )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TextButton(onClick = onCancel) { Text("dismiss") }
-                    TextButton(onClick = onCompletion) { Text("complete") }
+                    RatingBar(
+                        value = userReview?.userRating ?: myBook.rating?.toFloat() ?: 0f,
+                        style = RatingBarStyle.Default,
+                        onRatingChanged = { onRatingChange(it.toInt()) },
+                        onValueChange = { onRatingChange(it.toInt()) },
+                    )
+                    OutlinedTextField(
+                        label = {
+                            Text(
+                                text = "My Reading Notes",
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        },
+                        value = userNotes,
+                        onValueChange = onEdit,
+                        modifier = Modifier
+                            .fillMaxWidth(.9f)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TextButton(onClick = onCancel) { Text("dismiss") }
+                        TextButton(onClick = onCompletion) { Text("complete") }
+                    }
                 }
             }
         }
