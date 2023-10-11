@@ -56,6 +56,7 @@ sealed interface NytUiState {
     data class Success(val bestsellerList: List<Bestseller>) : NytUiState
     object Error: NytUiState
     object Loading: NytUiState
+    object Ready: NytUiState
 }
 
 
@@ -88,6 +89,7 @@ class BookshelfViewModel(
 
     // Create observable NYT search UI state holder
     var nytUiState: NytUiState by mutableStateOf(NytUiState.Loading)
+        private set
 
     private val _nytQueryState = MutableStateFlow(NytQueryStatus.READY)
 
@@ -555,8 +557,6 @@ class BookshelfViewModel(
 
     // On viewModel initiation, get search results to populate data and set timer function
     init {
-        // Set API cooldown to true for testing purposes
-        _uiState.update { it.copy(nytApiOnCooldown = true) }
         // When triggered, start countdown flow and once time = 0, set status to ready
         _nytQueryState
             .flatMapLatest {
@@ -571,6 +571,7 @@ class BookshelfViewModel(
                         it.copy(nytApiOnCooldown = false)
                     }
                     _nytQueryState.update { NytQueryStatus.READY }
+                    nytUiState = NytUiState.Ready
                 }
             }
             .launchIn(viewModelScope)

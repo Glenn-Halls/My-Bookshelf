@@ -160,29 +160,21 @@ fun MyBookshelfScreen(
                     }
                 }
                 ScreenSelect.BEST_SELLERS -> {
-                    if (viewModel.nytUiState == NytUiState.Loading) {
-                        LoadingScreen()
-                    } else if (uiState.selectedNytList == null) {
-                        NytListList(
-                            nytListList = uiState.nytLists!!,
-                            onListClick = {
-                                viewModel.selectNytList(it)
-                                viewModel.updateBestsellerList(context)
-                            }
-                        )
-                    } else {
-                        NytBestsellerScreen(
-                            nytUiState = viewModel.nytUiState,
-                            nytApiOnCooldown = uiState.nytApiOnCooldown,
-                            nytApiCooldown = uiState.nytApiCooldown,
-                            onCardClick = { onBestsellerClick(it) },
-                            onTryAgain = { viewModel.getBestsellers(300) },
-                            listSelected = uiState.selectedNytList?.listName ?: "null",
-                            hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
-                        )
-                    }
+                    NytBestsellerScreen(
+                        nytUiState = viewModel.nytUiState,
+                        nytApiOnCooldown = uiState.nytApiOnCooldown,
+                        nytApiCooldown = uiState.nytApiCooldown,
+                        nytListList = uiState.nytLists ?: emptyList(),
+                        onNytListClick = {
+                            viewModel.selectNytList(it)
+                            viewModel.updateBestsellerList(context)
+                                         },
+                        onCardClick = { onBestsellerClick(it) },
+                        onTryAgain = { viewModel.getBestsellers(300) },
+                        listSelected = uiState.selectedNytList,
+                        hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
+                    )
                 }
-
                 ScreenSelect.WATCH_LIST -> {
                     if (viewModel.nytUiState == NytUiState.Loading) {
                         LoadingScreen()

@@ -383,12 +383,14 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun NytWaitScreen(
+    tryAgain: Boolean,
+    tryAgainAction: () -> Unit,
     timeToWait: Int,
     modifier: Modifier = Modifier
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -413,9 +415,9 @@ fun NytWaitScreen(
                 text = "Please wait a moment and try again."
             )
             Spacer(modifier = Modifier.size(16.dp))
-            Button(onClick = {}) {
+            Button(onClick = tryAgainAction) {
                 Text(
-                    text = "Wait $timeToWait seconds",
+                    text = if (tryAgain) "Try Again" else "Wait $timeToWait seconds",
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -565,8 +567,4 @@ fun BestsellerCardPreview() {
     BestsellerCard(bestseller = FakeBestseller, onCardClick = {})
 }
 
-@Composable
-@Preview
-fun NytWaitScreenPreview() {
-    NytWaitScreen(5)
-}
+
