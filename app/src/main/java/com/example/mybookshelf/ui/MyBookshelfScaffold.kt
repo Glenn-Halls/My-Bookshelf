@@ -41,7 +41,9 @@ import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.model.NytUiState
+import com.example.mybookshelf.model.QuerySortOrder
 import com.example.mybookshelf.model.SearchUiState
+import com.example.mybookshelf.model.sort
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.ScreenSelect
 import kotlinx.coroutines.launch
@@ -60,7 +62,7 @@ fun MyBookshelfScreen(
     // State Flow accessor to book database
     val bookshelfBooks by viewModel.myBookDb.collectAsState()
     // Sorted book order for favourite and myBook screens
-    val sortedMyBooks = viewModel.sortMyBooks(bookshelfBooks, uiState.myBookSortOrder)
+    val sortedMyBooks = bookshelfBooks.sort(uiState.myBookSortOrder ?: QuerySortOrder.LAST_UPDATED)
     // Define navigation type based on WindowSizeClass dimensions
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
@@ -274,7 +276,7 @@ fun MyBookshelfScreen(
                     }
                 }
                 ScreenSelect.FAVOURITES -> {
-                    val favouriteList = bookshelfBooks.filter { it.isFavourite }
+                    val favouriteList = sortedMyBooks.filter { it.isFavourite }
                     val editInProgress = uiState.editInProgress
                     if (editInProgress) {
                         EditMyBookScreen(
