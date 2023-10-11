@@ -14,17 +14,19 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
 import com.example.mybookshelf.ui.util.NavigateBackTab
 import com.example.mybookshelf.ui.util.NavigationElement
 import com.example.mybookshelf.ui.util.NavigationTabs
+import com.example.mybookshelf.ui.util.ScreenSelect
 
 @Composable
 fun BookshelfBottomNavBar(
+    currentScreen: ScreenSelect?,
     onTabPressed: (NavigationElement) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -33,6 +35,17 @@ fun BookshelfBottomNavBar(
             .height(dimensionResource(R.dimen.bottom_nav_bar_height))
     ) {
         NavigationTabs.forEach {
+            val tabSelected = it.screenSelect == currentScreen
+            val iconColor = if (tabSelected) {
+                MaterialTheme.colorScheme.secondary
+            } else {
+                MaterialTheme.colorScheme.onSecondary
+            }
+            val backgroundColor = if (tabSelected) {
+                MaterialTheme.colorScheme.onSecondary
+            } else {
+                MaterialTheme.colorScheme.secondary
+            }
             NavigationBarItem(
                 selected = false,
                 onClick = { onTabPressed(it) },
@@ -46,12 +59,11 @@ fun BookshelfBottomNavBar(
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.onSecondary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSecondary
+                    unselectedIconColor = iconColor
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .background(MaterialTheme.colorScheme.secondary)
+                    .background(backgroundColor)
             )
         }
     }
@@ -59,6 +71,7 @@ fun BookshelfBottomNavBar(
 
 @Composable
 fun BookshelfNavigationRail(
+    currentScreen: ScreenSelect?,
     onTabPressed: (NavigationElement) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -87,6 +100,17 @@ fun BookshelfNavigationRail(
             )
         }
         NavigationTabs.forEach {
+            val tabSelected = it.screenSelect == currentScreen
+            val iconColor = if (tabSelected) {
+                MaterialTheme.colorScheme.secondary
+            } else {
+                MaterialTheme.colorScheme.onSecondary
+            }
+            val backgroundColor = if (tabSelected) {
+                MaterialTheme.colorScheme.onSecondary
+            } else {
+                MaterialTheme.colorScheme.secondary
+            }
             NavigationRailItem(
                 selected = false,
                 onClick = { onTabPressed(it) },
@@ -100,12 +124,11 @@ fun BookshelfNavigationRail(
                     )
                 },
                 colors = NavigationRailItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.onSecondary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSecondary
+                    unselectedIconColor = iconColor
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .background(MaterialTheme.colorScheme.secondary)
+                    .background(backgroundColor)
             )
         }
     }

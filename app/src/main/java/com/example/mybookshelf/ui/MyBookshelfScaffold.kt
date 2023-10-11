@@ -138,6 +138,7 @@ fun MyBookshelfScreen(
         bottomBar = {
             if (navigationType == BookshelfNavigationType.BOTTOM_BAR) {
                 BookshelfBottomNavBar(
+                    currentScreen = uiState.currentScreen,
                     onTabPressed = { viewModel.navigateToScreen(it) }
                 )
             }
@@ -147,6 +148,7 @@ fun MyBookshelfScreen(
             // Display navigation rail for non-compact-width screens
             if (navigationType == BookshelfNavigationType.NAVIGATION_RAIL) {
                 BookshelfNavigationRail(
+                    currentScreen = uiState.currentScreen,
                     onTabPressed = { viewModel.navigateToScreen(it) },
                     onNavigateBack = viewModel::navigateBack,
                     showBackButton = windowHeight == WindowHeightSizeClass.Compact
