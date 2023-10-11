@@ -96,6 +96,11 @@ class BookshelfViewModel(
     //Temporary function to test cooldown timer flow
     fun testTimer() {
         startNytCountdownTimer()
+        _uiState.update {
+            it.copy(
+                myBookSortOrder = QuerySortOrder.LAST_UPDATED
+            )
+        }
     }
 
     private fun getNytCountdownFlow(isRunning: Boolean): Flow<Int> {
@@ -125,6 +130,21 @@ class BookshelfViewModel(
             it.copy(
                 currentScreen = nav.screenSelect
             )
+        }
+    }
+
+    fun sortMyBooks(
+        myBookList: List<MyBook>,
+        sortOrder: QuerySortOrder?
+    ): List<MyBook> {
+        return when (sortOrder) {
+            QuerySortOrder.ALPHABETICAL -> myBookList.sortedBy{it.title}
+            QuerySortOrder.ALPHABETICAL_REVERSE -> myBookList.sortedBy{it.title}
+            QuerySortOrder.LAST_UPDATED -> myBookList.sortedBy{it.lastUpdated}.reversed()
+            QuerySortOrder.LAST_UPDATED_REVERSE -> myBookList.sortedBy { it.lastUpdated }.reversed()
+            QuerySortOrder.LAST_ADDED -> myBookList.reversed()
+            QuerySortOrder.LAST_ADDED_REVERSE -> myBookList
+            null -> myBookList
         }
     }
 

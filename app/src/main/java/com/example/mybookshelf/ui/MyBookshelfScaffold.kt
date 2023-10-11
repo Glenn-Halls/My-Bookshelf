@@ -59,6 +59,8 @@ fun MyBookshelfScreen(
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
     val bookshelfBooks by viewModel.myBookDb.collectAsState()
+    // Sorted book order for favourite and myBook screens
+    val sortedMyBooks = viewModel.sortMyBooks(bookshelfBooks, uiState.myBookSortOrder)
     // Define navigation type based on WindowSizeClass dimensions
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
@@ -249,7 +251,7 @@ fun MyBookshelfScreen(
                     } else {
                         if (uiState.selectedMyBook == null) {
                             MyBookGrid(
-                                myBooks = bookshelfBooks,
+                                myBooks = sortedMyBooks,
                                 onCardClick = {
                                     viewModel.selectMyBook(it)
                                 }
