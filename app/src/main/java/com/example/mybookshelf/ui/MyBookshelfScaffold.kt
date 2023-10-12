@@ -103,7 +103,9 @@ fun MyBookshelfScreen(
         viewModel.updateSearch(context)
         viewModel.selectBook(null)
         coroutineScope.launch {
-            listScrollPosition.scrollToItem(0,0) }
+            listScrollPosition.scrollToItem(0,0)
+            viewModel.saveMyBestseller(bestseller)
+        }
     }
     val actionButton = viewModel.getActionButton()
     /*

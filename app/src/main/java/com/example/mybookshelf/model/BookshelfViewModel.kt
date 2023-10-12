@@ -21,6 +21,7 @@ import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
 import com.example.mybookshelf.data.DefaultAppContainer
+import com.example.mybookshelf.data.MyBestsellerRepository
 import com.example.mybookshelf.data.MyBookRepository
 import com.example.mybookshelf.data.NetworkBestsellerRepository
 import com.example.mybookshelf.data.NetworkBookRepository
@@ -66,6 +67,7 @@ class BookshelfViewModel(
     private var bestsellerRepository: BestsellerRepository,
     private val nytListRepository: NytListRepository,
     private val myBookRepository: MyBookRepository,
+    private val myBestsellerRepository: MyBestsellerRepository,
 ) : ViewModel() {
 
     // Create observable state holder
@@ -559,6 +561,25 @@ class BookshelfViewModel(
         }
     }
 
+    suspend fun saveMyBestseller(bestseller: Bestseller) {
+        myBestsellerRepository.insertBestseller(
+            bestseller.let {
+                MyBestseller(
+                    it.isbn13,
+                    it.rank,
+                    it.previousRank,
+                    it.weeksOnList,
+                    it.title,
+                    it.author,
+                    it.publisher,
+                    it.description,
+                    it.coverImage,
+                )
+            }
+        )
+    }
+
+
     // Delete MyBook from database.
     // Update _uiState values for myBooksInSearch and favouritesInSearch accordingly.
     private suspend fun deleteBook(mybook: MyBook) {
@@ -609,11 +630,13 @@ class BookshelfViewModel(
                 val bestsellerRepository = application.container.bestsellerRepository
                 val nytListRepository = application.container.nytListRepository
                 val myBookRepository = application.container.myBookRepository
+                val myBestsellerRepository = application.container.myBestsellerRepository
                 BookshelfViewModel(
                     bookRepository,
                     bestsellerRepository,
                     nytListRepository,
-                    myBookRepository
+                    myBookRepository,
+                    myBestsellerRepository,
                     )
             }
         }

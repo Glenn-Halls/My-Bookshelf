@@ -14,6 +14,7 @@ interface AppContainer {
     val bestsellerRepository: BestsellerRepository
     val nytListRepository: NytListRepository
     val myBookRepository: MyBookRepository
+    val myBestsellerRepository: MyBestsellerRepository
     var searchString: String
     var nytListAddress: String
 }
@@ -25,11 +26,17 @@ class DefaultAppContainer(
 ) : AppContainer{
     // Base details for Google's book API
     private val bookBaseUrl = "https://www.googleapis.com"
-    private val bookJson = Json { ignoreUnknownKeys = true }
+    private val bookJson = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
     // Base details for NYT's bestseller API
     private val bestsellerBaseUrl = "https://api.nytimes.com"
-    private val bestsellerJson = Json { ignoreUnknownKeys = true }
+    private val bestsellerJson = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
 
     /**
@@ -85,5 +92,9 @@ class DefaultAppContainer(
 
     override val myBookRepository: MyBookRepository by lazy {
         OfflineMyBookRepository(AppDatabase.getDatabase(context).myBookDao())
+    }
+
+    override val myBestsellerRepository: MyBestsellerRepository by lazy {
+        OfflineMyBestsellerRepository(AppDatabase.getDatabase(context).myBestsellerDao())
     }
 }
