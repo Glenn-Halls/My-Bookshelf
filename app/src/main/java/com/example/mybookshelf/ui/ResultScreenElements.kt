@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -35,6 +36,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -49,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -61,6 +64,7 @@ import com.example.mybookshelf.data.getShortDescription
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.FakeBestseller
+import com.example.mybookshelf.model.MyBestseller
 import com.example.mybookshelf.model.MyBook
 import com.example.mybookshelf.model.NytBestsellerList
 import com.gowtham.ratingbar.RatingBar
@@ -125,6 +129,31 @@ fun MyBookGrid(
             key = { myBook -> myBook.id }
         ) {
             myBook -> MyBookCard(myBook = myBook, onCardClick = onCardClick)
+        }
+    }
+}
+
+@Composable
+fun MyBestsellerGrid(
+    myBestsellers: List<MyBestseller>,
+    onCardClick: (MyBestseller) -> Unit,
+    onStarClick: (MyBestseller) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 300.dp),
+        contentPadding = PaddingValues(dimensionResource(R.dimen.padding_medium)),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        items(
+            items = myBestsellers,
+            key = { myBestseller -> myBestseller.isbn13 }
+        ) {
+            myBestseller -> MyBestsellerCard(
+            myBestseller = myBestseller,
+            onCardClick = onCardClick,
+            onStarClick = onStarClick,
+        )
         }
     }
 }
@@ -374,6 +403,101 @@ fun BestSellerListItem(
                 style = MaterialTheme.typography.labelMedium
             )
             Text("STAR")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyBestsellerCard(
+    myBestseller: MyBestseller,
+    onCardClick: (MyBestseller) -> Unit,
+    onStarClick: (MyBestseller) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        elevation = CardDefaults.cardElevation(),
+        onClick = {onCardClick(myBestseller)},
+        modifier = modifier.padding(dimensionResource(R.dimen.padding_medium)),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .height(133.dp)
+                .padding(dimensionResource(R.dimen.padding_medium))
+                .fillMaxWidth()
+        ) {
+            AsyncImage(
+                model = myBestseller.getCoilUrl(),
+                contentDescription = stringResource(R.string.book_cover),
+                placeholder = painterResource(R.drawable.loading_img),
+                error = painterResource(R.drawable.ic_broken_image),
+                contentScale = ContentScale.FillHeight,
+                modifier = Modifier.fillMaxHeight(),
+                alignment = Alignment.Center
+            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(0.dp),
+            ) {
+                Text(
+                    text = myBestseller.title,
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 2,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(
+                        start = dimensionResource(R.dimen.padding_medium),
+                        end = 0.dp,
+                        top = 0.dp,
+                        bottom = 0.dp
+                    )
+                        .align(Alignment.CenterHorizontally)
+                )
+                Text(
+                    text = "Rank: ${myBestseller.rank}",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(0.dp),
+                    fontWeight = FontWeight.Bold
+                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = dimensionResource(R.dimen.padding_medium),
+                            end = 0.dp,
+                            top = 0.dp,
+                            bottom = 0.dp,
+                        )
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Bottom,
+                    ) {
+                        Text(
+                            text = "Previous rank: ${myBestseller.previousRank}",
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                        Text(
+                            text = "Weeks on list: ${myBestseller.weeksOnList}",
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                    IconButton(onClick = { onStarClick(myBestseller) }) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.remove_from_watch_list),
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }

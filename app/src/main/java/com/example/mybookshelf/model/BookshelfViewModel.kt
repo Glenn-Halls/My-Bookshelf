@@ -85,6 +85,15 @@ class BookshelfViewModel(
             initialValue = emptyList()
         )
 
+    // Accessor to MyBestseller database
+    val myBestsellerDb: StateFlow<List<MyBestseller>> = myBestsellerRepository
+        .getAllBestsellersStream()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
+
     // Create observable search UI state holder
     var searchUiState: SearchUiState by mutableStateOf(SearchUiState.Loading)
         private set
@@ -577,6 +586,10 @@ class BookshelfViewModel(
                 )
             }
         )
+    }
+
+    suspend fun deleteMyBestseller(myBestseller: MyBestseller) {
+        myBestsellerRepository.deleteBestseller(myBestseller)
     }
 
 

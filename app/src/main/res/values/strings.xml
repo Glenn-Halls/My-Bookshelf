@@ -16,4 +16,5 @@
     <string name="connection_error">connection error</string>
     <string name="wait_try_again">Please wait %1$s seconds and try again.</string>
     <string name="repeated_api_requests">I\'m sorry, the NYT server does not like repeated requests.</string>
+    <string name="remove_from_watch_list">remove from watch list</string>
 </resources>

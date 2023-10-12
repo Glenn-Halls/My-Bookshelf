@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.R
+import com.example.mybookshelf.data.convertToBestseller
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
@@ -61,6 +62,8 @@ fun MyBookshelfScreen(
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
     val bookshelfBooks by viewModel.myBookDb.collectAsState()
+    // State Flow accessor to bestseller database
+    val myBestsellerBooks by viewModel.myBestsellerDb.collectAsState()
     // Sorted book order for favourite and myBook screens
     val sortedMyBooks = bookshelfBooks.sort(uiState.myBookSortOrder ?: QuerySortOrder.LAST_UPDATED)
     // Define navigation type based on WindowSizeClass dimensions
@@ -186,18 +189,13 @@ fun MyBookshelfScreen(
                 ScreenSelect.WATCH_LIST -> {
                     if (viewModel.nytUiState == NytUiState.Loading) {
                         LoadingScreen()
-                    } else if (uiState.selectedNytList == null) {
-                        NytListList(
-                            nytListList = uiState.nytLists!!,
-                            onListClick = {
-                                viewModel.selectNytList(it)
-                                viewModel.updateBestsellerList(context)
-                            }
-                        )
                     } else {
-                        BestsellerGrid(
-                            bestsellers = uiState.bestseller!!.results.bestsellerList,
-                            onCardClick = {}
+                        MyBestsellerGrid(
+                            myBestsellers = myBestsellerBooks,
+                            onCardClick = { onBestsellerClick(it.convertToBestseller()) },
+                            onStarClick = { coroutineScope.launch {
+                                viewModel.deleteMyBestseller(it)
+                            } },
                         )
                     }
                 }
