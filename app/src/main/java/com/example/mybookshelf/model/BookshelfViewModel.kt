@@ -26,6 +26,7 @@ import com.example.mybookshelf.data.MyBookRepository
 import com.example.mybookshelf.data.NetworkBestsellerRepository
 import com.example.mybookshelf.data.NetworkBookRepository
 import com.example.mybookshelf.data.NytListRepository
+import com.example.mybookshelf.data.convertToMyBestseller
 import com.example.mybookshelf.ui.util.ActionButton
 import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
@@ -109,7 +110,7 @@ class BookshelfViewModel(
         startNytCountdownTimer()
         _uiState.update {
             it.copy(
-                myBookSortOrder = QuerySortOrder.LAST_UPDATED
+                myBookSortOrder = SortOrder.LAST_UPDATED
             )
         }
     }
@@ -570,21 +571,17 @@ class BookshelfViewModel(
         }
     }
 
+    suspend fun toggleBestseller(bestseller: Bestseller) {
+        if (bestseller.isbn13 in myBestsellerDb.value.map { it.isbn13 }) {
+            deleteMyBestseller(bestseller.convertToMyBestseller())
+        } else {
+            saveMyBestseller(bestseller)
+        }
+    }
+
     suspend fun saveMyBestseller(bestseller: Bestseller) {
         myBestsellerRepository.insertBestseller(
-            bestseller.let {
-                MyBestseller(
-                    it.isbn13,
-                    it.rank,
-                    it.previousRank,
-                    it.weeksOnList,
-                    it.title,
-                    it.author,
-                    it.publisher,
-                    it.description,
-                    it.coverImage,
-                )
-            }
+            bestseller.convertToMyBestseller()
         )
     }
 

@@ -38,13 +38,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.R
 import com.example.mybookshelf.data.convertToBestseller
+import com.example.mybookshelf.data.sortBestsellers
+import com.example.mybookshelf.data.sortBooks
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.model.NytUiState
-import com.example.mybookshelf.model.QuerySortOrder
 import com.example.mybookshelf.model.SearchUiState
-import com.example.mybookshelf.model.sort
+import com.example.mybookshelf.model.SortOrder
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.ScreenSelect
 import kotlinx.coroutines.launch
@@ -64,8 +65,6 @@ fun MyBookshelfScreen(
     val bookshelfBooks by viewModel.myBookDb.collectAsState()
     // State Flow accessor to bestseller database
     val myBestsellerBooks by viewModel.myBestsellerDb.collectAsState()
-    // Sorted book order for favourite and myBook screens
-    val sortedMyBooks = bookshelfBooks.sort(uiState.myBookSortOrder ?: QuerySortOrder.LAST_UPDATED)
     // Define navigation type based on WindowSizeClass dimensions
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
@@ -78,6 +77,8 @@ fun MyBookshelfScreen(
     val scrollPosition = rememberScrollState()
     // Separate from scroll position, remember list scroll state
     val listScrollPosition = rememberLazyGridState()
+    // Get action button to display in title bar
+    val actionButton = viewModel.getActionButton()
     // Helper function adds / removes book to / from database within coroutine scope
     fun onBookmarkClick(book: Book) {
         coroutineScope.launch { viewModel.onBookmarkClick(book, bookshelfBooks) }
@@ -100,17 +101,22 @@ fun MyBookshelfScreen(
             viewModel.toggleEditState()
         }
     }
-    // Helper function when bestseller selected updates search, reset selected book and scroll.
+    // Helper function when bestseller selected - updates search, reset selected book and scroll.
     fun onBestsellerClick(bestseller: Bestseller) {
         viewModel.updateSearchQuery("${bestseller.title} ${bestseller.author}")
         viewModel.updateSearch(context)
         viewModel.selectBook(null)
         coroutineScope.launch {
             listScrollPosition.scrollToItem(0,0)
-            viewModel.saveMyBestseller(bestseller)
         }
     }
-    val actionButton = viewModel.getActionButton()
+    // Helper function on bestseller star click - adds bestseller to watch list
+    fun onBestsellerStarClick(bestseller: Bestseller) {
+        coroutineScope.launch {
+            viewModel.toggleBestseller(bestseller)
+        }
+    }
+
     /*
      *  Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes
      *  OR when database is updated as reflected by bookshelfBooks: List<MyBook>.
@@ -176,11 +182,13 @@ fun MyBookshelfScreen(
                         nytApiOnCooldown = uiState.nytApiOnCooldown,
                         nytApiCooldown = uiState.nytApiCooldown,
                         nytListList = uiState.nytLists ?: emptyList(),
+                        myBestsellerList = myBestsellerBooks.sortBestsellers(SortOrder.LAST_ADDED),
                         onNytListClick = {
                             viewModel.selectNytList(it)
                             viewModel.updateBestsellerList(context)
                                          },
                         onCardClick = { onBestsellerClick(it) },
+                        onStarClick = { onBestsellerStarClick(it) },
                         onTryAgain = { viewModel.getBestsellers(300) },
                         listSelected = uiState.selectedNytList,
                         hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)
@@ -191,7 +199,9 @@ fun MyBookshelfScreen(
                         LoadingScreen()
                     } else {
                         MyBestsellerGrid(
-                            myBestsellers = myBestsellerBooks,
+                            myBestsellers = myBestsellerBooks.sortBestsellers(
+                                SortOrder.LAST_UPDATED
+                            ),
                             onCardClick = { onBestsellerClick(it.convertToBestseller()) },
                             onStarClick = { coroutineScope.launch {
                                 viewModel.deleteMyBestseller(it)
@@ -255,7 +265,7 @@ fun MyBookshelfScreen(
                     } else {
                         if (uiState.selectedMyBook == null) {
                             MyBookGrid(
-                                myBooks = sortedMyBooks,
+                                myBooks = bookshelfBooks.sortBooks(SortOrder.LAST_UPDATED),
                                 onCardClick = {
                                     viewModel.selectMyBook(it)
                                 }
@@ -276,7 +286,9 @@ fun MyBookshelfScreen(
                     }
                 }
                 ScreenSelect.FAVOURITES -> {
-                    val favouriteList = sortedMyBooks.filter { it.isFavourite }
+                    val favouriteList = bookshelfBooks.sortBooks(
+                        SortOrder.LAST_UPDATED
+                    ).filter { it.isFavourite }
                     val editInProgress = uiState.editInProgress
                     if (editInProgress) {
                         EditMyBookScreen(

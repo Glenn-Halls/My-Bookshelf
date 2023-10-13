@@ -7,6 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.mybookshelf.model.Bestseller
+import com.example.mybookshelf.model.MyBestseller
 import com.example.mybookshelf.model.NytBestsellerList
 import com.example.mybookshelf.model.NytUiState
 
@@ -16,8 +17,10 @@ fun NytBestsellerScreen(
     nytApiOnCooldown: Boolean,
     nytApiCooldown: Int,
     nytListList: List<NytBestsellerList>,
+    myBestsellerList: List<MyBestseller>,
     onNytListClick: (NytBestsellerList) -> Unit,
     onCardClick: (Bestseller) -> Unit,
+    onStarClick: (Bestseller) -> Unit,
     onTryAgain: () -> Unit,
     hideTopBar: Boolean,
     modifier: Modifier = Modifier,
@@ -51,7 +54,9 @@ fun NytBestsellerScreen(
                 ) { innerPadding ->
                     BestsellerGrid(
                         bestsellers = nytUiState.bestsellerList,
+                        myBestsellerList = myBestsellerList,
                         onCardClick = onCardClick,
+                        onStarClick = onStarClick,
                         modifier = modifier.padding(innerPadding)
 
                     )

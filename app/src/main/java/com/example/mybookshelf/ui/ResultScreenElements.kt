@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -63,7 +66,6 @@ import com.example.mybookshelf.data.getCoilUrl
 import com.example.mybookshelf.data.getShortDescription
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
-import com.example.mybookshelf.model.FakeBestseller
 import com.example.mybookshelf.model.MyBestseller
 import com.example.mybookshelf.model.MyBook
 import com.example.mybookshelf.model.NytBestsellerList
@@ -96,9 +98,12 @@ fun BookGrid(
 @Composable
 fun BestsellerGrid(
     bestsellers: List<Bestseller>,
+    myBestsellerList: List<MyBestseller>,
     onCardClick: (Bestseller) -> Unit,
+    onStarClick: (Bestseller) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val savedIsbnList = myBestsellerList.map { it.isbn13 }
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 300.dp),
         modifier = modifier.fillMaxWidth(),
@@ -108,7 +113,12 @@ fun BestsellerGrid(
             items = bestsellers,
             key = { bestseller -> bestseller.isbn13 }
         ) {
-            bestseller -> BestsellerCard(bestseller = bestseller, onCardClick = onCardClick)
+            bestseller -> BestsellerCard(
+                bestseller,
+                bestseller.isbn13 in savedIsbnList,
+                onCardClick,
+                onStarClick,
+            )
         }
     }
 }
@@ -244,7 +254,9 @@ fun BookCard(
 @Composable
 fun BestsellerCard(
     bestseller: Bestseller,
+    isBeingWatched: Boolean,
     onCardClick: (Bestseller) -> Unit,
+    onStarClick: (Bestseller) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -282,13 +294,29 @@ fun BestsellerCard(
                 Box(
                     modifier = modifier
                         .fillMaxWidth(.7f)
-                        .aspectRatio(.7f)
+                        .aspectRatio(.6f)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.SpaceBetween,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = modifier.fillMaxSize()
                     ) {
+                        IconButton(onClick = { onStarClick(bestseller) }) {
+                            if (isBeingWatched) {
+                                Image(
+                                    imageVector = Icons.Filled.Star,
+                                    contentDescription = "on watchlist",
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            } else {
+                                Image(
+                                    imageVector = Icons.Filled.StarOutline,
+                                    contentDescription = "not on watchlist",
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
+
+                        }
                         Text(
                             text = "Rank: ${bestseller.rank}",
                             style = MaterialTheme.typography.labelLarge,
@@ -449,12 +477,13 @@ fun MyBestsellerCard(
                     style = MaterialTheme.typography.labelLarge,
                     maxLines = 2,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(
-                        start = dimensionResource(R.dimen.padding_medium),
-                        end = 0.dp,
-                        top = 0.dp,
-                        bottom = 0.dp
-                    )
+                    modifier = Modifier
+                        .padding(
+                            start = dimensionResource(R.dimen.padding_medium),
+                            end = 0.dp,
+                            top = 0.dp,
+                            bottom = 0.dp
+                        )
                         .align(Alignment.CenterHorizontally)
                 )
                 Text(
@@ -692,7 +721,6 @@ fun BookCardPreview() {
 @Composable
 @Preview
 fun BestsellerCardPreview() {
-    BestsellerCard(bestseller = FakeBestseller, onCardClick = {})
 }
 
 
