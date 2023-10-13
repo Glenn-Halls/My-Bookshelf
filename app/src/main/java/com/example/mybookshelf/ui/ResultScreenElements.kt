@@ -148,12 +148,13 @@ fun MyBestsellerGrid(
     myBestsellers: List<MyBestseller>,
     onCardClick: (MyBestseller) -> Unit,
     onStarClick: (MyBestseller) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 300.dp),
         contentPadding = PaddingValues(dimensionResource(R.dimen.padding_medium)),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        state = LazyGridState(0, 0)
     ) {
         items(
             items = myBestsellers,

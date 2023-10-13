@@ -3,8 +3,9 @@ package com.example.mybookshelf.model
 import android.content.Context
 import android.util.Log
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SortByAlpha
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -278,10 +279,10 @@ class BookshelfViewModel(
                 }
                 NytUiState.Success(emptyList())
             } catch (e: IOException) {
-                Log.d("ViewModel NYT Network State", "IO Exception")
+                Log.d("ViewModel NYT Network", "IO Exception")
                 NytUiState.Error
             } catch (e: HttpException) {
-                Log.d("ViewModel NYT Network State", "HTTP Exception")
+                Log.d("ViewModel NYT Network", "HTTP Exception")
                 NytUiState.Error
             }
 
@@ -319,10 +320,10 @@ class BookshelfViewModel(
         }
     }
 
-    fun selectBestseller(bestseller: Bestseller) {
+    private fun setBestsellerSortOrder(order: SortOrder) {
         _uiState.update {
             it.copy(
-                selectedBestseller = bestseller
+                bestsellerSortOrder = order
             )
         }
     }
@@ -504,22 +505,68 @@ class BookshelfViewModel(
         myBookRepository.deleteBook(myBook)
     }
 
+    private fun cycleBestsellerSortOrder() {
+        setBestsellerSortOrder(
+            when (uiState.value.bestsellerSortOrder) {
+                SortOrder.ALPHABETICAL -> SortOrder.ALPHABETICAL_REVERSE
+                SortOrder.ALPHABETICAL_REVERSE -> SortOrder.LAST_UPDATED
+                SortOrder.LAST_UPDATED,
+                SortOrder.LAST_ADDED -> SortOrder.LAST_ADDED_REVERSE
+                SortOrder.LAST_UPDATED_REVERSE,
+                SortOrder.LAST_ADDED_REVERSE,
+                null -> SortOrder.ALPHABETICAL
+            }
+        )
+    }
+
     fun getActionButton(): ActionButton {
         return when (uiState.value.currentScreen) {
             ScreenSelect.NONE -> ActionButton(false,)
             ScreenSelect.BEST_SELLERS -> ActionButton(
-                true,
-                Icons.Filled.Whatshot,
-                { selectNytList(null) },
-                "select bestseller list",
+                showButton = uiState.value.selectedNytList != null,
+                icon = Icons.Filled.Whatshot,
+                action = { selectNytList(null) },
+                contentDescription = "select bestseller list",
             )
+            ScreenSelect.WATCH_LIST -> {
+                when (uiState.value.bestsellerSortOrder) {
+                    SortOrder.ALPHABETICAL -> ActionButton(
+                        showButton = true,
+                        icon = Icons.Filled.SortByAlpha,
+                        action = { cycleBestsellerSortOrder() },
+                        contentDescription = "sort by alphabetical order"
+                    )
+                    SortOrder.ALPHABETICAL_REVERSE -> ActionButton(
+                        showButton = true,
+                        icon = Icons.Filled.SortByAlpha,
+                        action = { cycleBestsellerSortOrder() },
+                        contentDescription = "sort by reverse alphabetical order",
+                        mirrorIcon = true,
+                    )
+                    SortOrder.LAST_UPDATED,
+                    SortOrder.LAST_ADDED -> ActionButton(
+                        showButton = true,
+                        icon = Icons.Filled.Update,
+                        action = { cycleBestsellerSortOrder() },
+                        contentDescription = "sort by date added"
+                    )
+                    SortOrder.LAST_UPDATED_REVERSE,
+                    SortOrder.LAST_ADDED_REVERSE -> ActionButton(
+                        showButton = true,
+                        icon = Icons.Filled.Update,
+                        action = { cycleBestsellerSortOrder() },
+                        contentDescription = "sort by reverse alphabetical order",
+                        mirrorIcon = true,
+                    )
+                    null -> ActionButton(
+                        showButton = true,
+                        icon = Icons.Filled.SortByAlpha,
+                        action = { setBestsellerSortOrder(SortOrder.ALPHABETICAL_REVERSE) },
+                        contentDescription = "sort by alphabetical order"
+                    )
+                }
+            }
 
-            ScreenSelect.WATCH_LIST -> ActionButton(
-                true,
-                Icons.Filled.Remove,
-                { selectNytList(null) },
-                contentDescription = "sort by alphabetical order"
-            )
             ScreenSelect.BROWSE -> ActionButton(
                 showButton = true,
                 icon = Icons.Filled.Search,

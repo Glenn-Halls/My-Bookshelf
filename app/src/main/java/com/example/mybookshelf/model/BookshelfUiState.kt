@@ -4,6 +4,8 @@ import com.example.mybookshelf.ui.util.ScreenSelect
 
 data class BookshelfUiState(
     val currentScreen: ScreenSelect? = null,
+    val myBookSortOrder: SortOrder? = null,
+    val bestsellerSortOrder: SortOrder? = null,
     val searchResult: BookSearchResult? = null,
     val bestseller: BestsellerSearch? = null,
     val nytLists: List<NytBestsellerList>? = null,
@@ -17,5 +19,4 @@ data class BookshelfUiState(
     val editInProgress: Boolean = false,
     val nytApiOnCooldown: Boolean = false,
     val nytApiCooldown: Int = 0,
-    val myBookSortOrder: SortOrder? = null,
 )

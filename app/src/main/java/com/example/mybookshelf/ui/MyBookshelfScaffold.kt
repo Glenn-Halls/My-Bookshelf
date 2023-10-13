@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -64,7 +65,11 @@ fun MyBookshelfScreen(
     // State Flow accessor to book database
     val bookshelfBooks by viewModel.myBookDb.collectAsState()
     // State Flow accessor to bestseller database
-    val myBestsellerBooks by viewModel.myBestsellerDb.collectAsState()
+    val myBestsellerDb by viewModel.myBestsellerDb.collectAsState()
+    // Sorted bestseller list as defined by user, defaulting to Last Updated
+    val myBestsellerBooks = myBestsellerDb.sortBestsellers(
+        uiState.bestsellerSortOrder ?: SortOrder.LAST_UPDATED
+    )
     // Define navigation type based on WindowSizeClass dimensions
     val navigationType = viewModel.getNavigationSetup(windowSize)
     // Get window height in order to NOT show top bar on compact screens
@@ -143,8 +148,9 @@ fun MyBookshelfScreen(
                     onUpButtonClick = { viewModel.navigateBack() },
                     showActionButton = actionButton.showButton,
                     actionButtonVector = actionButton.icon,
+                    isActionIconMirrored = actionButton.mirrorIcon ?: false,
                     onActionButtonClick = actionButton.action,
-                    contentDescription = actionButton.contentDescription
+                    contentDescription = actionButton.contentDescription,
                 )
             }
         },
@@ -199,9 +205,7 @@ fun MyBookshelfScreen(
                         LoadingScreen()
                     } else {
                         MyBestsellerGrid(
-                            myBestsellers = myBestsellerBooks.sortBestsellers(
-                                SortOrder.LAST_UPDATED
-                            ),
+                            myBestsellers = myBestsellerBooks,
                             onCardClick = { onBestsellerClick(it.convertToBestseller()) },
                             onStarClick = { coroutineScope.launch {
                                 viewModel.deleteMyBestseller(it)
@@ -367,6 +371,7 @@ fun MyBookshelfScreen(
 fun MyBookshelfTopBar(
     onUpButtonClick: () -> Unit,
     showActionButton: Boolean,
+    isActionIconMirrored: Boolean,
     actionButtonVector: ImageVector?,
     onActionButtonClick: () -> Unit,
     contentDescription: String?,
@@ -395,10 +400,18 @@ fun MyBookshelfTopBar(
         actions = {
                   if (showActionButton) {
                       IconButton(onClick = onActionButtonClick) {
-                          Icon(
-                              imageVector = actionButtonVector ?: Icons.Default.BrokenImage,
-                              contentDescription = contentDescription
-                          )
+                          if (isActionIconMirrored) {
+                              Icon(
+                                  imageVector = actionButtonVector ?: Icons.Default.BrokenImage,
+                                  contentDescription = contentDescription,
+                                  modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
+                              )
+                          } else {
+                              Icon(
+                                  imageVector = actionButtonVector ?: Icons.Default.BrokenImage,
+                                  contentDescription = contentDescription
+                              )
+                          }
                       }
                   }
         },

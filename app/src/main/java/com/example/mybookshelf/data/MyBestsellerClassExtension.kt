@@ -29,7 +29,7 @@ fun List<MyBestseller>.sortBestsellers(
 ): List<MyBestseller> {
     return when (sortOrder) {
         SortOrder.ALPHABETICAL -> sortedBy{it.title}
-        SortOrder.ALPHABETICAL_REVERSE -> sortedBy{it.title}
+        SortOrder.ALPHABETICAL_REVERSE -> sortedBy{it.title}.reversed()
         SortOrder.LAST_UPDATED -> reversed()
         SortOrder.LAST_UPDATED_REVERSE -> filter { true }
         SortOrder.LAST_ADDED -> reversed()
