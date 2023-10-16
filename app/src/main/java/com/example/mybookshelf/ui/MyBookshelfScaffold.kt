@@ -129,9 +129,9 @@ fun MyBookshelfScreen(
     }
 
     /*
-     *  Scroll to the position defined in ViewModel on Re/Composition OR if selected book changes
-     *  OR when database is updated as reflected by bookshelfBooks: List<MyBook>.
-     *  NB: viewModel.selectBook(book) will set scroll position to 0px.
+     *  Scroll to the position defined in ViewModel on Re/Composition OR if selected book OR
+     *  myBookSort Order changes OR when database is updated as reflected by
+     *  bookshelfBooks. NB: viewModel.selectBook(book) will set scroll position to 0px.
      */
     LaunchedEffect(uiState.selectedBook, uiState.myBookSortOrder) {
         scrollPosition.scrollTo(uiState.scrollPosition)
@@ -322,7 +322,7 @@ fun MyBookshelfScreen(
                     } else {
                         if (uiState.selectedMyBook == null) {
                             MyBookGrid(
-                                myBooks = bookshelfBooks,
+                                myBooks = bookshelfBooks.filter { it.isFavourite },
                                 gridScrollPosition = myBookListScrollPosition,
                                 onCardClick = {
                                     viewModel.selectMyBook(it)
