@@ -16,6 +16,7 @@ data class BookshelfUiState(
     val searchQuery: String? = null,
     var userReview: UserReview? = null,
     val scrollPosition: Int = 0,
+    val gridScrollPosition: Int = 0,
     val editInProgress: Boolean = false,
     val nytApiOnCooldown: Boolean = false,
     val nytApiCooldown: Int = 0,

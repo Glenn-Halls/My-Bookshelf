@@ -126,6 +126,7 @@ fun BestsellerGrid(
 @Composable
 fun MyBookGrid(
     myBooks: List<MyBook>,
+    gridScrollPosition: LazyGridState,
     onCardClick: (MyBook) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -133,6 +134,7 @@ fun MyBookGrid(
         columns = GridCells.Adaptive(minSize = 300.dp),
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(dimensionResource(R.dimen.padding_medium)),
+        state = gridScrollPosition
     ) {
         items(
             items = myBooks,

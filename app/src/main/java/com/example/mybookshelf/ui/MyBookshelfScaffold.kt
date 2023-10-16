@@ -40,7 +40,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.R
 import com.example.mybookshelf.data.convertToBestseller
 import com.example.mybookshelf.data.sortBestsellers
-import com.example.mybookshelf.data.sortBooks
+import com.example.mybookshelf.data.sortMyBook
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
@@ -63,7 +63,11 @@ fun MyBookshelfScreen(
     // State Flow accessor to UI State
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
-    val bookshelfBooks by viewModel.myBookDb.collectAsState()
+    val bookshelfBooksDb by viewModel.myBookDb.collectAsState()
+    // Sorted book list defined by user, defaulting to Last Updated
+    val bookshelfBooks = bookshelfBooksDb.sortMyBook(
+        uiState.myBookSortOrder ?: SortOrder.LAST_UPDATED
+    )
     // State Flow accessor to bestseller database
     val myBestsellerDb by viewModel.myBestsellerDb.collectAsState()
     // Sorted bestseller list as defined by user, defaulting to Last Updated
@@ -82,6 +86,8 @@ fun MyBookshelfScreen(
     val scrollPosition = rememberScrollState()
     // Separate from scroll position, remember list scroll state
     val listScrollPosition = rememberLazyGridState()
+    // Separate from watchlist, shared position for MyBook and MyBook favourites
+    val myBookListScrollPosition = rememberLazyGridState()
     // Get action button to display in title bar
     val actionButton = viewModel.getActionButton()
     // Helper function adds / removes book to / from database within coroutine scope
@@ -127,15 +133,20 @@ fun MyBookshelfScreen(
      *  OR when database is updated as reflected by bookshelfBooks: List<MyBook>.
      *  NB: viewModel.selectBook(book) will set scroll position to 0px.
      */
-    LaunchedEffect(uiState.selectedBook, bookshelfBooks) {
+    LaunchedEffect(uiState.selectedBook, uiState.myBookSortOrder) {
         scrollPosition.scrollTo(uiState.scrollPosition)
+        myBookListScrollPosition.scrollToItem(uiState.gridScrollPosition)
         Log.d("Launched Effect", "scroll to ${scrollPosition.value}")
+        Log.d("Launched Effect", "grid to ${uiState.gridScrollPosition}")
     }
     // On Composable destruction, save scroll position to ViewModel.
-    DisposableEffect(bookshelfBooks) {
+    DisposableEffect(true) {
         onDispose {
             viewModel.setScrollPosition(scrollPosition.value)
+            viewModel.setGridScrollPosition(myBookListScrollPosition.firstVisibleItemIndex)
             Log.d("Disposable Effect", "save scroll position ${scrollPosition.value}")
+            Log.d("Disposable Effect", "save grid position ${myBookListScrollPosition.firstVisibleItemIndex}")
+            Log.d("Disposable Effect", "saveD grid position ${uiState.gridScrollPosition}")
         }
     }
     // Enable back navigation via viewModel's up navigation logic
@@ -269,7 +280,8 @@ fun MyBookshelfScreen(
                     } else {
                         if (uiState.selectedMyBook == null) {
                             MyBookGrid(
-                                myBooks = bookshelfBooks.sortBooks(SortOrder.LAST_UPDATED),
+                                myBooks = bookshelfBooks,
+                                gridScrollPosition = myBookListScrollPosition,
                                 onCardClick = {
                                     viewModel.selectMyBook(it)
                                 }
@@ -290,9 +302,6 @@ fun MyBookshelfScreen(
                     }
                 }
                 ScreenSelect.FAVOURITES -> {
-                    val favouriteList = bookshelfBooks.sortBooks(
-                        SortOrder.LAST_UPDATED
-                    ).filter { it.isFavourite }
                     val editInProgress = uiState.editInProgress
                     if (editInProgress) {
                         EditMyBookScreen(
@@ -313,7 +322,8 @@ fun MyBookshelfScreen(
                     } else {
                         if (uiState.selectedMyBook == null) {
                             MyBookGrid(
-                                myBooks = favouriteList,
+                                myBooks = bookshelfBooks,
+                                gridScrollPosition = myBookListScrollPosition,
                                 onCardClick = {
                                     viewModel.selectMyBook(it)
                                 }
