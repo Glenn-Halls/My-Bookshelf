@@ -433,7 +433,7 @@ fun BestSellerListItem(
                 text = nytList.listName,
                 style = MaterialTheme.typography.labelMedium
             )
-            Text("STAR")
+            Icon(imageVector = Icons.Filled.StarOutline, contentDescription = null)
         }
     }
 }
