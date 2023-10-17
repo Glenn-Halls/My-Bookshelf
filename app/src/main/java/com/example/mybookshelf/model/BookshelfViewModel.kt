@@ -555,7 +555,7 @@ class BookshelfViewModel(
         )
     }
 
-    fun getActionButton(): ActionButton {
+    fun getActionButton(bookshelfContentLayout: BookshelfContentLayout? = null): ActionButton {
         return when (uiState.value.currentScreen) {
             ScreenSelect.NONE -> ActionButton(false,)
             ScreenSelect.BEST_SELLERS -> ActionButton(
@@ -612,23 +612,24 @@ class BookshelfViewModel(
                 contentDescription = "search",
             )
 
-            ScreenSelect.MY_BOOKS -> getMyBookActionButton()
-            ScreenSelect.FAVOURITES -> getMyBookActionButton()
+            ScreenSelect.MY_BOOKS -> getMyBookActionButton(bookshelfContentLayout)
+            ScreenSelect.FAVOURITES -> getMyBookActionButton(bookshelfContentLayout)
             null -> ActionButton(false)
         }
     }
 
-    private fun getMyBookActionButton(): ActionButton {
+    private fun getMyBookActionButton(layout: BookshelfContentLayout? = null): ActionButton {
+        val showButton: Boolean = layout != BookshelfContentLayout.DETAILS_ONLY
         return when (uiState.value.myBookSortOrder) {
             SortOrder.ALPHABETICAL -> ActionButton(
-                showButton = true,
+                showButton = showButton,
                 icon = Icons.Filled.SortByAlpha,
                 action = { cycleMyBookSortOrder() },
                 contentDescription = "sort by alphabetical order"
             )
 
             SortOrder.ALPHABETICAL_REVERSE -> ActionButton(
-                showButton = true,
+                showButton = showButton,
                 icon = Icons.Filled.SortByAlpha,
                 action = { cycleMyBookSortOrder() },
                 contentDescription = "sort by reverse alphabetical order",
@@ -636,14 +637,14 @@ class BookshelfViewModel(
             )
 
             SortOrder.LAST_UPDATED -> ActionButton(
-                showButton = true,
+                showButton = showButton,
                 icon = Icons.Filled.Edit,
                 action = { cycleMyBookSortOrder() },
                 contentDescription = "sort by last edit",
             )
 
             SortOrder.LAST_UPDATED_REVERSE -> ActionButton(
-                showButton = true,
+                showButton = showButton,
                 icon = Icons.Filled.Edit,
                 action = { cycleMyBookSortOrder() },
                 contentDescription = "sort by last edit reversed",
@@ -651,14 +652,14 @@ class BookshelfViewModel(
             )
 
             SortOrder.LAST_ADDED -> ActionButton(
-                showButton = true,
+                showButton = showButton,
                 icon = Icons.Filled.Update,
                 action = { cycleMyBookSortOrder() },
                 contentDescription = "sort by date added",
             )
 
             SortOrder.LAST_ADDED_REVERSE -> ActionButton(
-                showButton = true,
+                showButton = showButton,
                 icon = Icons.Filled.Update,
                 action = { cycleMyBookSortOrder() },
                 contentDescription = "sort by date added reversed",
@@ -666,7 +667,7 @@ class BookshelfViewModel(
             )
 
             null -> ActionButton(
-                showButton = true,
+                showButton = showButton,
                 icon = Icons.Filled.Update,
                 action = { setMyBookSortOrder(SortOrder.LAST_UPDATED) },
                 contentDescription = "sort by last edit"

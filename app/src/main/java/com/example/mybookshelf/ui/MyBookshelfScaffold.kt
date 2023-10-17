@@ -92,7 +92,7 @@ fun MyBookshelfScreen(
     // Separate from watchlist, shared position for MyBook and MyBook favourites
     val myBookListScrollPosition = rememberLazyGridState()
     // Get action button to display in title bar
-    val actionButton = viewModel.getActionButton()
+    val actionButton = viewModel.getActionButton(myBookScreenLayout)
     // Helper function adds / removes book to / from database within coroutine scope
     fun onBookmarkClick(book: Book) {
         coroutineScope.launch { viewModel.onBookmarkClick(book, bookshelfBooks) }
