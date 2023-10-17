@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">My Bookshelf</string>
+    <string name="my_favorites">My Favorites</string>
+    <string name="browse_books">Browse Books</string>
     <string name="back_button">back button</string>
     <string name="best_sellers">Best Sellers</string>
     <string name="watch_list">Watch List</string>

@@ -93,6 +93,16 @@ fun MyBookshelfScreen(
     val myBookListScrollPosition = rememberLazyGridState()
     // Get action button to display in title bar
     val actionButton = viewModel.getActionButton(myBookScreenLayout)
+    // Get title for header based on screen selected
+    val title = when (uiState.currentScreen) {
+        ScreenSelect.NONE -> stringResource(R.string.app_name)
+        ScreenSelect.BEST_SELLERS -> stringResource(R.string.best_sellers)
+        ScreenSelect.WATCH_LIST -> stringResource(R.string.watch_list)
+        ScreenSelect.BROWSE -> stringResource(R.string.browse_books)
+        ScreenSelect.MY_BOOKS -> stringResource(R.string.my_books)
+        ScreenSelect.FAVOURITES -> stringResource(R.string.my_favorites)
+        null -> stringResource(R.string.app_name)
+    }
     // Helper function adds / removes book to / from database within coroutine scope
     fun onBookmarkClick(book: Book) {
         coroutineScope.launch { viewModel.onBookmarkClick(book, bookshelfBooks) }
@@ -160,6 +170,7 @@ fun MyBookshelfScreen(
         topBar = {
             if (windowHeight != WindowHeightSizeClass.Compact) {
                 MyBookshelfTopBar(
+                    title = title,
                     onUpButtonClick = { viewModel.navigateBack() },
                     showActionButton = actionButton.showButton,
                     actionButtonVector = actionButton.icon,
@@ -369,6 +380,7 @@ fun MyBookshelfScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyBookshelfTopBar(
+    title: String,
     onUpButtonClick: () -> Unit,
     showActionButton: Boolean,
     isActionIconMirrored: Boolean,
@@ -379,7 +391,7 @@ fun MyBookshelfTopBar(
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.app_name),
+                text = title,
                 style = MaterialTheme.typography.displayLarge,
             )
         },
