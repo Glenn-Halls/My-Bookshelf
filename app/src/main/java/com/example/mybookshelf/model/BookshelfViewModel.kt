@@ -142,7 +142,11 @@ class BookshelfViewModel(
     fun navigateToScreen(nav: NavigationElement) {
         _uiState.update {
             it.copy(
-                currentScreen = nav.screenSelect
+                currentScreen = nav.screenSelect,
+                selectedBook = null,
+                selectedMyBook = null,
+                scrollPosition = 0,
+                gridScrollPosition = 0,
             )
         }
     }

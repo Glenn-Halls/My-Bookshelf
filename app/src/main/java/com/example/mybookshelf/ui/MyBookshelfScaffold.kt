@@ -48,6 +48,7 @@ import com.example.mybookshelf.model.NytUiState
 import com.example.mybookshelf.model.SearchUiState
 import com.example.mybookshelf.model.SortOrder
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
+import com.example.mybookshelf.ui.util.MyBookScreen
 import com.example.mybookshelf.ui.util.ScreenSelect
 import kotlinx.coroutines.launch
 
@@ -80,8 +81,10 @@ fun MyBookshelfScreen(
     val windowHeight = windowSize.heightSizeClass
     // Create a coroutine scope event listener
     val coroutineScope = rememberCoroutineScope()
-    // Get screen content layout
+    // Get screen content layout for Book search
     val bookScreenLayout = viewModel.getScreenLayout(windowSize, uiState.selectedBook)
+    // Get screen content layout for MyBook
+    val myBookScreenLayout = viewModel.getScreenLayout(windowSize, null, null, uiState.selectedMyBook)
     // Define & remember scroll state in order to use Launched Effect to update via coroutine
     val scrollPosition = rememberScrollState()
     // Separate from scroll position, remember list scroll state
@@ -133,7 +136,7 @@ fun MyBookshelfScreen(
      *  myBookSort Order changes OR when database is updated as reflected by
      *  bookshelfBooks. NB: viewModel.selectBook(book) will set scroll position to 0px.
      */
-    LaunchedEffect(uiState.selectedBook, uiState.myBookSortOrder) {
+    LaunchedEffect(uiState.selectedBook, uiState.myBookSortOrder, uiState.currentScreen) {
         scrollPosition.scrollTo(uiState.scrollPosition)
         myBookListScrollPosition.scrollToItem(uiState.gridScrollPosition)
         Log.d("Launched Effect", "scroll to ${scrollPosition.value}")
@@ -152,6 +155,7 @@ fun MyBookshelfScreen(
     // Enable back navigation via viewModel's up navigation logic
     BackHandler(true, viewModel::navigateBack)
     Scaffold(
+        modifier = modifier,
         // Do not show top bar on compact screens
         topBar = {
             if (windowHeight != WindowHeightSizeClass.Compact) {
@@ -278,27 +282,20 @@ fun MyBookshelfScreen(
                             onDismiss = { viewModel.toggleEditState() },
                         )
                     } else {
-                        if (uiState.selectedMyBook == null) {
-                            MyBookGrid(
-                                myBooks = bookshelfBooks,
-                                gridScrollPosition = myBookListScrollPosition,
-                                onCardClick = {
-                                    viewModel.selectMyBook(it)
+                        MyBookScreen(
+                            layout = myBookScreenLayout,
+                            myBooks = bookshelfBooks,
+                            listScrollPosition = myBookListScrollPosition,
+                            onCardClick = { viewModel.selectMyBook(it) },
+                            scrollPosition = scrollPosition,
+                            onEditClick = { viewModel.toggleEditState() },
+                            onFavouriteClick = {
+                                coroutineScope.launch{
+                                    viewModel.toggleMyBookFavourite()
                                 }
-                            )
-                        } else {
-                            MyBookDetailScreen(
-                                scrollPosition = scrollPosition,
-                                myBook = uiState.selectedMyBook!!,
-                                onEditClick = { viewModel.toggleEditState() },
-                                isFavourite = uiState.selectedMyBook!!.isFavourite,
-                                onFavouriteClick = {
-                                    coroutineScope.launch {
-                                        viewModel.toggleMyBookFavourite()
-                                    }
-                                },
-                            )
-                        }
+                            },
+                            myBookSelected = uiState.selectedMyBook
+                        )
                     }
                 }
                 ScreenSelect.FAVOURITES -> {
@@ -320,27 +317,20 @@ fun MyBookshelfScreen(
                             onDismiss = { viewModel.toggleEditState() },
                         )
                     } else {
-                        if (uiState.selectedMyBook == null) {
-                            MyBookGrid(
-                                myBooks = bookshelfBooks.filter { it.isFavourite },
-                                gridScrollPosition = myBookListScrollPosition,
-                                onCardClick = {
-                                    viewModel.selectMyBook(it)
+                        MyBookScreen(
+                            layout = myBookScreenLayout,
+                            myBooks = bookshelfBooks.filter { it.isFavourite },
+                            listScrollPosition = myBookListScrollPosition,
+                            onCardClick = { viewModel.selectMyBook(it) },
+                            scrollPosition = scrollPosition,
+                            onEditClick = { viewModel.toggleEditState() },
+                            onFavouriteClick = {
+                                coroutineScope.launch{
+                                    viewModel.toggleMyBookFavourite()
                                 }
-                            )
-                        } else {
-                            MyBookDetailScreen(
-                                scrollPosition = scrollPosition,
-                                myBook = uiState.selectedMyBook!!,
-                                onEditClick = { viewModel.toggleEditState() },
-                                isFavourite = uiState.selectedMyBook!!.isFavourite,
-                                onFavouriteClick = {
-                                    coroutineScope.launch {
-                                        viewModel.toggleMyBookFavourite()
-                                    }
-                                },
-                            )
-                        }
+                            },
+                            myBookSelected = uiState.selectedMyBook
+                        )
                     }
                 }
                 else -> if (
