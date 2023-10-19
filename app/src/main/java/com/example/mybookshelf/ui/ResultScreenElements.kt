@@ -387,19 +387,18 @@ fun MyBookCard(
                 onValueChange = { /* TODO */ },
                 onRatingChanged = { Log.d("Rating", "changed to $rating") }
             )
-            Text(text = notes ?: myBook.lastUpdated.toString())
             Text(
                 text = book.bookDetail.title,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.displayMedium
             )
             Text(
-                text = book.bookDetail.date,
+                text = myBook.author,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelMedium
             )
             Text(
-                text = book.getShortDescription(),
+                text = notes ?: book.getShortDescription(),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.labelMedium
             )

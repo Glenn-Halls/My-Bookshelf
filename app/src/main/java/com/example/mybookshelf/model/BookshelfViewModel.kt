@@ -768,7 +768,6 @@ class BookshelfViewModel(
         searchBooks()
         getBestsellers()
         getNytLists()
-        setSearchString("jazz history")
     }
 
     companion object {

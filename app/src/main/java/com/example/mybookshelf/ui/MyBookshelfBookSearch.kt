@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
 import com.example.mybookshelf.model.Book
@@ -111,15 +110,7 @@ fun CustomSearchScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-        ) {
-            Text(
-                text = "Search Google's Library",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.fillMaxWidth(.5f)
-            )
-
-        }
+        ) {}
         OutlinedTextField(
             label = {
                 Text(
