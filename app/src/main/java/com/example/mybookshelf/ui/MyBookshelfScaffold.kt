@@ -240,37 +240,35 @@ fun MyBookshelfScreen(
                     }
                 }
                 ScreenSelect.BROWSE -> {
-                    when (viewModel.searchUiState) {
+                    if (uiState.searchResult == null) {
+                        CustomSearchScreen(
+                            searchQuery = uiState.searchQuery ?: "",
+                            searchStringUpdate = { viewModel.setSearchString(it) },
+                            onSearchClicked = {
+                                viewModel.navigateBack()
+                                viewModel.updateSearch(context)
+                                coroutineScope.launch {
+                                    listScrollPosition.scrollToItem(0, 0)
+                                }
+                            }
+                        )
+                    } else when (viewModel.searchUiState) {
                         SearchUiState.Loading -> LoadingScreen()
                         SearchUiState.Error -> ErrorScreen({ viewModel.searchBooks(300) })
                         else -> {
-                            if (uiState.searchResult == null) {
-                                CustomSearchScreen(
-                                    searchQuery = uiState.searchQuery ?: "",
-                                    searchStringUpdate = { viewModel.setSearchString(it) },
-                                    onSearchClicked = {
-                                        viewModel.navigateBack()
-                                        viewModel.updateSearch(context)
-                                        coroutineScope.launch {
-                                            listScrollPosition.scrollToItem(0, 0)
-                                        }
-                                    }
-                                )
-                            } else {
-                                BookSearchScreen(
-                                    searchStatus = viewModel.searchUiState,
-                                    layout = bookScreenLayout,
-                                    scrollPosition = scrollPosition,
-                                    listScrollPosition = listScrollPosition,
-                                    onCardClick = { viewModel.selectBook(it) },
-                                    isMyBook = viewModel.isBookMyBook(),
-                                    isFavourite = viewModel.isBookFavourite(),
-                                    onFavouriteClick = { onFavouriteClick(it) },
-                                    onBookmarkClick = { onBookmarkClick(it) },
-                                    onTryAgain = { viewModel.searchBooks(300) },
-                                    bookSelected = uiState.selectedBook,
-                                )
-                            }
+                            BookSearchScreen(
+                                searchStatus = viewModel.searchUiState,
+                                layout = bookScreenLayout,
+                                scrollPosition = scrollPosition,
+                                listScrollPosition = listScrollPosition,
+                                onCardClick = { viewModel.selectBook(it) },
+                                isMyBook = viewModel.isBookMyBook(),
+                                isFavourite = viewModel.isBookFavourite(),
+                                onFavouriteClick = { onFavouriteClick(it) },
+                                onBookmarkClick = { onBookmarkClick(it) },
+                                onTryAgain = { viewModel.searchBooks(300) },
+                                bookSelected = uiState.selectedBook,
+                            )
                         }
                     }
                 }
@@ -344,10 +342,7 @@ fun MyBookshelfScreen(
                         )
                     }
                 }
-                else -> if (
-                    viewModel.searchUiState == SearchUiState.Loading ||
-                    viewModel.nytUiState == NytUiState.Loading
-                    ) {
+                else -> if (viewModel.nytUiState == NytUiState.Loading) {
                     LoadingScreen()
                 } else {
                     Box(

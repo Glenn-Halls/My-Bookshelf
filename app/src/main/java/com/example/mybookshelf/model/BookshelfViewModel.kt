@@ -765,7 +765,6 @@ class BookshelfViewModel(
                 }
             }
             .launchIn(viewModelScope)
-        searchBooks()
         getBestsellers()
         getNytLists()
     }
