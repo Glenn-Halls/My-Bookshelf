@@ -1,6 +1,9 @@
 package com.example.mybookshelf.data
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
+import com.example.mybookshelf.ProtoData
 import com.example.mybookshelf.network.BookshelfApiService
 import com.example.mybookshelf.network.BookshelfBestsellerApiService
 import com.example.mybookshelf.network.BookshelfNytListApiService
@@ -9,12 +12,18 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 
+private val Context.dataStore: DataStore<ProtoData> by dataStore(
+    fileName = "settings.pb",
+    serializer = DataStoreSerializer
+)
+
 interface AppContainer {
     val bookRepository: BookRepository
     val bestsellerRepository: BestsellerRepository
     val nytListRepository: NytListRepository
     val myBookRepository: MyBookRepository
     val myBestsellerRepository: MyBestsellerRepository
+    val protoDataRepository: DataStoreRepository
     var searchString: String
     var nytListAddress: String
 }
@@ -96,5 +105,8 @@ class DefaultAppContainer(
 
     override val myBestsellerRepository: MyBestsellerRepository by lazy {
         OfflineMyBestsellerRepository(AppDatabase.getDatabase(context).myBestsellerDao())
+    }
+    override val protoDataRepository: DataStoreRepository by lazy {
+        AndroidDataStoreRepository(context.dataStore)
     }
 }
