@@ -13,7 +13,8 @@ fun MyBookshelfApp(windowSize: WindowSizeClass) {
     val viewModel: BookshelfViewModel = viewModel(
         factory = BookshelfViewModel.Factory
     )
-    MyBookshelfTheme {
+    val darkTheme = false
+    MyBookshelfTheme(darkTheme) {
         MyBookshelfScreen(
             viewModel,
             windowSize,

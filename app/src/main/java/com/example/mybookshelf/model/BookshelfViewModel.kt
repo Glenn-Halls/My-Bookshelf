@@ -20,8 +20,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mybookshelf.MyBookshelfApplication
+import com.example.mybookshelf.ProtoData
 import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
+import com.example.mybookshelf.data.DataStoreRepository
 import com.example.mybookshelf.data.DefaultAppContainer
 import com.example.mybookshelf.data.MyBestsellerRepository
 import com.example.mybookshelf.data.MyBookRepository
@@ -43,6 +45,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -71,6 +74,7 @@ class BookshelfViewModel(
     private val nytListRepository: NytListRepository,
     private val myBookRepository: MyBookRepository,
     private val myBestsellerRepository: MyBestsellerRepository,
+    private val protoDataStoreRepository: DataStoreRepository,
 ) : ViewModel() {
 
     // Create observable state holder
@@ -106,6 +110,10 @@ class BookshelfViewModel(
         private set
 
     private val _nytQueryState = MutableStateFlow(NytQueryStatus.READY)
+
+    private val protoDataFlow: Flow<ProtoData> = protoDataStoreRepository.dataStoreFlow
+    val currentNumber = protoDataFlow.map { it.testNumber }
+    suspend fun changeCurrentNumber(newNumber: Int) = protoDataStoreRepository.setNumber(newNumber)
 
     //Temporary function to test cooldown timer flow
     fun testTimer() {
@@ -778,12 +786,14 @@ class BookshelfViewModel(
                 val nytListRepository = application.container.nytListRepository
                 val myBookRepository = application.container.myBookRepository
                 val myBestsellerRepository = application.container.myBestsellerRepository
+                val protoDataStoreRepository = application.container.protoDataRepository
                 BookshelfViewModel(
                     bookRepository,
                     bestsellerRepository,
                     nytListRepository,
                     myBookRepository,
                     myBestsellerRepository,
+                    protoDataStoreRepository
                     )
             }
         }

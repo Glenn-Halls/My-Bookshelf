@@ -91,6 +91,7 @@ fun MyBookshelfScreen(
     val listScrollPosition = rememberLazyGridState()
     // Separate from watchlist, shared position for MyBook and MyBook favourites
     val myBookListScrollPosition = rememberLazyGridState()
+    val testNumber = viewModel.currentNumber.collectAsState("")
     // Get action button to display in title bar
     val actionButton = viewModel.getActionButton(myBookScreenLayout)
     // Get title for header based on screen selected
@@ -349,20 +350,14 @@ fun MyBookshelfScreen(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        Column(
-                        ) {
-                            Text(
-                                text = uiState.nytApiOnCooldown.toString(),
-                                style = MaterialTheme.typography.headlineLarge
-                            )
-                            Text(
-                                text = uiState.nytApiCooldown.toString(),
-                                style = MaterialTheme.typography.headlineLarge
-                            )
-                            Button(
-                                onClick = { viewModel.testTimer() }
-                            ) {
-                                Text("TEST")
+                        Column (
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ){
+                            Text(text = "${testNumber.value}")
+                            Button(onClick = { coroutineScope.launch {
+                                viewModel.changeCurrentNumber((0..9).random())
+                            } }) {
+                                Text(text = "click")
                             }
                         }
                     }

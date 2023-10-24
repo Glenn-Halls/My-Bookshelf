@@ -1,7 +1,6 @@
 package com.example.mybookshelf.data
 
 import androidx.datastore.core.CorruptionException
-import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import com.example.mybookshelf.ProtoData
 import com.google.protobuf.InvalidProtocolBufferException

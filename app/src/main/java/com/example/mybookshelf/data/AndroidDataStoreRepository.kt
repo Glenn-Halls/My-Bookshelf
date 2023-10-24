@@ -1,16 +1,11 @@
 package com.example.mybookshelf.data
 
-import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
 import com.example.mybookshelf.ProtoData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import java.io.IOException
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 
 private const val TAG = "Android DataStore Repo"
 
