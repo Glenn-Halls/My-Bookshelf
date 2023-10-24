@@ -6,8 +6,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -37,6 +39,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.mybookshelf.ProtoData.DarkMode
 import com.example.mybookshelf.R
 import com.example.mybookshelf.data.convertToBestseller
 import com.example.mybookshelf.data.sortBestsellers
@@ -91,7 +96,7 @@ fun MyBookshelfScreen(
     val listScrollPosition = rememberLazyGridState()
     // Separate from watchlist, shared position for MyBook and MyBook favourites
     val myBookListScrollPosition = rememberLazyGridState()
-    val testNumber = viewModel.currentNumber.collectAsState("")
+    val testDark = viewModel.darkMode.collectAsState("")
     // Get action button to display in title bar
     val actionButton = viewModel.getActionButton(myBookScreenLayout)
     // Get title for header based on screen selected
@@ -352,12 +357,25 @@ fun MyBookshelfScreen(
                     ) {
                         Column (
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            Text(text = "${testNumber.value}")
-                            Button(onClick = { coroutineScope.launch {
-                                viewModel.changeCurrentNumber((0..9).random())
-                            } }) {
-                                Text(text = "click")
+                        ) {
+                            val buttons = listOf(
+                                Pair(DarkMode.PHONE, "Phone Settings"),
+                                Pair(DarkMode.DARK, "Dark Mode"),
+                                Pair(DarkMode.LIGHT, "Light Mode")
+                            )
+                            Text(
+                                text = "Dark Mode?: ${testDark.value}",
+                                fontSize = 20.sp
+                            )
+                            Spacer(modifier = Modifier.size(10.dp))
+                            buttons.forEach {
+                                Button(onClick = {
+                                    coroutineScope.launch {
+                                        viewModel.setDarkMode(it.first)
+                                    }
+                                }) {
+                                    Text(it.second)
+                                }
                             }
                         }
                     }

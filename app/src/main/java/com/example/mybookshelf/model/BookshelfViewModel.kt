@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.ProtoData
+import com.example.mybookshelf.ProtoData.DarkMode
 import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
 import com.example.mybookshelf.data.DataStoreRepository
@@ -113,6 +114,22 @@ class BookshelfViewModel(
 
     private val protoDataFlow: Flow<ProtoData> = protoDataStoreRepository.dataStoreFlow
     val currentNumber = protoDataFlow.map { it.testNumber }
+    // Get dark mode from proto dataStore as a boolean or null; which defaults to system setting.
+    val darkMode: Flow<Boolean?> = protoDataFlow.map { it.darkMode }
+        .map {
+            when (it) {
+                DarkMode.DARK -> true
+                DarkMode.LIGHT -> false
+                else -> null
+            }
+        }
+
+
+    // Toggles dark mode in the proto data store, should be set to DARK, LIGHT or PHONE.
+    suspend fun setDarkMode(darkMode: DarkMode) {
+        protoDataStoreRepository.setDarkMode(darkMode)
+    }
+
     suspend fun changeCurrentNumber(newNumber: Int) = protoDataStoreRepository.setNumber(newNumber)
 
     //Temporary function to test cooldown timer flow

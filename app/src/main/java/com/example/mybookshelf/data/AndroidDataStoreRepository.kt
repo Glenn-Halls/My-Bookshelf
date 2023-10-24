@@ -26,8 +26,14 @@ class AndroidDataStoreRepository(
         }
     // Sets the number in the data store
     override suspend fun setNumber(newNumber: Int) {
-        dataStore.updateData { data ->
-            data.toBuilder().setTestNumber(newNumber).build()
+        dataStore.updateData {
+            it.toBuilder().setTestNumber(newNumber).build()
+        }
+    }
+
+    override suspend fun setDarkMode(mode: ProtoData.DarkMode) {
+        dataStore.updateData {
+            it.toBuilder().setDarkMode(mode).build()
         }
     }
 }

@@ -5,4 +5,15 @@ option java_multiple_files = true;
 
 message ProtoData {
     int32 test_number = 1;
+
+    // Dark Mode enum for user preferences. Should be set to LIGHT / DARK / PHONE
+    enum DarkMode {
+        DARK_MODE_UNSPECIFIED = 0;
+        DARK = 1;
+        LIGHT = 2;
+        PHONE = 3;
+        UNRECOGNISED = 4;
+    }
+
+    DarkMode dark_mode = 2;
 }
