@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
     id("com.google.devtools.ksp")
+    id("com.google.protobuf") version "0.9.1"
 }
 
 android {
@@ -86,6 +87,10 @@ dependencies {
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     // Compose Rating Bar
     implementation("com.github.a914-gowtham:compose-ratingbar:1.3.6")
+    // DataStore Library
+    implementation("androidx.datastore:datastore:1.0.0")
+    // Protobuf Library
+    implementation("com.google.protobuf:protobuf-javalite:3.19.4")
     // J Unit test implementation
     testImplementation("junit:junit:4.13.2")
     // Kotlin CoRoutines test implementation
@@ -99,4 +104,21 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+// Protobuf artifact definition
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.21.7"
+    }
+    // Generate proto classes using javalite plugin
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                val java by registering {
+                    option("lite")
+                }
+            }
+        }
+    }
 }
