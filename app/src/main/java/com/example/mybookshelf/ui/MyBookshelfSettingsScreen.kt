@@ -58,6 +58,7 @@ fun SortOrder.getShortDescription(): String {
 fun SettingsScreen(
     darkMode: Boolean?,
     onDarkModeClick: (DarkMode) -> Unit,
+    startScreen: ScreenSelect?,
     onStartScreenClick: (NavigationElement) -> Unit,
     sortOrderOptions: List<Pair<SortOrder, ActionButton>>,
     onSortOrderClick: (SortOrder) -> Unit,
@@ -133,7 +134,7 @@ fun SettingsScreen(
             NavigationTabs.forEach {
                 StartupScreenButton(
                     navigationElement = it,
-                    isActive = false,
+                    isActive = it.screenSelect == startScreen,
                     drawable = painterResource(it.icon),
                     contentDescription = it.name.toString(),
                     onStartScreenClick = onStartScreenClick,
@@ -310,6 +311,7 @@ fun SettingsScreenPreview() {
     MyBookshelfTheme {
         SettingsScreen(
             darkMode = true,
+            startScreen = ScreenSelect.NONE,
             onDarkModeClick = {},
             onStartScreenClick = {},
             sortOrderOptions = SortOrderActionButtonList,

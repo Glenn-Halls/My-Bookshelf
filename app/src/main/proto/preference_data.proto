@@ -16,4 +16,16 @@ message ProtoData {
     }
 
     DarkMode dark_mode = 2;
+
+    enum ProtoScreenSelect {
+        SCREEN_SELECT_UNSPECIFIED = 0;
+        NONE = 1;
+        BEST_SELLERS = 2;
+        WATCH_LIST = 3;
+        BROWSE = 4;
+        MY_BOOKS = 5;
+        FAVOURITES = 6;
+    }
+
+    ProtoScreenSelect screen_select = 3;
 }

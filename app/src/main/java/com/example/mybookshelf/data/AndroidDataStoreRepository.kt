@@ -44,4 +44,10 @@ class AndroidDataStoreRepository(
             it.toBuilder().setDarkMode(mode).build()
         }
     }
+
+    override suspend fun setStartupScreen(protoStartupScreen: ProtoData.ProtoScreenSelect) {
+        dataStore.updateData {
+            it.toBuilder().setScreenSelect(protoStartupScreen).build()
+        }
+    }
 }

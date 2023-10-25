@@ -64,6 +64,8 @@ fun MyBookshelfScreen(
     val bookshelfBooksDb by viewModel.myBookDb.collectAsState()
     // Get flow of dark mode status from view model
     val darkMode by viewModel.darkMode.collectAsState(null)
+    // Get startup screen flow from view model
+    val startupScreen by viewModel.startupScreen.collectAsState(initial = null)
     // Sorted book list defined by user, defaulting to Last Updated
     val bookshelfBooks = bookshelfBooksDb.sortMyBook(
         uiState.myBookSortOrder ?: SortOrder.LAST_UPDATED
@@ -146,6 +148,11 @@ fun MyBookshelfScreen(
     fun setDarkMode(darkMode: DarkMode) {
         coroutineScope.launch {
             viewModel.setDarkMode(darkMode)
+        }
+    }
+    fun setScreenSelect(screen: ScreenSelect) {
+        coroutineScope.launch {
+            viewModel.setStartupScreen(screen)
         }
     }
 
@@ -345,17 +352,23 @@ fun MyBookshelfScreen(
                     }
                 }
                 ScreenSelect.NONE, null -> {
-                    SettingsScreen(
-                        darkMode = darkMode,
-                        onDarkModeClick = { setDarkMode(it) },
-                        onStartScreenClick = { viewModel.navigateToScreen(it) },
-                        sortOrderOptions = SortOrderActionButtonList,
-                        onSortOrderClick = {
-                            viewModel.setMyBookSortOrder(it)
-                            viewModel.setBestsellerSortOrder(it)
-                        }
+                    if (viewModel.nytUiState == NytUiState.Loading) {
+                        LoadingScreen()
+                    } else {
+                        SettingsScreen(
+                            darkMode = darkMode,
+                            onDarkModeClick = { setDarkMode(it) },
+                            startScreen = startupScreen,
+                            onStartScreenClick = { setScreenSelect(it.screenSelect) },
+                            sortOrderOptions = SortOrderActionButtonList,
+                            onSortOrderClick = {
+                                viewModel.setMyBookSortOrder(it)
+                                viewModel.setBestsellerSortOrder(it)
+                            }
 
-                    )
+                        )
+                    }
+
                 }
             }
         }

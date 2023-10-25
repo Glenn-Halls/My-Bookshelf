@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
@@ -123,11 +124,39 @@ class BookshelfViewModel(
                 else -> null
             }
         }
+    // Get startup screen setting from proto dataStore
+    val startupScreen: Flow<ScreenSelect> = protoDataFlow.map { it.screenSelect }
+        .map {
+            when (it) {
+                ProtoData.ProtoScreenSelect.BEST_SELLERS -> ScreenSelect.BEST_SELLERS
+                ProtoData.ProtoScreenSelect.WATCH_LIST -> ScreenSelect.WATCH_LIST
+                ProtoData.ProtoScreenSelect.BROWSE -> ScreenSelect.BROWSE
+                ProtoData.ProtoScreenSelect.MY_BOOKS -> ScreenSelect.MY_BOOKS
+                ProtoData.ProtoScreenSelect.FAVOURITES -> ScreenSelect.FAVOURITES
+                ProtoData.ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED,
+                ProtoData.ProtoScreenSelect.NONE,
+                ProtoData.ProtoScreenSelect.UNRECOGNIZED -> ScreenSelect.NONE
+            }
+        }
 
 
     // Toggles dark mode in the proto data store, should be set to DARK, LIGHT or PHONE.
     suspend fun setDarkMode(darkMode: DarkMode) {
         protoDataStoreRepository.setDarkMode(darkMode)
+    }
+    suspend fun setStartupScreen(screen: ScreenSelect) {
+        val protoScreen = when (screen) {
+            ScreenSelect.NONE -> ProtoData.ProtoScreenSelect.NONE
+            ScreenSelect.BEST_SELLERS -> ProtoData.ProtoScreenSelect.BEST_SELLERS
+            ScreenSelect.WATCH_LIST -> ProtoData.ProtoScreenSelect.WATCH_LIST
+            ScreenSelect.BROWSE -> ProtoData.ProtoScreenSelect.BROWSE
+            ScreenSelect.MY_BOOKS -> ProtoData.ProtoScreenSelect.MY_BOOKS
+            ScreenSelect.FAVOURITES -> ProtoData.ProtoScreenSelect.FAVOURITES
+        }
+        protoDataStoreRepository.setStartupScreen(protoScreen)
+    }
+    private suspend fun getStartupScreen() : ScreenSelect {
+        return startupScreen.first()
     }
     private suspend fun restoreSearchString(): String {
         return protoDataStoreRepository.getSearchString()
@@ -193,7 +222,6 @@ class BookshelfViewModel(
     // Search for books with an optional delay to display search attempt to user
     fun searchBooks(delay: Long? = null) {
         viewModelScope.launch {
-            saveSearchString()
             searchUiState = SearchUiState.Loading
             if (delay != null) {
                 delay(delay)
@@ -217,6 +245,7 @@ class BookshelfViewModel(
                 Log.d("ViewModel", "HTTP Exception")
                 SearchUiState.Error
             }
+            saveSearchString()
         }
     }
 
@@ -787,11 +816,17 @@ class BookshelfViewModel(
                 }
             }
             .launchIn(viewModelScope)
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    currentScreen = getStartupScreen()
+                )
+            }
+            val query = restoreSearchString()
+            updateSearchQuery(query)
+        }
         getBestsellers()
         getNytLists()
-        viewModelScope.launch {
-            setSearchString(restoreSearchString())
-        }
     }
 
     companion object {
