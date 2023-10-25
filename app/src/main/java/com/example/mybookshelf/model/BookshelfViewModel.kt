@@ -114,7 +114,6 @@ class BookshelfViewModel(
 
     // Get settings from proto dataStore as a Flow
     private val protoDataFlow: Flow<ProtoData> = protoDataStoreRepository.dataStoreFlow
-    val currentNumber = protoDataFlow.map { it.testNumber }
     // Get dark mode from proto dataStore as a boolean or null; which defaults to system setting.
     val darkMode: Flow<Boolean?> = protoDataFlow.map { it.darkMode }
         .map {
@@ -130,17 +129,12 @@ class BookshelfViewModel(
     suspend fun setDarkMode(darkMode: DarkMode) {
         protoDataStoreRepository.setDarkMode(darkMode)
     }
+    private suspend fun restoreSearchString(): String {
+        return protoDataStoreRepository.getSearchString()
+    }
 
-    suspend fun changeCurrentNumber(newNumber: Int) = protoDataStoreRepository.setNumber(newNumber)
-
-    //Temporary function to test cooldown timer flow
-    fun testTimer() {
-        startNytCountdownTimer()
-        _uiState.update {
-            it.copy(
-                myBookSortOrder = SortOrder.LAST_UPDATED
-            )
-        }
+    private suspend fun saveSearchString() {
+        uiState.value.searchQuery?.let { protoDataStoreRepository.setSearchString(it) }
     }
 
     private fun getNytCountdownFlow(isRunning: Boolean): Flow<Int> {
@@ -199,6 +193,7 @@ class BookshelfViewModel(
     // Search for books with an optional delay to display search attempt to user
     fun searchBooks(delay: Long? = null) {
         viewModelScope.launch {
+            saveSearchString()
             searchUiState = SearchUiState.Loading
             if (delay != null) {
                 delay(delay)
@@ -758,13 +753,13 @@ class BookshelfViewModel(
 
     // Delete MyBook from database.
     // Update _uiState values for myBooksInSearch and favouritesInSearch accordingly.
-    private suspend fun deleteBook(mybook: MyBook) {
+    private suspend fun deleteBook(myBook: MyBook) {
         val searchResult = _uiState.value.searchResult
-        val newMyBookList = searchResult!!.myBooksInSearch.filter { it != mybook.id }
-        val newFavouriteList = searchResult.favouritesInSearch.filter { it != mybook.id }
+        val newMyBookList = searchResult!!.myBooksInSearch.filter { it != myBook.id }
+        val newFavouriteList = searchResult.favouritesInSearch.filter { it != myBook.id }
         searchResult.myBooksInSearch = newMyBookList
         searchResult.favouritesInSearch = newFavouriteList
-        myBookRepository.deleteBook(mybook)
+        myBookRepository.deleteBook(myBook)
         _uiState.update {
             it.copy(
                 searchResult = searchResult
@@ -794,6 +789,9 @@ class BookshelfViewModel(
             .launchIn(viewModelScope)
         getBestsellers()
         getNytLists()
+        viewModelScope.launch {
+            setSearchString(restoreSearchString())
+        }
     }
 
     companion object {

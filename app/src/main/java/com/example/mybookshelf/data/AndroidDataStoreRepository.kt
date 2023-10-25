@@ -5,6 +5,8 @@ import androidx.datastore.core.DataStore
 import com.example.mybookshelf.ProtoData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 private const val TAG = "Android DataStore Repo"
@@ -24,12 +26,18 @@ class AndroidDataStoreRepository(
                 throw exception
             }
         }
+
     // Sets the number in the data store
-    override suspend fun setNumber(newNumber: Int) {
+    override suspend fun setSearchString(string: String) {
         dataStore.updateData {
-            it.toBuilder().setTestNumber(newNumber).build()
+            it.toBuilder().setSearchString(string).build()
         }
     }
+
+    override suspend fun getSearchString(): String {
+       return dataStore.data.map { it.searchString }.first()
+    }
+
 
     override suspend fun setDarkMode(mode: ProtoData.DarkMode) {
         dataStore.updateData {
