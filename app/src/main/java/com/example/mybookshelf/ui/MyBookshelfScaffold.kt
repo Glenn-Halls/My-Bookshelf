@@ -3,19 +3,13 @@ package com.example.mybookshelf.ui
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrokenImage
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,15 +26,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mybookshelf.ProtoData.DarkMode
 import com.example.mybookshelf.R
 import com.example.mybookshelf.data.convertToBestseller
@@ -55,6 +46,7 @@ import com.example.mybookshelf.model.SortOrder
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.MyBookScreen
 import com.example.mybookshelf.ui.util.ScreenSelect
+import com.example.mybookshelf.ui.util.SortOrderActionButtonList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -70,6 +62,8 @@ fun MyBookshelfScreen(
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
     val bookshelfBooksDb by viewModel.myBookDb.collectAsState()
+    // Get flow of dark mode status from view model
+    val darkMode by viewModel.darkMode.collectAsState(null)
     // Sorted book list defined by user, defaulting to Last Updated
     val bookshelfBooks = bookshelfBooksDb.sortMyBook(
         uiState.myBookSortOrder ?: SortOrder.LAST_UPDATED
@@ -146,6 +140,15 @@ fun MyBookshelfScreen(
             viewModel.toggleBestseller(bestseller)
         }
     }
+    /*  Helper functions listed below are designed to reduce clutter composables where it is
+        necessary to call view model functions within a coroutine scope.
+     */
+    fun setDarkMode(darkMode: DarkMode) {
+        coroutineScope.launch {
+            viewModel.setDarkMode(darkMode)
+        }
+    }
+
 
     /*
      *  Scroll to the position defined in ViewModel on Re/Composition OR if selected book OR
@@ -207,13 +210,6 @@ fun MyBookshelfScreen(
             }
             // Determine screen to display based on current screen selection
             when (uiState.currentScreen) {
-                ScreenSelect.NONE -> {
-                    if (viewModel.searchUiState == SearchUiState.Loading) {
-                        LoadingScreen()
-                    } else {
-                        Text("null")
-                    }
-                }
                 ScreenSelect.BEST_SELLERS -> {
                     NytBestsellerScreen(
                         nytUiState = viewModel.nytUiState,
@@ -348,37 +344,18 @@ fun MyBookshelfScreen(
                         )
                     }
                 }
-                else -> if (viewModel.nytUiState == NytUiState.Loading) {
-                    LoadingScreen()
-                } else {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Column (
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            val buttons = listOf(
-                                Pair(DarkMode.PHONE, "Phone Settings"),
-                                Pair(DarkMode.DARK, "Dark Mode"),
-                                Pair(DarkMode.LIGHT, "Light Mode")
-                            )
-                            Text(
-                                text = "Dark Mode?: ${testDark.value}",
-                                fontSize = 20.sp
-                            )
-                            Spacer(modifier = Modifier.size(10.dp))
-                            buttons.forEach {
-                                Button(onClick = {
-                                    coroutineScope.launch {
-                                        viewModel.setDarkMode(it.first)
-                                    }
-                                }) {
-                                    Text(it.second)
-                                }
-                            }
+                ScreenSelect.NONE, null -> {
+                    SettingsScreen(
+                        darkMode = darkMode,
+                        onDarkModeClick = { setDarkMode(it) },
+                        onStartScreenClick = { viewModel.navigateToScreen(it) },
+                        sortOrderOptions = SortOrderActionButtonList,
+                        onSortOrderClick = {
+                            viewModel.setMyBookSortOrder(it)
+                            viewModel.setBestsellerSortOrder(it)
                         }
-                    }
+
+                    )
                 }
             }
         }

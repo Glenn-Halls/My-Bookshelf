@@ -112,6 +112,7 @@ class BookshelfViewModel(
 
     private val _nytQueryState = MutableStateFlow(NytQueryStatus.READY)
 
+    // Get settings from proto dataStore as a Flow
     private val protoDataFlow: Flow<ProtoData> = protoDataStoreRepository.dataStoreFlow
     val currentNumber = protoDataFlow.map { it.testNumber }
     // Get dark mode from proto dataStore as a boolean or null; which defaults to system setting.
@@ -350,7 +351,7 @@ class BookshelfViewModel(
         }
     }
 
-    private fun setBestsellerSortOrder(order: SortOrder) {
+    fun setBestsellerSortOrder(order: SortOrder) {
         _uiState.update {
             it.copy(
                 bestsellerSortOrder = order
@@ -358,7 +359,7 @@ class BookshelfViewModel(
         }
     }
 
-    private fun setMyBookSortOrder(order: SortOrder) {
+    fun setMyBookSortOrder(order: SortOrder) {
         _uiState.update {
             it.copy(
                 myBookSortOrder = order,
@@ -447,6 +448,7 @@ class BookshelfViewModel(
                 selectedBook = null,
                 selectedBestseller = null,
                 selectedMyBook = null,
+                currentScreen = ScreenSelect.NONE
             )
         }
     }
