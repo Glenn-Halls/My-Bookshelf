@@ -22,6 +22,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.ProtoData
 import com.example.mybookshelf.ProtoData.DarkMode
+import com.example.mybookshelf.ProtoData.ProtoScreenSelect
+import com.example.mybookshelf.ProtoData.ProtoSortOrder
 import com.example.mybookshelf.data.BestsellerRepository
 import com.example.mybookshelf.data.BookRepository
 import com.example.mybookshelf.data.DataStoreRepository
@@ -37,6 +39,7 @@ import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import com.example.mybookshelf.ui.util.ScreenSelect
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -52,6 +55,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -66,6 +70,19 @@ sealed interface NytUiState {
     object Error: NytUiState
     object Loading: NytUiState
     object Ready: NytUiState
+}
+
+fun ProtoSortOrder.toSortOrder(): SortOrder? {
+    return when (this) {
+        ProtoSortOrder.ALPHABETICAL -> SortOrder.ALPHABETICAL
+        ProtoSortOrder.ALPHABETICAL_REVERSE -> SortOrder.ALPHABETICAL_REVERSE
+        ProtoSortOrder.LAST_UPDATED -> SortOrder.LAST_UPDATED
+        ProtoSortOrder.LAST_UPDATED_REVERSE -> SortOrder.LAST_UPDATED_REVERSE
+        ProtoSortOrder.LAST_ADDED -> SortOrder.LAST_ADDED
+        ProtoSortOrder.LAST_ADDED_REVERSE -> SortOrder.LAST_ADDED_REVERSE
+        ProtoSortOrder.PROTO_SORT_ORDER_UNSPECIFIED,
+        ProtoSortOrder.UNRECOGNIZED -> null
+    }
 }
 
 
@@ -115,6 +132,7 @@ class BookshelfViewModel(
 
     // Get settings from proto dataStore as a Flow
     private val protoDataFlow: Flow<ProtoData> = protoDataStoreRepository.dataStoreFlow
+
     // Get dark mode from proto dataStore as a boolean or null; which defaults to system setting.
     val darkMode: Flow<Boolean?> = protoDataFlow.map { it.darkMode }
         .map {
@@ -124,20 +142,25 @@ class BookshelfViewModel(
                 else -> null
             }
         }
+
     // Get startup screen setting from proto dataStore
     val startupScreen: Flow<ScreenSelect> = protoDataFlow.map { it.screenSelect }
         .map {
             when (it) {
-                ProtoData.ProtoScreenSelect.BEST_SELLERS -> ScreenSelect.BEST_SELLERS
-                ProtoData.ProtoScreenSelect.WATCH_LIST -> ScreenSelect.WATCH_LIST
-                ProtoData.ProtoScreenSelect.BROWSE -> ScreenSelect.BROWSE
-                ProtoData.ProtoScreenSelect.MY_BOOKS -> ScreenSelect.MY_BOOKS
-                ProtoData.ProtoScreenSelect.FAVOURITES -> ScreenSelect.FAVOURITES
-                ProtoData.ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED,
-                ProtoData.ProtoScreenSelect.NONE,
-                ProtoData.ProtoScreenSelect.UNRECOGNIZED -> ScreenSelect.NONE
+                ProtoScreenSelect.BEST_SELLERS -> ScreenSelect.BEST_SELLERS
+                ProtoScreenSelect.WATCH_LIST -> ScreenSelect.WATCH_LIST
+                ProtoScreenSelect.BROWSE -> ScreenSelect.BROWSE
+                ProtoScreenSelect.MY_BOOKS -> ScreenSelect.MY_BOOKS
+                ProtoScreenSelect.FAVOURITES -> ScreenSelect.FAVOURITES
+                ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED,
+                ProtoScreenSelect.NONE,
+                ProtoScreenSelect.UNRECOGNIZED
+                -> ScreenSelect.NONE
             }
         }
+
+    val protoSortOrder: Flow<SortOrder?> = protoDataFlow.map { it.protoSortOrder }
+        .map { it.toSortOrder() }
 
 
     // Toggles dark mode in the proto data store, should be set to DARK, LIGHT or PHONE.
@@ -146,24 +169,34 @@ class BookshelfViewModel(
     }
     suspend fun setStartupScreen(screen: ScreenSelect) {
         val protoScreen = when (screen) {
-            ScreenSelect.NONE -> ProtoData.ProtoScreenSelect.NONE
-            ScreenSelect.BEST_SELLERS -> ProtoData.ProtoScreenSelect.BEST_SELLERS
-            ScreenSelect.WATCH_LIST -> ProtoData.ProtoScreenSelect.WATCH_LIST
-            ScreenSelect.BROWSE -> ProtoData.ProtoScreenSelect.BROWSE
-            ScreenSelect.MY_BOOKS -> ProtoData.ProtoScreenSelect.MY_BOOKS
-            ScreenSelect.FAVOURITES -> ProtoData.ProtoScreenSelect.FAVOURITES
+            ScreenSelect.NONE -> ProtoScreenSelect.NONE
+            ScreenSelect.BEST_SELLERS -> ProtoScreenSelect.BEST_SELLERS
+            ScreenSelect.WATCH_LIST -> ProtoScreenSelect.WATCH_LIST
+            ScreenSelect.BROWSE -> ProtoScreenSelect.BROWSE
+            ScreenSelect.MY_BOOKS -> ProtoScreenSelect.MY_BOOKS
+            ScreenSelect.FAVOURITES -> ProtoScreenSelect.FAVOURITES
         }
         protoDataStoreRepository.setStartupScreen(protoScreen)
     }
-    private suspend fun getStartupScreen() : ScreenSelect {
-        return startupScreen.first()
+
+    private suspend fun setProtoSortOrder(protoSortOrder: ProtoData.ProtoSortOrder) {
+        protoDataStoreRepository.setSortOrder(protoSortOrder)
     }
-    private suspend fun restoreSearchString(): String {
-        return protoDataStoreRepository.getSearchString()
+
+    private suspend fun getProtoSortOrder(): ProtoSortOrder {
+        return protoDataStoreRepository.getProtoSortOrder()
     }
 
     private suspend fun saveSearchString() {
         uiState.value.searchQuery?.let { protoDataStoreRepository.setSearchString(it) }
+    }
+
+    private suspend fun getStartupScreen() : ScreenSelect {
+        return startupScreen.first()
+    }
+
+    private suspend fun restoreSearchString(): String {
+        return protoDataStoreRepository.getSearchString()
     }
 
     private fun getNytCountdownFlow(isRunning: Boolean): Flow<Int> {
@@ -373,6 +406,20 @@ class BookshelfViewModel(
                 scrollPosition = 0,
             )
         }
+    }
+
+    suspend fun updateProtoSortOrder(order: SortOrder) {
+        val protoSortOrder: ProtoSortOrder = when (order) {
+            SortOrder.ALPHABETICAL -> ProtoSortOrder.ALPHABETICAL
+            SortOrder.ALPHABETICAL_REVERSE -> ProtoSortOrder.ALPHABETICAL_REVERSE
+            SortOrder.LAST_UPDATED -> ProtoSortOrder.LAST_UPDATED
+            SortOrder.LAST_UPDATED_REVERSE -> ProtoSortOrder.LAST_UPDATED_REVERSE
+            SortOrder.LAST_ADDED -> ProtoSortOrder.LAST_ADDED
+            SortOrder.LAST_ADDED_REVERSE -> ProtoSortOrder.LAST_ADDED_REVERSE
+        }
+        setBestsellerSortOrder(order)
+        setMyBookSortOrder(order)
+        setProtoSortOrder(protoSortOrder)
     }
 
     fun setBestsellerSortOrder(order: SortOrder) {
@@ -822,9 +869,15 @@ class BookshelfViewModel(
                     currentScreen = getStartupScreen()
                 )
             }
-            val query = restoreSearchString()
+            val query = withContext(Dispatchers.Main) {restoreSearchString()}
             updateSearchQuery(query)
+            val searchOrder = withContext(Dispatchers.Main) {getProtoSortOrder().toSortOrder()}
+            if (searchOrder != null) {
+                setBestsellerSortOrder(searchOrder)
+                setMyBookSortOrder(searchOrder)
+            }
         }
+
         getBestsellers()
         getNytLists()
     }

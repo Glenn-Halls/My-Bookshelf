@@ -6,7 +6,7 @@ option java_multiple_files = true;
 message ProtoData {
     string search_string = 1;
 
-    // Dark Mode enum for user preferences. Should be set to LIGHT / DARK / PHONE
+    // Dark Mode enum for user preferences. Should be set to LIGHT / DARK / PHONE.
     enum DarkMode {
         DARK_MODE_UNSPECIFIED = 0;
         DARK = 1;
@@ -17,6 +17,7 @@ message ProtoData {
 
     DarkMode dark_mode = 2;
 
+    // Screen Select enum for user preferences, should be used for opening screen.
     enum ProtoScreenSelect {
         SCREEN_SELECT_UNSPECIFIED = 0;
         NONE = 1;
@@ -28,4 +29,17 @@ message ProtoData {
     }
 
     ProtoScreenSelect screen_select = 3;
+
+    // Sort Order enum for user preferences, should also change UI State.
+    enum ProtoSortOrder {
+        PROTO_SORT_ORDER_UNSPECIFIED = 0;
+        ALPHABETICAL = 1;
+        ALPHABETICAL_REVERSE = 2;
+        LAST_UPDATED = 3;
+        LAST_UPDATED_REVERSE = 4;
+        LAST_ADDED = 5;
+        LAST_ADDED_REVERSE = 6;
+    }
+
+    ProtoSortOrder proto_sort_order = 4;
 }

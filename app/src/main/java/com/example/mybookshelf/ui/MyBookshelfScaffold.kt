@@ -45,6 +45,7 @@ import com.example.mybookshelf.model.SearchUiState
 import com.example.mybookshelf.model.SortOrder
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.MyBookScreen
+import com.example.mybookshelf.ui.util.NavigationTabs
 import com.example.mybookshelf.ui.util.ScreenSelect
 import com.example.mybookshelf.ui.util.SortOrderActionButtonList
 import kotlinx.coroutines.launch
@@ -65,7 +66,9 @@ fun MyBookshelfScreen(
     // Get flow of dark mode status from view model
     val darkMode by viewModel.darkMode.collectAsState(null)
     // Get startup screen flow from view model
-    val startupScreen by viewModel.startupScreen.collectAsState(initial = null)
+    val startupScreen by viewModel.startupScreen.collectAsState(null)
+    // Get user preference sort order
+    val userSortOrder by viewModel.protoSortOrder.collectAsState(null)
     // Sorted book list defined by user, defaulting to Last Updated
     val bookshelfBooks = bookshelfBooksDb.sortMyBook(
         uiState.myBookSortOrder ?: SortOrder.LAST_UPDATED
@@ -92,7 +95,6 @@ fun MyBookshelfScreen(
     val listScrollPosition = rememberLazyGridState()
     // Separate from watchlist, shared position for MyBook and MyBook favourites
     val myBookListScrollPosition = rememberLazyGridState()
-    val testDark = viewModel.darkMode.collectAsState("")
     // Get action button to display in title bar
     val actionButton = viewModel.getActionButton(myBookScreenLayout)
     // Get title for header based on screen selected
@@ -153,6 +155,11 @@ fun MyBookshelfScreen(
     fun setScreenSelect(screen: ScreenSelect) {
         coroutineScope.launch {
             viewModel.setStartupScreen(screen)
+        }
+    }
+    fun setSortOrder(sortOrder: SortOrder) {
+        coroutineScope.launch {
+            viewModel.updateProtoSortOrder(sortOrder)
         }
     }
 
@@ -359,12 +366,11 @@ fun MyBookshelfScreen(
                             darkMode = darkMode,
                             onDarkModeClick = { setDarkMode(it) },
                             startScreen = startupScreen,
+                            navTabList = NavigationTabs,
                             onStartScreenClick = { setScreenSelect(it.screenSelect) },
+                            sortOrderSetting = userSortOrder,
                             sortOrderOptions = SortOrderActionButtonList,
-                            onSortOrderClick = {
-                                viewModel.setMyBookSortOrder(it)
-                                viewModel.setBestsellerSortOrder(it)
-                            }
+                            onSortOrderClick = { setSortOrder(it) },
 
                         )
                     }

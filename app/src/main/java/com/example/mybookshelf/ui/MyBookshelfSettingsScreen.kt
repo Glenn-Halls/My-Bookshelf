@@ -54,12 +54,25 @@ fun SortOrder.getShortDescription(): String {
     }
 }
 
+fun ScreenSelect.getShortDescription(): String {
+    return when (this) {
+        ScreenSelect.BEST_SELLERS -> "Bestsellers"
+        ScreenSelect.WATCH_LIST -> "Watch List"
+        ScreenSelect.BROWSE -> "Browse"
+        ScreenSelect.MY_BOOKS -> "My Books"
+        ScreenSelect.FAVOURITES -> "Favourites"
+        ScreenSelect.NONE -> "Home"
+    }
+}
+
 @Composable
 fun SettingsScreen(
     darkMode: Boolean?,
     onDarkModeClick: (DarkMode) -> Unit,
     startScreen: ScreenSelect?,
+    navTabList: List<NavigationElement>,
     onStartScreenClick: (NavigationElement) -> Unit,
+    sortOrderSetting: SortOrder?,
     sortOrderOptions: List<Pair<SortOrder, ActionButton>>,
     onSortOrderClick: (SortOrder) -> Unit,
     modifier: Modifier = Modifier,
@@ -69,6 +82,7 @@ fun SettingsScreen(
         false -> "Light"
         null -> "Match Phone"
     }
+    val startupScreenString = startScreen?.getShortDescription() ?: "Home"
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = modifier.fillMaxSize()
@@ -120,7 +134,7 @@ fun SettingsScreen(
             )
         }
         Text(
-            text = "Startup Screen: ",
+            text = "Startup Screen: $startupScreenString",
             style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -131,7 +145,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            NavigationTabs.forEach {
+            navTabList.forEach {
                 StartupScreenButton(
                     navigationElement = it,
                     isActive = it.screenSelect == startScreen,
@@ -146,14 +160,14 @@ fun SettingsScreen(
                     icon = R.drawable.ic_broken_image,
                     screenSelect = ScreenSelect.NONE
                 ),
-                isActive = false,
+                isActive = startScreen == ScreenSelect.NONE,
                 icon = Icons.Filled.Home,
                 contentDescription = "home",
                 onStartScreenClick = onStartScreenClick,
             )
         }
         Text(
-            text = "Sort Order: ",
+            text = "Sort Order: ${sortOrderSetting?.getShortDescription() ?: "None"}",
             style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -168,8 +182,8 @@ fun SettingsScreen(
                 SortOrderButton(
                     sortOrder = it.first,
                     actionButton = it.second,
-                    isActive = false,
-                    contentDescription = it.second.contentDescription ?: "unknown",
+                    isActive = it.first == sortOrderSetting,
+                    contentDescription = it.second.contentDescription ?: "Home",
                     onSortOrderClick = onSortOrderClick
                 )
             }
@@ -316,6 +330,8 @@ fun SettingsScreenPreview() {
             onStartScreenClick = {},
             sortOrderOptions = SortOrderActionButtonList,
             onSortOrderClick = {},
+            navTabList = NavigationTabs,
+            sortOrderSetting = SortOrder.ALPHABETICAL
         )
     }
 }

@@ -50,4 +50,14 @@ class AndroidDataStoreRepository(
             it.toBuilder().setScreenSelect(protoStartupScreen).build()
         }
     }
+
+    override suspend fun setSortOrder(protoSortOrder: ProtoData.ProtoSortOrder) {
+        dataStore.updateData {
+            it.toBuilder().setProtoSortOrder(protoSortOrder).build()
+        }
+    }
+
+    override suspend fun getProtoSortOrder(): ProtoData.ProtoSortOrder {
+        return dataStore.data.map { it.protoSortOrder }.first()
+    }
 }
