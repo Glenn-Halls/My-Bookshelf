@@ -1,4 +1,4 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.data.api
 
 import com.example.mybookshelf.ProtoData
 import com.example.mybookshelf.ProtoData.DarkMode

@@ -24,16 +24,16 @@ import com.example.mybookshelf.ProtoData
 import com.example.mybookshelf.ProtoData.DarkMode
 import com.example.mybookshelf.ProtoData.ProtoScreenSelect
 import com.example.mybookshelf.ProtoData.ProtoSortOrder
-import com.example.mybookshelf.data.BestsellerRepository
-import com.example.mybookshelf.data.BookRepository
-import com.example.mybookshelf.data.DataStoreRepository
-import com.example.mybookshelf.data.DefaultAppContainer
-import com.example.mybookshelf.data.MyBestsellerRepository
-import com.example.mybookshelf.data.MyBookRepository
-import com.example.mybookshelf.data.NetworkBestsellerRepository
-import com.example.mybookshelf.data.NetworkBookRepository
-import com.example.mybookshelf.data.NytListRepository
-import com.example.mybookshelf.data.convertToMyBestseller
+import com.example.mybookshelf.data.api.BestsellerRepository
+import com.example.mybookshelf.data.api.BookRepository
+import com.example.mybookshelf.data.api.DataStoreRepository
+import com.example.mybookshelf.DefaultAppContainer
+import com.example.mybookshelf.data.api.MyBestsellerRepository
+import com.example.mybookshelf.data.api.MyBookRepository
+import com.example.mybookshelf.network.NetworkBestsellerRepository
+import com.example.mybookshelf.network.NetworkBookRepository
+import com.example.mybookshelf.data.repo.NytListRepository
+import com.example.mybookshelf.model.extension.convertToMyBestseller
 import com.example.mybookshelf.ui.util.ActionButton
 import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
@@ -155,7 +155,7 @@ class BookshelfViewModel(
                 ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED,
                 ProtoScreenSelect.NONE,
                 ProtoScreenSelect.UNRECOGNIZED
-                -> ScreenSelect.NONE
+                -> ScreenSelect.SETTINGS
             }
         }
 
@@ -169,7 +169,7 @@ class BookshelfViewModel(
     }
     suspend fun setStartupScreen(screen: ScreenSelect) {
         val protoScreen = when (screen) {
-            ScreenSelect.NONE -> ProtoScreenSelect.NONE
+            ScreenSelect.SETTINGS -> ProtoScreenSelect.NONE
             ScreenSelect.BEST_SELLERS -> ProtoScreenSelect.BEST_SELLERS
             ScreenSelect.WATCH_LIST -> ProtoScreenSelect.WATCH_LIST
             ScreenSelect.BROWSE -> ProtoScreenSelect.BROWSE
@@ -296,7 +296,7 @@ class BookshelfViewModel(
 
     fun updateSearch(context: Context) {
         bookRepository = NetworkBookRepository(
-            bookshelfApiService = DefaultAppContainer(context).bookRetrofitService,
+            bookApiService = DefaultAppContainer(context).bookRetrofitService,
             searchString = uiState.value.searchQuery ?: ""
         )
         searchBooks()
@@ -519,7 +519,7 @@ class BookshelfViewModel(
                 selectedBook = null,
                 selectedBestseller = null,
                 selectedMyBook = null,
-                currentScreen = ScreenSelect.NONE
+                currentScreen = ScreenSelect.SETTINGS
             )
         }
     }
@@ -655,7 +655,7 @@ class BookshelfViewModel(
 
     fun getActionButton(bookshelfContentLayout: BookshelfContentLayout? = null): ActionButton {
         return when (uiState.value.currentScreen) {
-            ScreenSelect.NONE -> ActionButton(false,)
+            ScreenSelect.SETTINGS -> ActionButton(false,)
             ScreenSelect.BEST_SELLERS -> ActionButton(
                 showButton = uiState.value.selectedNytList != null,
                 icon = Icons.Filled.Whatshot,

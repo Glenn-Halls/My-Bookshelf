@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mybookshelf.R
-import com.example.mybookshelf.data.getCoilUrl
+import com.example.mybookshelf.model.extension.getCoilUrl
 import com.example.mybookshelf.model.Book
 
 @Composable

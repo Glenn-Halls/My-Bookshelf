@@ -9,5 +9,5 @@ enum class BookshelfContentLayout {
 }
 
 enum class ScreenSelect {
-    NONE, BEST_SELLERS, WATCH_LIST, BROWSE, MY_BOOKS, FAVOURITES
+    SETTINGS, BEST_SELLERS, WATCH_LIST, BROWSE, MY_BOOKS, FAVOURITES
 }

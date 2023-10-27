@@ -1,6 +1,6 @@
 package com.example.mybookshelf.fake
 
-import com.example.mybookshelf.data.MyBookRepository
+import com.example.mybookshelf.data.api.MyBookRepository
 import com.example.mybookshelf.model.MyBook
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow

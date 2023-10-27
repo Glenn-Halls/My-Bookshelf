@@ -61,7 +61,7 @@ fun ScreenSelect.getShortDescription(): String {
         ScreenSelect.BROWSE -> "Browse"
         ScreenSelect.MY_BOOKS -> "My Books"
         ScreenSelect.FAVOURITES -> "Favourites"
-        ScreenSelect.NONE -> "Home"
+        ScreenSelect.SETTINGS -> "Home"
     }
 }
 
@@ -158,9 +158,9 @@ fun SettingsScreen(
                 navigationElement = NavigationElement(
                     name = R.string.app_name,
                     icon = R.drawable.ic_broken_image,
-                    screenSelect = ScreenSelect.NONE
+                    screenSelect = ScreenSelect.SETTINGS
                 ),
-                isActive = startScreen == ScreenSelect.NONE,
+                isActive = startScreen == ScreenSelect.SETTINGS,
                 icon = Icons.Filled.Home,
                 contentDescription = "home",
                 onStartScreenClick = onStartScreenClick,
@@ -325,7 +325,7 @@ fun SettingsScreenPreview() {
     MyBookshelfTheme {
         SettingsScreen(
             darkMode = true,
-            startScreen = ScreenSelect.NONE,
+            startScreen = ScreenSelect.SETTINGS,
             onDarkModeClick = {},
             onStartScreenClick = {},
             sortOrderOptions = SortOrderActionButtonList,

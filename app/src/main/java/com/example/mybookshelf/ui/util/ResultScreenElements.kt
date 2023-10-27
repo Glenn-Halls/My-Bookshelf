@@ -1,4 +1,4 @@
-package com.example.mybookshelf.ui
+package com.example.mybookshelf.ui.util
 
 import android.util.Log
 import androidx.compose.animation.core.Animatable
@@ -61,9 +61,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mybookshelf.R
-import com.example.mybookshelf.data.convertToBook
-import com.example.mybookshelf.data.getCoilUrl
-import com.example.mybookshelf.data.getShortDescription
+import com.example.mybookshelf.model.extension.convertToBook
+import com.example.mybookshelf.model.extension.getCoilUrl
+import com.example.mybookshelf.model.extension.getShortDescription
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.MyBestseller

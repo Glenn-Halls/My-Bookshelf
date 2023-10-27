@@ -1,4 +1,4 @@
-package com.example.mybookshelf.ui
+package com.example.mybookshelf.ui.util
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
@@ -19,10 +19,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mybookshelf.R
-import com.example.mybookshelf.ui.util.NavigateBackTab
-import com.example.mybookshelf.ui.util.NavigationElement
-import com.example.mybookshelf.ui.util.NavigationTabs
-import com.example.mybookshelf.ui.util.ScreenSelect
 
 @Composable
 fun BookshelfBottomNavBar(

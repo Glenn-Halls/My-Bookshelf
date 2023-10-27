@@ -34,17 +34,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.ProtoData.DarkMode
 import com.example.mybookshelf.R
-import com.example.mybookshelf.data.convertToBestseller
-import com.example.mybookshelf.data.sortBestsellers
-import com.example.mybookshelf.data.sortMyBook
+import com.example.mybookshelf.model.extension.convertToBestseller
+import com.example.mybookshelf.model.extension.sortBestsellers
+import com.example.mybookshelf.model.extension.sortMyBook
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.model.NytUiState
 import com.example.mybookshelf.model.SearchUiState
 import com.example.mybookshelf.model.SortOrder
+import com.example.mybookshelf.ui.util.BookshelfBottomNavBar
+import com.example.mybookshelf.ui.util.BookshelfNavigationRail
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
-import com.example.mybookshelf.ui.util.MyBookScreen
+import com.example.mybookshelf.ui.util.ErrorScreen
+import com.example.mybookshelf.ui.util.LoadingScreen
+import com.example.mybookshelf.ui.util.MyBestsellerGrid
 import com.example.mybookshelf.ui.util.NavigationTabs
 import com.example.mybookshelf.ui.util.ScreenSelect
 import com.example.mybookshelf.ui.util.SortOrderActionButtonList
@@ -99,7 +103,7 @@ fun MyBookshelfScreen(
     val actionButton = viewModel.getActionButton(myBookScreenLayout)
     // Get title for header based on screen selected
     val title = when (uiState.currentScreen) {
-        ScreenSelect.NONE -> stringResource(R.string.app_name)
+        ScreenSelect.SETTINGS -> stringResource(R.string.app_name)
         ScreenSelect.BEST_SELLERS -> stringResource(R.string.best_sellers)
         ScreenSelect.WATCH_LIST -> stringResource(R.string.watch_list)
         ScreenSelect.BROWSE -> stringResource(R.string.browse_books)
@@ -358,7 +362,7 @@ fun MyBookshelfScreen(
                         )
                     }
                 }
-                ScreenSelect.NONE, null -> {
+                ScreenSelect.SETTINGS, null -> {
                     if (viewModel.nytUiState == NytUiState.Loading) {
                         LoadingScreen()
                     } else {

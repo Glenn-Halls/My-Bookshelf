@@ -1,6 +1,6 @@
 package com.example.mybookshelf.data.test
 
-import com.example.mybookshelf.data.NetworkBookRepository
+import com.example.mybookshelf.network.NetworkBookRepository
 import com.example.mybookshelf.fake.FakeBookApiService
 import com.example.mybookshelf.fake.FakeBookDataSource
 import kotlinx.coroutines.test.runTest
@@ -12,7 +12,7 @@ class NetworkBookRepositoryTest {
     fun networkBookRepository_getBooks_verifyBookList() =
         runTest {
         val repository = NetworkBookRepository(
-            bookshelfApiService = FakeBookApiService(),
+            bookApiService = FakeBookApiService(),
             searchString = ""
         )
         assertEquals(FakeBookDataSource.items, repository.getBooks().items)

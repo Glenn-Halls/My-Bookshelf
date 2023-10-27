@@ -1,11 +1,7 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.network
 
+import com.example.mybookshelf.data.api.BestsellerRepository
 import com.example.mybookshelf.model.BestsellerSearch
-import com.example.mybookshelf.network.BookshelfBestsellerApiService
-
-interface BestsellerRepository {
-    suspend fun getBestsellers(): BestsellerSearch
-}
 
 class NetworkBestsellerRepository(
     private val bestsellerApiService: BookshelfBestsellerApiService,

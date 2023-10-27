@@ -1,6 +1,6 @@
 package com.example.mybookshelf.data.test
 
-import com.example.mybookshelf.data.NetworkBestsellerRepository
+import com.example.mybookshelf.network.NetworkBestsellerRepository
 import com.example.mybookshelf.fake.FakeBestsellerApiService
 import com.example.mybookshelf.fake.FakeBookDataSource
 import com.example.mybookshelf.fake.FakeNytListApiService

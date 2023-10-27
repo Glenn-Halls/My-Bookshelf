@@ -1,4 +1,4 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.model.extension
 
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.MyBestseller

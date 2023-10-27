@@ -1,5 +1,7 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.data.repo
 
+import com.example.mybookshelf.data.database.MyBookDao
+import com.example.mybookshelf.data.api.MyBookRepository
 import com.example.mybookshelf.model.MyBook
 import kotlinx.coroutines.flow.Flow
 

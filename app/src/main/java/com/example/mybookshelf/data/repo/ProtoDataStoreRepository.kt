@@ -1,8 +1,9 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.data.repo
 
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.example.mybookshelf.ProtoData
+import com.example.mybookshelf.data.api.DataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -13,7 +14,7 @@ private const val TAG = "Android DataStore Repo"
 
 
 // Local repository for data store, used in default app container
-class AndroidDataStoreRepository(
+class ProtoDataStoreRepository(
     private val dataStore: DataStore<ProtoData>
 ) : DataStoreRepository {
     // Produces a flow, to be used by ViewModel

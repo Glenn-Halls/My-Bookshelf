@@ -40,8 +40,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.example.mybookshelf.R
-import com.example.mybookshelf.data.convertToBook
-import com.example.mybookshelf.data.getCoilUrl
+import com.example.mybookshelf.model.extension.convertToBook
+import com.example.mybookshelf.model.extension.getCoilUrl
 import com.example.mybookshelf.model.MyBook
 import com.example.mybookshelf.model.UserReview
 import com.gowtham.ratingbar.RatingBar

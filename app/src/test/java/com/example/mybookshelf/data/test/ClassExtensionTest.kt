@@ -1,6 +1,6 @@
 package com.example.mybookshelf.data.test
 
-import com.example.mybookshelf.data.getShortDescription
+import com.example.mybookshelf.model.extension.getShortDescription
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookDetail
 import org.junit.Assert.*

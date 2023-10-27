@@ -1,4 +1,4 @@
-package com.example.mybookshelf.ui.util
+package com.example.mybookshelf.ui
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
@@ -9,8 +9,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.mybookshelf.model.MyBook
-import com.example.mybookshelf.ui.MyBookDetailScreen
-import com.example.mybookshelf.ui.MyBookGrid
+import com.example.mybookshelf.ui.util.BookshelfContentLayout
+import com.example.mybookshelf.ui.util.MyBookGrid
 
 @Composable
 fun MyBookScreen(

@@ -1,10 +1,23 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import com.example.mybookshelf.ProtoData
-import com.example.mybookshelf.network.BookshelfApiService
+import com.example.mybookshelf.data.api.BestsellerRepository
+import com.example.mybookshelf.data.api.BookRepository
+import com.example.mybookshelf.data.api.DataStoreRepository
+import com.example.mybookshelf.data.api.MyBestsellerRepository
+import com.example.mybookshelf.data.api.MyBookRepository
+import com.example.mybookshelf.network.NetworkBestsellerRepository
+import com.example.mybookshelf.network.NetworkBookRepository
+import com.example.mybookshelf.data.database.AppDatabase
+import com.example.mybookshelf.data.database.DataStoreSerializer
+import com.example.mybookshelf.data.repo.ProtoDataStoreRepository
+import com.example.mybookshelf.data.repo.NetworkNytListRepository
+import com.example.mybookshelf.data.repo.NytListRepository
+import com.example.mybookshelf.data.repo.OfflineMyBestsellerRepository
+import com.example.mybookshelf.data.repo.OfflineMyBookRepository
+import com.example.mybookshelf.network.BookApiService
 import com.example.mybookshelf.network.BookshelfBestsellerApiService
 import com.example.mybookshelf.network.BookshelfNytListApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -32,7 +45,7 @@ class DefaultAppContainer(
     private val context: Context,
     override var searchString: String = "Jazz",
     override var nytListAddress: String = "hardcover-fiction"
-) : AppContainer{
+) : AppContainer {
     // Base details for Google's book API
     private val bookBaseUrl = "https://www.googleapis.com"
     private val bookJson = Json {
@@ -56,8 +69,8 @@ class DefaultAppContainer(
         .baseUrl(bookBaseUrl)
         .build()
 
-    val bookRetrofitService: BookshelfApiService by lazy {
-        bookRetrofit.create(BookshelfApiService::class.java)
+    val bookRetrofitService: BookApiService by lazy {
+        bookRetrofit.create(BookApiService::class.java)
     }
     override val bookRepository: BookRepository by lazy {
         NetworkBookRepository(bookRetrofitService, searchString)
@@ -107,6 +120,6 @@ class DefaultAppContainer(
         OfflineMyBestsellerRepository(AppDatabase.getDatabase(context).myBestsellerDao())
     }
     override val protoDataRepository: DataStoreRepository by lazy {
-        AndroidDataStoreRepository(context.dataStore)
+        ProtoDataStoreRepository(context.dataStore)
     }
 }

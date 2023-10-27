@@ -1,4 +1,4 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.data.database
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer

@@ -29,9 +29,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mybookshelf.R
-import com.example.mybookshelf.data.convertToBook
-import com.example.mybookshelf.data.getCoilUrl
 import com.example.mybookshelf.model.MyBook
+import com.example.mybookshelf.model.extension.convertToBook
+import com.example.mybookshelf.model.extension.getCoilUrl
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 

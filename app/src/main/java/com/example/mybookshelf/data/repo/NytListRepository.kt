@@ -1,4 +1,4 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.data.repo
 
 import com.example.mybookshelf.model.NytListSearch
 import com.example.mybookshelf.network.BookshelfNytListApiService

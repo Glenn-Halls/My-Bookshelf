@@ -1,4 +1,4 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.data.database
 
 import android.content.Context
 import androidx.room.Database

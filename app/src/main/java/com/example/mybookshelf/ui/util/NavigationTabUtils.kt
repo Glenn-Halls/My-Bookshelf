@@ -21,6 +21,6 @@ val NavigationTabs = listOf<NavigationElement>(
     NavigationElement(R.string.favourites, R.drawable.favourite, ScreenSelect.FAVOURITES)
 )
 
-val NavigateBackTab = NavigationElement(R.string.back_button, R.drawable.back_arrow, ScreenSelect.NONE)
+val NavigateBackTab = NavigationElement(R.string.back_button, R.drawable.back_arrow, ScreenSelect.SETTINGS)
 
 

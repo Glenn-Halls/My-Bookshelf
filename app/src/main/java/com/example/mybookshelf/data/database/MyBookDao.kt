@@ -1,4 +1,4 @@
-package com.example.mybookshelf.data
+package com.example.mybookshelf.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
