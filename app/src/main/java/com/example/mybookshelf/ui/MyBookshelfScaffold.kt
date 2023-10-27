@@ -34,15 +34,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mybookshelf.ProtoData.DarkMode
 import com.example.mybookshelf.R
-import com.example.mybookshelf.model.extension.convertToBestseller
-import com.example.mybookshelf.model.extension.sortBestsellers
-import com.example.mybookshelf.model.extension.sortMyBook
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
 import com.example.mybookshelf.model.NytUiState
 import com.example.mybookshelf.model.SearchUiState
 import com.example.mybookshelf.model.SortOrder
+import com.example.mybookshelf.model.extension.convertToBestseller
+import com.example.mybookshelf.model.extension.sortBestsellers
+import com.example.mybookshelf.model.extension.sortMyBook
 import com.example.mybookshelf.ui.util.BookshelfBottomNavBar
 import com.example.mybookshelf.ui.util.BookshelfNavigationRail
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
@@ -156,7 +156,7 @@ fun MyBookshelfScreen(
             viewModel.setDarkMode(darkMode)
         }
     }
-    fun setScreenSelect(screen: ScreenSelect) {
+    fun setScreenSelect(screen: ScreenSelect?) {
         coroutineScope.launch {
             viewModel.setStartupScreen(screen)
         }
@@ -362,7 +362,7 @@ fun MyBookshelfScreen(
                         )
                     }
                 }
-                ScreenSelect.SETTINGS, null -> {
+                ScreenSelect.SETTINGS -> {
                     if (viewModel.nytUiState == NytUiState.Loading) {
                         LoadingScreen()
                     } else {
@@ -378,7 +378,17 @@ fun MyBookshelfScreen(
 
                         )
                     }
-
+                }
+                null -> {
+                    if (viewModel.nytUiState == NytUiState.Loading) {
+                        LoadingScreen()
+                    } else {
+                        HomeScreen(
+                            navigationType = navigationType,
+                            navigationElements = NavigationTabs,
+                            onIconClick = { viewModel.navigateToScreen(it) }
+                        )
+                    }
                 }
             }
         }

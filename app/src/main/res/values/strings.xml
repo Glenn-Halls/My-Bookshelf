@@ -19,4 +19,13 @@
     <string name="wait_try_again">Please wait %1$s seconds and try again.</string>
     <string name="repeated_api_requests">I\'m sorry, the NYT server does not like repeated requests.</string>
     <string name="remove_from_watch_list">remove from watch list</string>
+    <string name="settings">Settings</string>
+    <string name="home">Home</string>
+    <string name="bestseller_description">From here, you can browse the New York Times\' lists of current bestsellers and add these books to your watch list.</string>
+    <string name="watch_screen_description">After adding books from the Bestseller screen, you can track their progress here.</string>
+    <string name="browse_description">Use this screen to browse Google\'s database of over 40 million books.</string>
+    <string name="my_books_description">Here you can view all of the books you have saved to your bookshelf. You can also mark them as favourite and add your own reading notes.</string>
+    <string name="favourites_description">Similar to the My Books screen but ony containing your favourite books.</string>
+    <string name="blank" />
+    <string name="bookshelf_introduction">Within this app you can access the New York Times Bestseller lists and can track bestsellers to watch their progress. You can browse Google\'s massive library and bookmark the books you own to save them to your bookshelf. You can rate these books and save reading notes, adding you top-rated books to your favourites list for easy perusal.</string>
 </resources>

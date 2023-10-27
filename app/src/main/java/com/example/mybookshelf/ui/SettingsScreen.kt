@@ -160,7 +160,7 @@ fun SettingsScreen(
                     icon = R.drawable.ic_broken_image,
                     screenSelect = ScreenSelect.SETTINGS
                 ),
-                isActive = startScreen == ScreenSelect.SETTINGS,
+                isActive = startScreen == null,
                 icon = Icons.Filled.Home,
                 contentDescription = "home",
                 onStartScreenClick = onStartScreenClick,

@@ -4,7 +4,9 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.Whatshot
@@ -19,21 +21,22 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.mybookshelf.DefaultAppContainer
 import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.ProtoData
 import com.example.mybookshelf.ProtoData.DarkMode
 import com.example.mybookshelf.ProtoData.ProtoScreenSelect
 import com.example.mybookshelf.ProtoData.ProtoSortOrder
+import com.example.mybookshelf.R
 import com.example.mybookshelf.data.api.BestsellerRepository
 import com.example.mybookshelf.data.api.BookRepository
 import com.example.mybookshelf.data.api.DataStoreRepository
-import com.example.mybookshelf.DefaultAppContainer
 import com.example.mybookshelf.data.api.MyBestsellerRepository
 import com.example.mybookshelf.data.api.MyBookRepository
-import com.example.mybookshelf.network.NetworkBestsellerRepository
-import com.example.mybookshelf.network.NetworkBookRepository
 import com.example.mybookshelf.data.repo.NytListRepository
 import com.example.mybookshelf.model.extension.convertToMyBestseller
+import com.example.mybookshelf.network.NetworkBestsellerRepository
+import com.example.mybookshelf.network.NetworkBookRepository
 import com.example.mybookshelf.ui.util.ActionButton
 import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
@@ -144,7 +147,7 @@ class BookshelfViewModel(
         }
 
     // Get startup screen setting from proto dataStore
-    val startupScreen: Flow<ScreenSelect> = protoDataFlow.map { it.screenSelect }
+    val startupScreen: Flow<ScreenSelect?> = protoDataFlow.map { it.screenSelect }
         .map {
             when (it) {
                 ProtoScreenSelect.BEST_SELLERS -> ScreenSelect.BEST_SELLERS
@@ -152,10 +155,9 @@ class BookshelfViewModel(
                 ProtoScreenSelect.BROWSE -> ScreenSelect.BROWSE
                 ProtoScreenSelect.MY_BOOKS -> ScreenSelect.MY_BOOKS
                 ProtoScreenSelect.FAVOURITES -> ScreenSelect.FAVOURITES
-                ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED,
-                ProtoScreenSelect.NONE,
-                ProtoScreenSelect.UNRECOGNIZED
-                -> ScreenSelect.SETTINGS
+                ProtoScreenSelect.NONE -> ScreenSelect.SETTINGS
+                ProtoScreenSelect.UNRECOGNIZED,
+                ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED -> null
             }
         }
 
@@ -167,14 +169,15 @@ class BookshelfViewModel(
     suspend fun setDarkMode(darkMode: DarkMode) {
         protoDataStoreRepository.setDarkMode(darkMode)
     }
-    suspend fun setStartupScreen(screen: ScreenSelect) {
+    suspend fun setStartupScreen(screen: ScreenSelect?) {
         val protoScreen = when (screen) {
-            ScreenSelect.SETTINGS -> ProtoScreenSelect.NONE
+            ScreenSelect.SETTINGS -> ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED
             ScreenSelect.BEST_SELLERS -> ProtoScreenSelect.BEST_SELLERS
             ScreenSelect.WATCH_LIST -> ProtoScreenSelect.WATCH_LIST
             ScreenSelect.BROWSE -> ProtoScreenSelect.BROWSE
             ScreenSelect.MY_BOOKS -> ProtoScreenSelect.MY_BOOKS
             ScreenSelect.FAVOURITES -> ProtoScreenSelect.FAVOURITES
+            null -> ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED
         }
         protoDataStoreRepository.setStartupScreen(protoScreen)
     }
@@ -191,7 +194,7 @@ class BookshelfViewModel(
         uiState.value.searchQuery?.let { protoDataStoreRepository.setSearchString(it) }
     }
 
-    private suspend fun getStartupScreen() : ScreenSelect {
+    private suspend fun getStartupScreen() : ScreenSelect? {
         return startupScreen.first()
     }
 
@@ -519,7 +522,7 @@ class BookshelfViewModel(
                 selectedBook = null,
                 selectedBestseller = null,
                 selectedMyBook = null,
-                currentScreen = ScreenSelect.SETTINGS
+                currentScreen = null
             )
         }
     }
@@ -655,7 +658,19 @@ class BookshelfViewModel(
 
     fun getActionButton(bookshelfContentLayout: BookshelfContentLayout? = null): ActionButton {
         return when (uiState.value.currentScreen) {
-            ScreenSelect.SETTINGS -> ActionButton(false,)
+            ScreenSelect.SETTINGS -> ActionButton(
+                showButton = true,
+                icon = Icons.Default.Home,
+                action = {
+                    navigateToScreen(
+                        NavigationElement(
+                            name = R.string.home,
+                            icon = R.drawable.material_home,
+                            screenSelect = null
+                        )
+                    )
+                }
+            )
             ScreenSelect.BEST_SELLERS -> ActionButton(
                 showButton = uiState.value.selectedNytList != null,
                 icon = Icons.Filled.Whatshot,
@@ -712,7 +727,19 @@ class BookshelfViewModel(
 
             ScreenSelect.MY_BOOKS -> getMyBookActionButton(bookshelfContentLayout)
             ScreenSelect.FAVOURITES -> getMyBookActionButton(bookshelfContentLayout)
-            null -> ActionButton(false)
+            null -> ActionButton(
+                showButton = true,
+                icon = Icons.Default.Settings,
+                action = {
+                    navigateToScreen(
+                        NavigationElement(
+                            name = R.string.settings,
+                            icon = R.drawable.material_settings,
+                            screenSelect = ScreenSelect.SETTINGS
+                        )
+                    )
+                }
+            )
         }
     }
 
