@@ -61,14 +61,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mybookshelf.R
-import com.example.mybookshelf.model.extension.convertToBook
-import com.example.mybookshelf.model.extension.getCoilUrl
-import com.example.mybookshelf.model.extension.getShortDescription
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.MyBestseller
 import com.example.mybookshelf.model.MyBook
 import com.example.mybookshelf.model.NytBestsellerList
+import com.example.mybookshelf.model.extension.convertToBook
+import com.example.mybookshelf.model.extension.getCoilUrl
+import com.example.mybookshelf.model.extension.getShortDescription
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 import kotlinx.coroutines.delay
@@ -700,10 +700,10 @@ fun BookshelfHeader(
             )
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         modifier = Modifier.height(30.dp)
     )
