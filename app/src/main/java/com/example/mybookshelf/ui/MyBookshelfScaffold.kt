@@ -1,6 +1,7 @@
 package com.example.mybookshelf.ui
 
 
+import android.content.Context
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
@@ -134,14 +135,18 @@ fun MyBookshelfScreen(
         }
     }
     // Helper function when bestseller selected - updates search, reset selected book and scroll.
-    fun onBestsellerClick(bestseller: Bestseller) {
-        viewModel.updateSearchQuery("${bestseller.title} ${bestseller.author}")
-        viewModel.updateSearch(context)
-        viewModel.selectBook(null)
-        coroutineScope.launch {
-            listScrollPosition.scrollToItem(0,0)
-        }
+//    fun onBestsellerClick(bestseller: Bestseller) {
+//        viewModel.updateSearchQuery("${bestseller.title} ${bestseller.author}")
+//        viewModel.updateSearch(context)
+//        viewModel.selectBook(null)
+//        coroutineScope.launch {
+//            listScrollPosition.scrollToItem(0,0)
+//        }
+//    }
+    fun onBestsellerClick(context: Context, bestseller: Bestseller) {
+        coroutineScope.launch { viewModel.bestsellerBookSearch(context, bestseller) }
     }
+
     // Helper function on bestseller star click - adds bestseller to watch list
     fun onBestsellerStarClick(bestseller: Bestseller) {
         coroutineScope.launch {
@@ -239,7 +244,7 @@ fun MyBookshelfScreen(
                             viewModel.selectNytList(it)
                             viewModel.updateBestsellerList(context)
                                          },
-                        onCardClick = { onBestsellerClick(it) },
+                        onCardClick = { onBestsellerClick(context, it) },
                         onStarClick = { onBestsellerStarClick(it) },
                         onTryAgain = { viewModel.getBestsellers(300) },
                         listSelected = uiState.selectedNytList,
@@ -252,7 +257,7 @@ fun MyBookshelfScreen(
                     } else {
                         MyBestsellerGrid(
                             myBestsellers = myBestsellerBooks,
-                            onCardClick = { onBestsellerClick(it.convertToBestseller()) },
+                            onCardClick = { onBestsellerClick(context, it.convertToBestseller()) },
                             onStarClick = { coroutineScope.launch {
                                 viewModel.deleteMyBestseller(it)
                             } },

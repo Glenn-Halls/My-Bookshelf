@@ -44,6 +44,7 @@ import com.example.mybookshelf.ui.util.NavigationElement
 import com.example.mybookshelf.ui.util.ScreenSelect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -182,7 +183,7 @@ class BookshelfViewModel(
         protoDataStoreRepository.setStartupScreen(protoScreen)
     }
 
-    private suspend fun setProtoSortOrder(protoSortOrder: ProtoData.ProtoSortOrder) {
+    private suspend fun setProtoSortOrder(protoSortOrder: ProtoSortOrder) {
         protoDataStoreRepository.setSortOrder(protoSortOrder)
     }
 
@@ -282,6 +283,56 @@ class BookshelfViewModel(
                 SearchUiState.Error
             }
             saveSearchString()
+        }
+    }
+
+    suspend fun bestsellerBookSearch(context: Context, bestseller: Bestseller) {
+        val searchQuery = "${bestseller.title} ${bestseller.author}"
+        searchUiState = SearchUiState.Loading
+        _uiState.update {
+            it.copy(
+                currentScreen = ScreenSelect.BROWSE,
+                gridScrollPosition = 0,
+                selectedBook = null,
+                searchQuery = searchQuery,
+                searchResult = BookSearchResult(0, emptyList())
+            )
+        }
+        val searchResult = viewModelScope.async {
+            bookRepository = NetworkBookRepository(
+                bookApiService = DefaultAppContainer(context).bookRetrofitService,
+                searchString = searchQuery
+            )
+            try {
+                val result = bookRepository.getBooks()
+                val myBooks = myBookDb.value
+                val myFavourites = myBooks.filter { it.isFavourite }
+                result.myBooksInSearch = myBooks.map { it.id }
+                result.favouritesInSearch = myFavourites.map { it.id }
+                Log.d("idk", "success??")
+                _uiState.update {
+                    it.copy(
+                        searchResult = result,
+                        gridScrollPosition = 0,
+                    )
+                }
+                SearchUiState.Success(result.items)
+            } catch (e: IOException) {
+                Log.d("ViewModel", "IO Exception")
+                SearchUiState.Error
+            } catch (e: HttpException) {
+                Log.d("ViewModel", "HTTP Exception")
+                SearchUiState.Error
+            }
+        }
+        val newSearchUiState = searchResult.await()
+        searchUiState = newSearchUiState
+        if (newSearchUiState is SearchUiState.Success) {
+            _uiState.update {
+                it.copy(
+                    selectedBook = newSearchUiState.bookList[0],
+                )
+            }
         }
     }
 
