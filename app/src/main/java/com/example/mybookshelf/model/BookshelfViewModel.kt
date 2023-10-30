@@ -294,7 +294,6 @@ class BookshelfViewModel(
                 currentScreen = ScreenSelect.BROWSE,
                 gridScrollPosition = 0,
                 selectedBook = null,
-                searchQuery = searchQuery,
                 searchResult = BookSearchResult(0, emptyList())
             )
         }
@@ -319,9 +318,19 @@ class BookshelfViewModel(
                 SearchUiState.Success(result.items)
             } catch (e: IOException) {
                 Log.d("ViewModel", "IO Exception")
+                _uiState.update {
+                    it.copy(
+                        searchQuery = searchQuery
+                    )
+                }
                 SearchUiState.Error
             } catch (e: HttpException) {
                 Log.d("ViewModel", "HTTP Exception")
+                _uiState.update {
+                    it.copy(
+                        searchQuery = searchQuery
+                    )
+                }
                 SearchUiState.Error
             }
         }
