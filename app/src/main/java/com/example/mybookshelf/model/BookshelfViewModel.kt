@@ -158,7 +158,7 @@ class BookshelfViewModel(
                 ProtoScreenSelect.FAVOURITES -> ScreenSelect.FAVOURITES
                 ProtoScreenSelect.NONE -> ScreenSelect.SETTINGS
                 ProtoScreenSelect.UNRECOGNIZED,
-                ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED -> null
+                ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED, null -> null
             }
         }
 
@@ -338,8 +338,10 @@ class BookshelfViewModel(
         searchUiState = newSearchUiState
         if (newSearchUiState is SearchUiState.Success) {
             _uiState.update {
+                val selectedBook = newSearchUiState.bookList[0]
+                val updatedBook = selectedBook.getMissingInformation(bestseller)
                 it.copy(
-                    selectedBook = newSearchUiState.bookList[0],
+                    selectedBook = updatedBook
                 )
             }
         }
