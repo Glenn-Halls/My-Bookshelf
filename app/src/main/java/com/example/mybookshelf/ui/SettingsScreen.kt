@@ -212,7 +212,7 @@ fun DarkModeButton(
             contentDescription = contentDescription,
             colorFilter = ColorFilter.tint(
                 if (isActive) {
-                    MaterialTheme.colorScheme.secondary
+                    MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onBackground
                 }
@@ -245,7 +245,7 @@ fun StartupScreenButton(
                 contentDescription = contentDescription,
                 colorFilter = ColorFilter.tint(
                     if (isActive) {
-                        MaterialTheme.colorScheme.secondary
+                        MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onBackground
                     }
@@ -259,7 +259,7 @@ fun StartupScreenButton(
                 alignment = Alignment.Center,
                 colorFilter = ColorFilter.tint(
                     if (isActive) {
-                        MaterialTheme.colorScheme.secondary
+                        MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onBackground
                     }
@@ -272,7 +272,7 @@ fun StartupScreenButton(
                 contentDescription = contentDescription,
                 colorFilter = ColorFilter.tint(
                     if (isActive) {
-                        MaterialTheme.colorScheme.secondary
+                        MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onBackground
                     }
@@ -305,7 +305,7 @@ fun SortOrderButton(
             contentDescription = contentDescription,
             colorFilter = ColorFilter.tint(
                 if (isActive) {
-                    MaterialTheme.colorScheme.secondary
+                    MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.onBackground
                 }
