@@ -6,11 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.mybookshelf.model.MyBestseller
 import com.example.mybookshelf.model.MyBook
+import com.example.mybookshelf.model.MyNytList
 
-@Database(entities = [MyBook::class, MyBestseller::class], version = 1, exportSchema = false)
+@Database(entities = [MyBook::class, MyBestseller::class, MyNytList::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun myBookDao(): MyBookDao
     abstract fun myBestsellerDao(): MyBestsellerDao
+    abstract fun myNytListDao(): MyNytListDao
 
     companion object {
         @Volatile

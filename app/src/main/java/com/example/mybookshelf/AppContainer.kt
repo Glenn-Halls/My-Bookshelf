@@ -8,18 +8,20 @@ import com.example.mybookshelf.data.api.BookRepository
 import com.example.mybookshelf.data.api.DataStoreRepository
 import com.example.mybookshelf.data.api.MyBestsellerRepository
 import com.example.mybookshelf.data.api.MyBookRepository
-import com.example.mybookshelf.network.NetworkBestsellerRepository
-import com.example.mybookshelf.network.NetworkBookRepository
+import com.example.mybookshelf.data.api.MyNytListRepository
 import com.example.mybookshelf.data.database.AppDatabase
 import com.example.mybookshelf.data.database.DataStoreSerializer
-import com.example.mybookshelf.data.repo.ProtoDataStoreRepository
 import com.example.mybookshelf.data.repo.NetworkNytListRepository
 import com.example.mybookshelf.data.repo.NytListRepository
 import com.example.mybookshelf.data.repo.OfflineMyBestsellerRepository
 import com.example.mybookshelf.data.repo.OfflineMyBookRepository
+import com.example.mybookshelf.data.repo.OfflineMyNytListRepository
+import com.example.mybookshelf.data.repo.ProtoDataStoreRepository
 import com.example.mybookshelf.network.BookApiService
 import com.example.mybookshelf.network.BookshelfBestsellerApiService
 import com.example.mybookshelf.network.BookshelfNytListApiService
+import com.example.mybookshelf.network.NetworkBestsellerRepository
+import com.example.mybookshelf.network.NetworkBookRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -36,6 +38,7 @@ interface AppContainer {
     val nytListRepository: NytListRepository
     val myBookRepository: MyBookRepository
     val myBestsellerRepository: MyBestsellerRepository
+    val myNytListRepository: MyNytListRepository
     val protoDataRepository: DataStoreRepository
     var searchString: String
     var nytListAddress: String
@@ -119,6 +122,11 @@ class DefaultAppContainer(
     override val myBestsellerRepository: MyBestsellerRepository by lazy {
         OfflineMyBestsellerRepository(AppDatabase.getDatabase(context).myBestsellerDao())
     }
+
+    override val myNytListRepository: MyNytListRepository by lazy {
+        OfflineMyNytListRepository(AppDatabase.getDatabase(context).myNytListDao())
+    }
+
     override val protoDataRepository: DataStoreRepository by lazy {
         ProtoDataStoreRepository(context.dataStore)
     }
