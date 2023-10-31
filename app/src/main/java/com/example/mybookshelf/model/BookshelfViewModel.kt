@@ -33,6 +33,7 @@ import com.example.mybookshelf.data.api.BookRepository
 import com.example.mybookshelf.data.api.DataStoreRepository
 import com.example.mybookshelf.data.api.MyBestsellerRepository
 import com.example.mybookshelf.data.api.MyBookRepository
+import com.example.mybookshelf.data.api.MyNytListRepository
 import com.example.mybookshelf.data.repo.NytListRepository
 import com.example.mybookshelf.model.extension.convertToMyBestseller
 import com.example.mybookshelf.network.NetworkBestsellerRepository
@@ -97,6 +98,7 @@ class BookshelfViewModel(
     private val nytListRepository: NytListRepository,
     private val myBookRepository: MyBookRepository,
     private val myBestsellerRepository: MyBestsellerRepository,
+    private val myNytListRepository: MyNytListRepository,
     private val protoDataStoreRepository: DataStoreRepository,
 ) : ViewModel() {
 
@@ -118,6 +120,15 @@ class BookshelfViewModel(
     // Accessor to MyBestseller database
     val myBestsellerDb: StateFlow<List<MyBestseller>> = myBestsellerRepository
         .getAllBestsellersStream()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
+
+    // Accessor to MyNytList database
+    val myNytListDb: StateFlow<List<MyNytList>> = myNytListRepository
+        .getMyNytListFlow()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -170,6 +181,7 @@ class BookshelfViewModel(
     suspend fun setDarkMode(darkMode: DarkMode) {
         protoDataStoreRepository.setDarkMode(darkMode)
     }
+
     suspend fun setStartupScreen(screen: ScreenSelect?) {
         val protoScreen = when (screen) {
             ScreenSelect.SETTINGS -> ProtoScreenSelect.SCREEN_SELECT_UNSPECIFIED
@@ -355,7 +367,7 @@ class BookshelfViewModel(
         }
     }
 
-    fun updateSearchQuery(query: String) {
+    private fun updateSearchQuery(query: String) {
         _uiState.update {
             it.copy(searchQuery = query)
         }
@@ -495,7 +507,7 @@ class BookshelfViewModel(
         setProtoSortOrder(protoSortOrder)
     }
 
-    fun setBestsellerSortOrder(order: SortOrder) {
+    private fun setBestsellerSortOrder(order: SortOrder) {
         _uiState.update {
             it.copy(
                 bestsellerSortOrder = order
@@ -503,7 +515,7 @@ class BookshelfViewModel(
         }
     }
 
-    fun setMyBookSortOrder(order: SortOrder) {
+    private fun setMyBookSortOrder(order: SortOrder) {
         _uiState.update {
             it.copy(
                 myBookSortOrder = order,
@@ -525,6 +537,15 @@ class BookshelfViewModel(
             it.copy(
                 selectedNytList = nytList
             )
+        }
+    }
+
+    suspend fun toggleMyNytList(nytList: NytBestsellerList) {
+        val myNytLists: List<MyNytList> = myNytListRepository.getAllMyNytLists()
+        if (nytList.listName in myNytLists.map { it.listName }) {
+            myNytListRepository.deleteNytList(MyNytList(nytList.listName))
+        } else {
+            myNytListRepository.insertNytList(MyNytList(nytList.listName))
         }
     }
 
@@ -1026,6 +1047,7 @@ class BookshelfViewModel(
                 val nytListRepository = application.container.nytListRepository
                 val myBookRepository = application.container.myBookRepository
                 val myBestsellerRepository = application.container.myBestsellerRepository
+                val myNytListRepository = application.container.myNytListRepository
                 val protoDataStoreRepository = application.container.protoDataRepository
                 BookshelfViewModel(
                     bookRepository,
@@ -1033,6 +1055,7 @@ class BookshelfViewModel(
                     nytListRepository,
                     myBookRepository,
                     myBestsellerRepository,
+                    myNytListRepository,
                     protoDataStoreRepository
                     )
             }

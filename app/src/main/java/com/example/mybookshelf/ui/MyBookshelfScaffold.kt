@@ -42,6 +42,7 @@ import com.example.mybookshelf.R
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.BookshelfViewModel
+import com.example.mybookshelf.model.NytBestsellerList
 import com.example.mybookshelf.model.NytUiState
 import com.example.mybookshelf.model.SearchUiState
 import com.example.mybookshelf.model.SortOrder
@@ -72,6 +73,8 @@ fun MyBookshelfScreen(
     val uiState by viewModel.uiState.collectAsState()
     // State Flow accessor to book database
     val bookshelfBooksDb by viewModel.myBookDb.collectAsState()
+    // State Flow accessor to myNytList database
+    val myNytLists by viewModel.myNytListDb.collectAsState()
     // Get flow of dark mode status from view model
     val darkMode by viewModel.darkMode.collectAsState(null)
     // Get startup screen flow from view model
@@ -151,10 +154,16 @@ fun MyBookshelfScreen(
         coroutineScope.launch { viewModel.bestsellerBookSearch(context, bestseller) }
     }
 
-    // Helper function on bestseller star click - adds bestseller to watch list
-    fun onBestsellerStarClick(bestseller: Bestseller) {
+    // Helper function on bestseller eye click - adds bestseller to watch list
+    fun onBestsellerEyeClick(bestseller: Bestseller) {
         coroutineScope.launch {
             viewModel.toggleBestseller(bestseller)
+        }
+    }
+    // Helper function on NYT bestseller star click = adds list to database
+    fun onNytListStarClick(bestsellerList: NytBestsellerList) {
+        coroutineScope.launch {
+            viewModel.toggleMyNytList(bestsellerList)
         }
     }
     /*  Helper functions listed below are designed to reduce clutter composables where it is
@@ -244,13 +253,15 @@ fun MyBookshelfScreen(
                         nytApiOnCooldown = uiState.nytApiOnCooldown,
                         nytApiCooldown = uiState.nytApiCooldown,
                         nytListList = uiState.nytLists ?: emptyList(),
+                        myNytLists = myNytLists,
                         myBestsellerList = myBestsellerBooks.sortBestsellers(SortOrder.LAST_ADDED),
                         onNytListClick = {
                             viewModel.selectNytList(it)
                             viewModel.updateBestsellerList(context)
                                          },
+                        onNytListStarClick = { onNytListStarClick(it) },
                         onCardClick = { onBestsellerClick(context, it) },
-                        onStarClick = { onBestsellerStarClick(it) },
+                        onStarClick = { onBestsellerEyeClick(it) },
                         onTryAgain = { viewModel.getBestsellers(300) },
                         listSelected = uiState.selectedNytList,
                         hideTopBar = (windowHeight == WindowHeightSizeClass.Compact)

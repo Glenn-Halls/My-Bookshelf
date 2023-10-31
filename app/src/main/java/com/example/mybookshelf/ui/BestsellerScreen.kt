@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.MyBestseller
+import com.example.mybookshelf.model.MyNytList
 import com.example.mybookshelf.model.NytBestsellerList
 import com.example.mybookshelf.model.NytUiState
 import com.example.mybookshelf.ui.util.BestsellerGrid
@@ -23,8 +24,10 @@ fun NytBestsellerScreen(
     nytApiOnCooldown: Boolean,
     nytApiCooldown: Int,
     nytListList: List<NytBestsellerList>,
-    myBestsellerList: List<MyBestseller>,
+    myNytLists: List<MyNytList>,
     onNytListClick: (NytBestsellerList) -> Unit,
+    onNytListStarClick: (NytBestsellerList) -> Unit,
+    myBestsellerList: List<MyBestseller>,
     onCardClick: (Bestseller) -> Unit,
     onStarClick: (Bestseller) -> Unit,
     onTryAgain: () -> Unit,
@@ -45,7 +48,9 @@ fun NytBestsellerScreen(
         if (listSelected == null) {
             NytListList(
                 nytListList = nytListList,
+                myNytLists = myNytLists,
                 onListClick = onNytListClick,
+                onStarClick = onNytListStarClick
             )
         } else when (nytUiState) {
             is NytUiState.Loading -> LoadingScreen()

@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface MyNytListRepository {
     suspend fun insertNytList(nytList: MyNytList)
     suspend fun deleteNytList(nytList: MyNytList)
-    fun getAllMyNytLists(): Flow<List<MyNytList>>
+    suspend fun getAllMyNytLists(): List<MyNytList>
+    fun getMyNytListFlow(): Flow<List<MyNytList>>
 }

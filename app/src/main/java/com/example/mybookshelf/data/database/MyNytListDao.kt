@@ -17,5 +17,8 @@ interface MyNytListDao {
     suspend fun delete(myNytList: MyNytList)
 
     @Query("SELECT * from nyt_list")
-    fun getMyNytLists(): Flow<List<MyNytList>>
+    suspend fun getAllMyNytLists(): List<MyNytList>
+
+    @Query("SELECT * from nyt_list")
+    fun getMyNytListFlow(): Flow<List<MyNytList>>
 }

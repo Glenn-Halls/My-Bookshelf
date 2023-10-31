@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -66,6 +67,7 @@ import com.example.mybookshelf.model.Bestseller
 import com.example.mybookshelf.model.Book
 import com.example.mybookshelf.model.MyBestseller
 import com.example.mybookshelf.model.MyBook
+import com.example.mybookshelf.model.MyNytList
 import com.example.mybookshelf.model.NytBestsellerList
 import com.example.mybookshelf.model.extension.convertToBook
 import com.example.mybookshelf.model.extension.getCoilUrl
@@ -175,9 +177,12 @@ fun MyBestsellerGrid(
 @Composable
 fun NytListList(
     nytListList: List<NytBestsellerList>,
+    myNytLists: List<MyNytList>,
     onListClick: (NytBestsellerList) -> Unit,
+    onStarClick: (NytBestsellerList) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val myNytListNames: List<String> = myNytLists.map { it.listName }
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
         contentPadding = PaddingValues(0.dp),
@@ -192,7 +197,9 @@ fun NytListList(
         ) {
             nytList -> BestSellerListItem(
             nytList = nytList,
+            isFavourite = nytList.listName in myNytListNames,
             onListClick = onListClick,
+            onStarClick = onStarClick,
             modifier = Modifier
                 .padding(0.dp)
                 .border(Dp.Hairline, Color.Black)
@@ -412,6 +419,8 @@ fun MyBookCard(
 @Composable
 fun BestSellerListItem(
     nytList: NytBestsellerList,
+    isFavourite: Boolean,
+    onStarClick: (NytBestsellerList) -> Unit,
     onListClick: (NytBestsellerList) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -434,7 +443,21 @@ fun BestSellerListItem(
                 text = nytList.listName,
                 style = MaterialTheme.typography.labelMedium
             )
-            Icon(imageVector = Icons.Filled.StarOutline, contentDescription = null)
+            IconButton(onClick = { onStarClick(nytList) } ) {
+                if (isFavourite) {
+                    Image(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "favourite",
+                        modifier = Modifier.size(40.dp)
+                    )
+                } else {
+                    Image(
+                        imageVector = Icons.Filled.StarOutline,
+                        contentDescription = "not favourite",
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+            }
         }
     }
 }
