@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
@@ -429,26 +431,36 @@ fun MyBookshelfTopBar(
             actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         navigationIcon = {
-            IconButton(onClick = onUpButtonClick) {
+            IconButton(
+                onClick = onUpButtonClick,
+                modifier = Modifier.fillMaxHeight()
+                ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.back_button),
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         },
         actions = {
                   if (showActionButton) {
-                      IconButton(onClick = onActionButtonClick) {
+                      IconButton(
+                          onClick = onActionButtonClick,
+                          modifier = Modifier.fillMaxHeight(),
+                          ) {
                           if (isActionIconMirrored) {
                               Icon(
                                   imageVector = actionButtonVector ?: Icons.Default.BrokenImage,
                                   contentDescription = contentDescription,
-                                  modifier = Modifier.scale(scaleX = -1f, scaleY = 1f)
+                                  modifier = Modifier
+                                      .fillMaxSize(.85f)
+                                      .scale(scaleX = -1f, scaleY = 1f)
                               )
                           } else {
                               Icon(
                                   imageVector = actionButtonVector ?: Icons.Default.BrokenImage,
-                                  contentDescription = contentDescription
+                                  contentDescription = contentDescription,
+                                  modifier = Modifier.fillMaxSize(.85f)
                               )
                           }
                       }
