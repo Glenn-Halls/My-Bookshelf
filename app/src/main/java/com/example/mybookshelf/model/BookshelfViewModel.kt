@@ -824,7 +824,7 @@ class BookshelfViewModel(
                 }
             }
             ScreenSelect.BROWSE -> ActionButton(
-                showButton = _uiState.value.selectedBook != null,
+                showButton = uiState.value.searchResult != null,
                 icon = Icons.Filled.Search,
                 action = {
                     selectBook(null)
