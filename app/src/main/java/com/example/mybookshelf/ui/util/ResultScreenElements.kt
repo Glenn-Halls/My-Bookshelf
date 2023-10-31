@@ -30,8 +30,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -307,13 +308,14 @@ fun BestsellerCard(
                         IconButton(onClick = { onStarClick(bestseller) }) {
                             if (isBeingWatched) {
                                 Image(
-                                    imageVector = Icons.Filled.Star,
+                                    imageVector = Icons.Filled.Visibility,
                                     contentDescription = "on watchlist",
                                     modifier = Modifier.size(40.dp)
                                 )
                             } else {
                                 Image(
-                                    imageVector = Icons.Filled.StarOutline,
+                                    imageVector = Icons.Filled.VisibilityOff,
+                                    alpha = 0.23f,
                                     contentDescription = "not on watchlist",
                                     modifier = Modifier.size(40.dp)
                                 )
@@ -657,7 +659,7 @@ fun ErrorScreen(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -705,7 +707,7 @@ fun BookshelfHeader(
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             actionIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
-        modifier = Modifier.height(30.dp)
+        modifier = modifier.height(30.dp)
     )
 }
 
