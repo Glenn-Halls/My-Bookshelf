@@ -237,6 +237,14 @@ class BookshelfViewModel(
         }
     }
 
+    fun navigateHome() {
+        _uiState.update {
+            it.copy(
+                currentScreen = null,
+            )
+        }
+    }
+
 
     // Get screen layout based on window size class and context
     fun getScreenLayout(

@@ -4,6 +4,7 @@ package com.example.mybookshelf.ui
 import android.content.Context
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -203,6 +204,7 @@ fun MyBookshelfScreen(
             if (windowHeight != WindowHeightSizeClass.Compact) {
                 MyBookshelfTopBar(
                     title = title,
+                    onTitleClick = { viewModel.navigateHome() },
                     onUpButtonClick = { viewModel.navigateBack() },
                     showActionButton = actionButton.showButton,
                     actionButtonVector = actionButton.icon,
@@ -404,6 +406,7 @@ fun MyBookshelfScreen(
 @Composable
 fun MyBookshelfTopBar(
     title: String,
+    onTitleClick: () -> Unit,
     onUpButtonClick: () -> Unit,
     showActionButton: Boolean,
     isActionIconMirrored: Boolean,
@@ -416,6 +419,7 @@ fun MyBookshelfTopBar(
             Text(
                 text = title,
                 style = MaterialTheme.typography.displayLarge,
+                modifier = Modifier.clickable(true, onClick = onTitleClick)
             )
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
