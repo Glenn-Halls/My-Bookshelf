@@ -108,9 +108,9 @@ fun MyBookshelfScreen(
         ScreenSelect.SETTINGS -> stringResource(R.string.app_name)
         ScreenSelect.BEST_SELLERS -> stringResource(R.string.best_sellers)
         ScreenSelect.WATCH_LIST -> stringResource(R.string.watch_list)
-        ScreenSelect.BROWSE -> stringResource(R.string.browse_books)
-        ScreenSelect.MY_BOOKS -> stringResource(R.string.my_books)
-        ScreenSelect.FAVOURITES -> stringResource(R.string.my_favorites)
+        ScreenSelect.BROWSE -> stringResource(R.string.browse)
+        ScreenSelect.MY_BOOKS -> stringResource(R.string.bookshelf)
+        ScreenSelect.FAVOURITES -> stringResource(R.string.favourites)
         null -> stringResource(R.string.app_name)
     }
     // Helper function adds / removes book to / from database within coroutine scope

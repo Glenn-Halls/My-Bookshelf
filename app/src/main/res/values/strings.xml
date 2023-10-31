@@ -28,4 +28,5 @@
     <string name="favourites_description">Similar to the My Books screen but ony containing your favourite books.</string>
     <string name="blank" />
     <string name="bookshelf_introduction">Within this app you can access the New York Times Bestseller lists and can track bestsellers to watch their progress. You can browse Google\'s massive library and bookmark the books you own to save them to your bookshelf. You can rate these books and save reading notes, adding you top-rated books to your favourites list for easy perusal.</string>
+    <string name="bookshelf">Bookshelf</string>
 </resources>
