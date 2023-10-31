@@ -562,6 +562,23 @@ class BookshelfViewModel(
         }
     }
 
+    private fun showExitDialog() {
+        _uiState.update {
+            it.copy(
+                showExitDialog = true
+            )
+        }
+    }
+
+    fun hideExitDialog() {
+        _uiState.update {
+            it.copy(
+                showExitDialog = false
+            )
+        }
+    }
+
+
 
     // When book selected from book search, verify if selected book is favourite in database
     fun isBookFavourite(): Boolean {
@@ -587,13 +604,34 @@ class BookshelfViewModel(
 
     // Temporary navigation handler
     fun navigateBack() {
-        _uiState.update {
-            it.copy(
-                selectedBook = null,
-                selectedBestseller = null,
-                selectedMyBook = null,
-                currentScreen = null
-            )
+        uiState.value.let {
+            when (it.currentScreen) {
+                ScreenSelect.SETTINGS -> navigateHome()
+                ScreenSelect.BEST_SELLERS -> if (it.selectedNytList != null) {
+                    selectNytList(null)
+                } else {
+                    navigateHome()
+                }
+                ScreenSelect.WATCH_LIST -> navigateHome()
+                ScreenSelect.BROWSE -> if (it.selectedBook != null) {
+                    selectBook(null)
+                } else if (it.searchResult != null) {
+                    resetSearchResults()
+                } else {
+                    navigateHome()
+                }
+                ScreenSelect.MY_BOOKS -> if (it.selectedMyBook != null) {
+                    selectMyBook(null)
+                } else {
+                    navigateHome()
+                }
+                ScreenSelect.FAVOURITES -> if (it.selectedMyBook != null) {
+                    selectMyBook(null)
+                } else {
+                    navigateHome()
+                }
+                null -> showExitDialog()
+            }
         }
     }
 
@@ -786,7 +824,7 @@ class BookshelfViewModel(
                 }
             }
             ScreenSelect.BROWSE -> ActionButton(
-                showButton = true,
+                showButton = _uiState.value.selectedBook != null,
                 icon = Icons.Filled.Search,
                 action = {
                     selectBook(null)

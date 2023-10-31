@@ -20,4 +20,5 @@ data class BookshelfUiState(
     val editInProgress: Boolean = false,
     val nytApiOnCooldown: Boolean = false,
     val nytApiCooldown: Int = 0,
+    val showExitDialog: Boolean = false
 )

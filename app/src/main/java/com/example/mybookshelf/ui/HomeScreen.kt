@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,12 +43,16 @@ fun HomeScreen(
     navigationType: BookshelfNavigationType,
     navigationElements: List<NavigationElement>,
     onIconClick: (NavigationElement) -> Unit,
+    showExitDialog: Boolean,
+    onExitConfirm: () -> Unit,
+    onExitCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tabLocation: String = when (navigationType) {
         BookshelfNavigationType.BOTTOM_BAR -> "below"
         BookshelfNavigationType.NAVIGATION_RAIL,
-        BookshelfNavigationType.NAVIGATION_DRAWER -> "to the left"
+        BookshelfNavigationType.NAVIGATION_DRAWER
+        -> "to the left"
     }
     val iconColor = MaterialTheme.colorScheme.secondary
     val iconSize = 70.dp
@@ -88,7 +94,10 @@ fun HomeScreen(
                         Image(
                             painter = painterResource(it.icon),
                             contentDescription = stringResource(it.name),
-                            colorFilter = ColorFilter.tint(iconColor, blendMode = BlendMode.SrcAtop),
+                            colorFilter = ColorFilter.tint(
+                                iconColor,
+                                blendMode = BlendMode.SrcAtop
+                            ),
                             modifier = Modifier.size(iconSize.minus(30.dp))
                         )
                     }
@@ -102,15 +111,34 @@ fun HomeScreen(
             }
         }
         Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+        if (showExitDialog) {
+            AlertDialog(
+                onDismissRequest = onExitCancel,
+                title = { Text("Are you sure you want to exit?") },
+                confirmButton = {
+                    TextButton(onClick = onExitConfirm) {
+                        Text("Confirm")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = onExitCancel) {
+                        Text("Cancel")
+                    }
+                },
+            )
+        }
     }
 }
 
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
-fun HomeScreenPreview(){
+fun HomeScreenPreview() {
     HomeScreen(
         navigationType = BookshelfNavigationType.BOTTOM_BAR,
         navigationElements = NavigationTabs,
+        {},
+        false,
+        {},
         {}
     )
 }

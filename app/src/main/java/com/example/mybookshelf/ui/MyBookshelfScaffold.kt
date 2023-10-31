@@ -395,7 +395,10 @@ fun MyBookshelfScreen(
                         HomeScreen(
                             navigationType = navigationType,
                             navigationElements = NavigationTabs,
-                            onIconClick = { viewModel.navigateToScreen(it) }
+                            onIconClick = { viewModel.navigateToScreen(it) },
+                            showExitDialog = uiState.showExitDialog,
+                            onExitCancel = { viewModel.hideExitDialog() },
+                            onExitConfirm = { viewModel.hideExitDialog() }
                         )
                     }
                 }
