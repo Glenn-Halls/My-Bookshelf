@@ -1,6 +1,7 @@
 package com.example.mybookshelf.ui
 
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -392,13 +393,14 @@ fun MyBookshelfScreen(
                     if (viewModel.nytUiState == NytUiState.Loading) {
                         LoadingScreen()
                     } else {
+                        val activity = (LocalContext.current as? Activity)
                         HomeScreen(
                             navigationType = navigationType,
                             navigationElements = NavigationTabs,
                             onIconClick = { viewModel.navigateToScreen(it) },
                             showExitDialog = uiState.showExitDialog,
                             onExitCancel = { viewModel.hideExitDialog() },
-                            onExitConfirm = { viewModel.hideExitDialog() }
+                            onExitConfirm = { activity?.finishAndRemoveTask() }
                         )
                     }
                 }
