@@ -61,4 +61,11 @@ class ProtoDataStoreRepository(
     override suspend fun getProtoSortOrder(): ProtoData.ProtoSortOrder {
         return dataStore.data.map { it.protoSortOrder }.first()
     }
+
+    override suspend fun toggleFavourite() {
+        val current = dataStore.data.first().filterFavourites
+        dataStore.updateData {
+            it.toBuilder().setFilterFavourites(!current).build()
+        }
+    }
 }

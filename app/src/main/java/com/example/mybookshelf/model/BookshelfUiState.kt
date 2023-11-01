@@ -13,6 +13,7 @@ data class BookshelfUiState(
     val selectedBestseller: Bestseller? = null,
     val selectedMyBook: MyBook? = null,
     val selectedNytList: NytBestsellerList? = null,
+    val favouriteFilter: Boolean = false,
     val searchQuery: String? = null,
     var userReview: UserReview? = null,
     val scrollPosition: Int = 0,

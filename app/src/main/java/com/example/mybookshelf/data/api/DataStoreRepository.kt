@@ -14,4 +14,5 @@ interface DataStoreRepository {
     suspend fun setStartupScreen(protoStartupScreen: ProtoScreenSelect)
     suspend fun setSortOrder(protoSortOrder: ProtoSortOrder)
     suspend fun getProtoSortOrder(): ProtoSortOrder
+    suspend fun toggleFavourite()
 }

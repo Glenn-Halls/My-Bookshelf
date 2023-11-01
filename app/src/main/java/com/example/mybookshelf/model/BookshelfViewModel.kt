@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SortByAlpha
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -213,6 +215,23 @@ class BookshelfViewModel(
 
     private suspend fun restoreSearchString(): String {
         return protoDataStoreRepository.getSearchString()
+    }
+
+    private fun toggleNytListFilter() {
+        viewModelScope.launch {
+            protoDataStoreRepository.toggleFavourite()
+            _uiState.update {
+                it.copy(favouriteFilter = !uiState.value.favouriteFilter)
+            }
+        }
+    }
+
+    private suspend fun restoreFavouriteFilter() {
+        _uiState.update {
+            it.copy(
+                favouriteFilter = protoDataFlow.first().filterFavourites
+            )
+        }
     }
 
     private fun getNytCountdownFlow(isRunning: Boolean): Flow<Int> {
@@ -800,12 +819,28 @@ class BookshelfViewModel(
                     )
                 }
             )
-            ScreenSelect.BEST_SELLERS -> ActionButton(
-                showButton = uiState.value.selectedNytList != null,
-                icon = Icons.Filled.Whatshot,
-                action = { selectNytList(null) },
-                contentDescription = "select bestseller list",
-            )
+            ScreenSelect.BEST_SELLERS -> {
+                if (uiState.value.selectedNytList == null) {
+                    val starIcon = if (uiState.value.favouriteFilter) {
+                        Icons.Filled.Star
+                    } else {
+                        Icons.Filled.StarOutline
+                    }
+                    ActionButton(
+                        showButton = true,
+                        icon = starIcon,
+                        action = { toggleNytListFilter() },
+                        contentDescription = "toggle favourite filter"
+                    )
+                } else {
+                    ActionButton(
+                        showButton = uiState.value.selectedNytList != null,
+                        icon = Icons.Filled.Whatshot,
+                        action = { selectNytList(null) },
+                        contentDescription = "select bestseller list",
+                    )
+                }
+            }
             ScreenSelect.WATCH_LIST -> {
                 when (uiState.value.bestsellerSortOrder) {
                     SortOrder.ALPHABETICAL -> ActionButton(
@@ -1025,15 +1060,15 @@ class BookshelfViewModel(
                     currentScreen = getStartupScreen()
                 )
             }
-            val query = withContext(Dispatchers.Main) {restoreSearchString()}
+            val query = withContext(Dispatchers.Main) { restoreSearchString() }
             updateSearchQuery(query)
-            val searchOrder = withContext(Dispatchers.Main) {getProtoSortOrder().toSortOrder()}
+            val searchOrder = withContext(Dispatchers.Main) { getProtoSortOrder().toSortOrder() }
             if (searchOrder != null) {
                 setBestsellerSortOrder(searchOrder)
                 setMyBookSortOrder(searchOrder)
             }
+            restoreFavouriteFilter()
         }
-
         getBestsellers()
         getNytLists()
     }

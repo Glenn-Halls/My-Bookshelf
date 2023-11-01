@@ -25,6 +25,7 @@ fun NytBestsellerScreen(
     nytApiCooldown: Int,
     nytListList: List<NytBestsellerList>,
     myNytLists: List<MyNytList>,
+    filterLists: Boolean,
     onNytListClick: (NytBestsellerList) -> Unit,
     onNytListStarClick: (NytBestsellerList) -> Unit,
     myBestsellerList: List<MyBestseller>,
@@ -49,8 +50,9 @@ fun NytBestsellerScreen(
             NytListList(
                 nytListList = nytListList,
                 myNytLists = myNytLists,
+                filterLists = filterLists,
                 onListClick = onNytListClick,
-                onStarClick = onNytListStarClick
+                onStarClick = onNytListStarClick,
             )
         } else when (nytUiState) {
             is NytUiState.Loading -> LoadingScreen()

@@ -81,7 +81,6 @@ fun MyBookshelfScreen(
     val startupScreen by viewModel.startupScreen.collectAsState(null)
     // Get user preference sort order
     val userSortOrder by viewModel.protoSortOrder.collectAsState(null)
-    // Sorted book list defined by user, defaulting to Last Updated
     val bookshelfBooks = bookshelfBooksDb.sortMyBook(
         uiState.myBookSortOrder ?: SortOrder.LAST_UPDATED
     )
@@ -254,6 +253,7 @@ fun MyBookshelfScreen(
                         nytApiCooldown = uiState.nytApiCooldown,
                         nytListList = uiState.nytLists ?: emptyList(),
                         myNytLists = myNytLists,
+                        filterLists = uiState.favouriteFilter,
                         myBestsellerList = myBestsellerBooks.sortBestsellers(SortOrder.LAST_ADDED),
                         onNytListClick = {
                             viewModel.selectNytList(it)

@@ -178,11 +178,17 @@ fun MyBestsellerGrid(
 fun NytListList(
     nytListList: List<NytBestsellerList>,
     myNytLists: List<MyNytList>,
+    filterLists: Boolean,
     onListClick: (NytBestsellerList) -> Unit,
     onStarClick: (NytBestsellerList) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val myNytListNames: List<String> = myNytLists.map { it.listName }
+    val displayLists = if (filterLists) {
+        nytListList.filter { it.listName in myNytListNames }
+    } else {
+        nytListList
+    }
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
         contentPadding = PaddingValues(0.dp),
@@ -192,7 +198,7 @@ fun NytListList(
             .fillMaxWidth()
     ) {
         items(
-            items = nytListList,
+            items = displayLists,
             key = { nytList -> nytList.toString() }
         ) {
             nytList -> BestSellerListItem(

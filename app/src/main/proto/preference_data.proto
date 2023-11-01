@@ -42,4 +42,6 @@ message ProtoData {
     }
 
     ProtoSortOrder proto_sort_order = 4;
+
+    bool filter_favourites = 5;
 }
