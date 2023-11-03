@@ -13,7 +13,7 @@ class OfflineMyNytListRepository (private val myNytListDao: MyNytListDao)
     override suspend fun deleteNytList(nytList: MyNytList) =
         myNytListDao.delete(nytList)
 
-    override suspend fun getAllMyNytLists(): List<MyNytList> =
+    override suspend fun getAllMyNytLists(): List<MyNytList>? =
         myNytListDao.getAllMyNytLists()
 
     override fun getMyNytListFlow(): Flow<List<MyNytList>> =

@@ -455,7 +455,7 @@ class BookshelfViewModel(
         }
     }
 
-    private fun getNytLists(delay: Long? = null) {
+    fun getNytLists(delay: Long? = null) {
         viewModelScope.launch {
             nytUiState = NytUiState.Loading
             if (delay != null) {
@@ -483,17 +483,7 @@ class BookshelfViewModel(
                 nytListRepository.getNytLists()
             } catch (e: Exception) {
                 Log.e("ViewModel", e.message.toString())
-                NytListSearch(
-                    listOf(
-                        NytBestsellerList(
-                            listName = "No Lists Found...",
-                            listLocation = "",
-                            publishedDate = "",
-                            firstPublished = "",
-                            frequency = "",
-                        )
-                    )
-                )
+                NytListSearch(null)
             }
             _uiState.update {
                 it.copy(
@@ -560,11 +550,13 @@ class BookshelfViewModel(
     }
 
     suspend fun toggleMyNytList(nytList: NytBestsellerList) {
-        val myNytLists: List<MyNytList> = myNytListRepository.getAllMyNytLists()
-        if (nytList.listName in myNytLists.map { it.listName }) {
-            myNytListRepository.deleteNytList(MyNytList(nytList.listName))
-        } else {
-            myNytListRepository.insertNytList(MyNytList(nytList.listName))
+        val myNytLists: List<MyNytList>? = myNytListRepository.getAllMyNytLists()
+        if (myNytLists != null) {
+            if (nytList.listName in myNytLists.map { it.listName }) {
+                myNytListRepository.deleteNytList(MyNytList(nytList.listName))
+            } else {
+                myNytListRepository.insertNytList(MyNytList(nytList.listName))
+            }
         }
     }
 

@@ -26,7 +26,7 @@ data class BestsellerResults(
 
 @Serializable
 data class NytListSearch(
-    val results: List<NytBestsellerList>
+    val results: List<NytBestsellerList>?
 )
 @Serializable
 data class NytBestsellerList(

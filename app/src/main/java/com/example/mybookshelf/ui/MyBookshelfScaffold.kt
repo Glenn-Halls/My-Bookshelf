@@ -251,8 +251,9 @@ fun MyBookshelfScreen(
                         nytUiState = viewModel.nytUiState,
                         nytApiOnCooldown = uiState.nytApiOnCooldown,
                         nytApiCooldown = uiState.nytApiCooldown,
-                        nytListList = uiState.nytLists ?: emptyList(),
+                        nytListList = uiState.nytLists,
                         myNytLists = myNytLists,
+                        onNullNytListList = { viewModel.getNytLists(300) },
                         filterLists = uiState.favouriteFilter,
                         myBestsellerList = myBestsellerBooks.sortBestsellers(SortOrder.LAST_ADDED),
                         onNytListClick = {

@@ -23,8 +23,9 @@ fun NytBestsellerScreen(
     nytUiState: NytUiState,
     nytApiOnCooldown: Boolean,
     nytApiCooldown: Int,
-    nytListList: List<NytBestsellerList>,
+    nytListList: List<NytBestsellerList>?,
     myNytLists: List<MyNytList>,
+    onNullNytListList: () -> Unit,
     filterLists: Boolean,
     onNytListClick: (NytBestsellerList) -> Unit,
     onNytListStarClick: (NytBestsellerList) -> Unit,
@@ -45,8 +46,13 @@ fun NytBestsellerScreen(
                 tryAgain = false,
                 tryAgainAction = {},
                 timeToWait = nytApiCooldown)
-        }
-        if (listSelected == null) {
+        } else if (nytListList == null) {
+            if (nytUiState == NytUiState.Loading) {
+                LoadingScreen()
+            } else {
+                ErrorScreen(onTryAgainButton = onNullNytListList)
+            }
+        } else if (listSelected == null) {
             NytListList(
                 nytListList = nytListList,
                 myNytLists = myNytLists,
