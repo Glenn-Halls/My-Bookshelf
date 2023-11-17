@@ -91,6 +91,8 @@ dependencies {
     implementation("androidx.datastore:datastore:1.0.0")
     // Protobuf Library
     implementation("com.google.protobuf:protobuf-javalite:3.19.4")
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     // J Unit test implementation
     testImplementation("junit:junit:4.13.2")
     // Kotlin CoRoutines test implementation
