@@ -17,5 +17,8 @@ interface MyBestsellerDao {
     suspend fun delete(myBestseller: MyBestseller)
 
     @Query("SELECT * from bestseller")
+    fun getMyBestsellersList(): List<MyBestseller>?
+
+    @Query("SELECT * from bestseller")
     fun getBestsellers(): Flow<List<MyBestseller>>
 }

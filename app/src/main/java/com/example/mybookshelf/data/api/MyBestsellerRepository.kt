@@ -7,5 +7,6 @@ interface MyBestsellerRepository {
 
     suspend fun insertBestseller(bestseller: MyBestseller)
     suspend fun deleteBestseller(bestseller: MyBestseller)
+    suspend fun getMyBestsellerList() : List<MyBestseller>?
     fun getAllBestsellersStream(): Flow<List<MyBestseller>>
 }
