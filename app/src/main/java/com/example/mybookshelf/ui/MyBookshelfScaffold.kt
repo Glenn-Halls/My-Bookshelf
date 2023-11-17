@@ -390,7 +390,10 @@ fun MyBookshelfScreen(
                     } else {
                         SettingsScreen(
                             darkMode = darkMode,
-                            onDarkModeClick = { setDarkMode(it) },
+                            onDarkModeClick = {
+                                setDarkMode(it)
+                                viewModel.testWorker(context)
+                                              },
                             startScreen = startupScreen,
                             navTabList = NavigationTabs,
                             onStartScreenClick = { setScreenSelect(it.screenSelect) },

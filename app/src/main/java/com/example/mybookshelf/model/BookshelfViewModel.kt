@@ -23,6 +23,8 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.mybookshelf.DefaultAppContainer
 import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.ProtoData
@@ -45,6 +47,7 @@ import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import com.example.mybookshelf.ui.util.ScreenSelect
+import com.example.mybookshelf.workers.DatabaseDownloadWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -1024,6 +1027,13 @@ class BookshelfViewModel(
                 searchResult = searchResult
             )
         }
+    }
+
+    fun testWorker(context: Context) {
+        val workManager = WorkManager.getInstance(context)
+        val workRequest = OneTimeWorkRequestBuilder<DatabaseDownloadWorker>().build()
+        workManager.enqueue(workRequest)
+
     }
 
     // On viewModel initiation, get search results to populate data and set timer function
