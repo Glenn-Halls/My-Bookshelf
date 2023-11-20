@@ -3,7 +3,26 @@ package com.example.mybookshelf.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Serializable
+data class NytListOverview(
+    @SerialName(value = "num_results")
+    val totalItems: Int,
+    val results: NytListPublication
+)
 
+@Serializable
+data class NytListPublication(
+    @SerialName(value = "bestsellers_date")
+    val publicationDate: String,
+    val lists: List<NytPublishedList>
+)
+
+@Serializable
+data class NytPublishedList(
+    @SerialName(value = "list_name")
+    val listName: String,
+    val books: List<Bestseller>
+)
 
 @Serializable
 data class BestsellerSearch(

@@ -23,8 +23,6 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.mybookshelf.DefaultAppContainer
 import com.example.mybookshelf.MyBookshelfApplication
 import com.example.mybookshelf.ProtoData
@@ -39,15 +37,16 @@ import com.example.mybookshelf.data.api.MyBestsellerRepository
 import com.example.mybookshelf.data.api.MyBookRepository
 import com.example.mybookshelf.data.api.MyNytListRepository
 import com.example.mybookshelf.data.repo.NytListRepository
+import com.example.mybookshelf.data.repo.NytOverviewRepository
 import com.example.mybookshelf.model.extension.convertToMyBestseller
 import com.example.mybookshelf.network.NetworkBestsellerRepository
 import com.example.mybookshelf.network.NetworkBookRepository
+import com.example.mybookshelf.network.NetworkUpdateWorkManager
 import com.example.mybookshelf.ui.util.ActionButton
 import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
 import com.example.mybookshelf.ui.util.NavigationElement
 import com.example.mybookshelf.ui.util.ScreenSelect
-import com.example.mybookshelf.workers.DatabaseDownloadWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -101,6 +100,7 @@ class BookshelfViewModel(
     private var bookRepository: BookRepository,
     private var bestsellerRepository: BestsellerRepository,
     private val nytListRepository: NytListRepository,
+    private val nytFullOverviewRepository: NytOverviewRepository,
     private val myBookRepository: MyBookRepository,
     private val myBestsellerRepository: MyBestsellerRepository,
     private val myNytListRepository: MyNytListRepository,
@@ -494,6 +494,10 @@ class BookshelfViewModel(
                 )
             }
         }
+    }
+
+    fun updateMyBestsellerDatabase(context: Context) {
+        NetworkUpdateWorkManager(context).startWork()
     }
 
     fun selectBook(book: Book?) {
@@ -1029,13 +1033,6 @@ class BookshelfViewModel(
         }
     }
 
-    fun testWorker(context: Context) {
-        val workManager = WorkManager.getInstance(context)
-        val workRequest = OneTimeWorkRequestBuilder<DatabaseDownloadWorker>().build()
-        workManager.enqueue(workRequest)
-
-    }
-
     // On viewModel initiation, get search results to populate data and set timer function
     init {
         // When triggered, start countdown flow and once time = 0, set status to ready
@@ -1082,6 +1079,7 @@ class BookshelfViewModel(
                 val bookRepository = application.container.bookRepository
                 val bestsellerRepository = application.container.bestsellerRepository
                 val nytListRepository = application.container.nytListRepository
+                val nytOverviewRepository = application.container.nytOverviewRepository
                 val myBookRepository = application.container.myBookRepository
                 val myBestsellerRepository = application.container.myBestsellerRepository
                 val myNytListRepository = application.container.myNytListRepository
@@ -1090,6 +1088,7 @@ class BookshelfViewModel(
                     bookRepository,
                     bestsellerRepository,
                     nytListRepository,
+                    nytOverviewRepository,
                     myBookRepository,
                     myBestsellerRepository,
                     myNytListRepository,

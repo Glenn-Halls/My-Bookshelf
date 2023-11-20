@@ -1,6 +1,7 @@
 package com.example.mybookshelf.network
 
 import com.example.mybookshelf.model.BestsellerSearch
+import com.example.mybookshelf.model.NytListOverview
 import com.example.mybookshelf.model.NytListSearch
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -21,4 +22,11 @@ interface BookshelfNytListApiService{
     suspend fun getNytBestsellerLists(
         @Query("api-key") key: String = API_KEY
     ): NytListSearch
+}
+
+interface BookshelfNytFullOverviewApiService{
+    @GET("svc/books/v3/lists/full-overview.json")
+    suspend fun getNytFullOverview(
+        @Query("api-key") key: String = API_KEY
+    ): NytListOverview
 }

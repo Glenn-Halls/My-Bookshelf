@@ -392,7 +392,9 @@ fun MyBookshelfScreen(
                             darkMode = darkMode,
                             onDarkModeClick = {
                                 setDarkMode(it)
-                                viewModel.testWorker(context)
+                                coroutineScope.launch{
+                                    viewModel.updateMyBestsellerDatabase(context)
+                                }
                                               },
                             startScreen = startupScreen,
                             navTabList = NavigationTabs,

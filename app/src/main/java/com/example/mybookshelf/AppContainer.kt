@@ -12,13 +12,16 @@ import com.example.mybookshelf.data.api.MyNytListRepository
 import com.example.mybookshelf.data.database.AppDatabase
 import com.example.mybookshelf.data.database.DataStoreSerializer
 import com.example.mybookshelf.data.repo.NetworkNytListRepository
+import com.example.mybookshelf.data.repo.NetworkNytOverviewRepository
 import com.example.mybookshelf.data.repo.NytListRepository
+import com.example.mybookshelf.data.repo.NytOverviewRepository
 import com.example.mybookshelf.data.repo.OfflineMyBestsellerRepository
 import com.example.mybookshelf.data.repo.OfflineMyBookRepository
 import com.example.mybookshelf.data.repo.OfflineMyNytListRepository
 import com.example.mybookshelf.data.repo.ProtoDataStoreRepository
 import com.example.mybookshelf.network.BookApiService
 import com.example.mybookshelf.network.BookshelfBestsellerApiService
+import com.example.mybookshelf.network.BookshelfNytFullOverviewApiService
 import com.example.mybookshelf.network.BookshelfNytListApiService
 import com.example.mybookshelf.network.NetworkBestsellerRepository
 import com.example.mybookshelf.network.NetworkBookRepository
@@ -36,6 +39,7 @@ interface AppContainer {
     val bookRepository: BookRepository
     val bestsellerRepository: BestsellerRepository
     val nytListRepository: NytListRepository
+    val nytOverviewRepository: NytOverviewRepository
     val myBookRepository: MyBookRepository
     val myBestsellerRepository: MyBestsellerRepository
     val myNytListRepository: MyNytListRepository
@@ -114,6 +118,22 @@ class DefaultAppContainer(
     override val nytListRepository: NytListRepository by lazy {
         NetworkNytListRepository(nytListRetrofitService)
     }
+
+    private val nytFullOverviewRetrofit = Retrofit.Builder()
+        .addConverterFactory(bestsellerJson.asConverterFactory(
+            "application/json".toMediaType()
+        ))
+        .baseUrl(bestsellerBaseUrl)
+        .build()
+
+    val nytListOverviewRetrofitService: BookshelfNytFullOverviewApiService by lazy {
+        nytFullOverviewRetrofit.create(BookshelfNytFullOverviewApiService::class.java)
+    }
+
+    override val nytOverviewRepository: NytOverviewRepository by lazy {
+        NetworkNytOverviewRepository(nytListOverviewRetrofitService)
+    }
+
 
     override val myBookRepository: MyBookRepository by lazy {
         OfflineMyBookRepository(AppDatabase.getDatabase(context).myBookDao())
