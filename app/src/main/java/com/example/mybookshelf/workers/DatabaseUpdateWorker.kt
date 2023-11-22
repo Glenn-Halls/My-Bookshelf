@@ -15,17 +15,17 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-private const val TAG = "NETWORK_UPDATE_WORKER"
+private const val TAG = "DatabaseUpdateWorker"
 
 class DatabaseUpdateWorker(
     private val context: Context,
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
-    val updateIsbnList = inputData.getStringArray(NETWORK_WORKER_OUTPUT)
-    val appContainer = DefaultAppContainer(context)
-    val nytOverviewRetrofit = appContainer.nytListOverviewRetrofitService
-    val nytOverviewRepository: NytOverviewRepository by lazy {
+    private val updateIsbnList = inputData.getStringArray(NETWORK_WORKER_OUTPUT)
+    private val appContainer = DefaultAppContainer(context)
+    private val nytOverviewRetrofit = appContainer.nytListOverviewRetrofitService
+    private val nytOverviewRepository: NytOverviewRepository by lazy {
         NetworkNytOverviewRepository(nytOverviewRetrofit)
     }
 

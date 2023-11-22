@@ -11,24 +11,24 @@ import com.example.mybookshelf.data.api.NETWORK_WORKER_OUTPUT
 import com.example.mybookshelf.data.repo.NetworkNytOverviewRepository
 import com.example.mybookshelf.data.repo.NytOverviewRepository
 
-private const val TAG = "NetworkUpdateWorker"
+private const val TAG = "NetworkDownloadWorker"
 
 /*
-    NetworkUpdateWorker will attempt to run ONLY if DatabaseDownloadWorker was
+    NetworkDownloadWorker will attempt to run ONLY if DatabaseDownloadWorker was
     successful in retrieving a list of MyBestsellers that need to be updated. In this case,
     it will download the entire NYT bestseller list and return an array of Isbn13s.
  */
-class NetworkUpdateWorker (
+class NetworkDownloadWorker (
     context: Context,
     params: WorkerParameters,
 
 ) : CoroutineWorker(context, params) {
 
-    val dBArray = inputData.getStringArray(DATABASE_WORKER_OUTPUT)
-    val dBIsbnList = dBArray?.toList() ?: emptyList()
-    val appContainer = DefaultAppContainer(context)
-    val nytOverviewRetrofit = appContainer.nytListOverviewRetrofitService
-    val nytOverviewRepository: NytOverviewRepository by lazy {
+    private val dBArray = inputData.getStringArray(DATABASE_WORKER_OUTPUT)
+    private val dBIsbnList = dBArray?.toList() ?: emptyList()
+    private val appContainer = DefaultAppContainer(context)
+    private val nytOverviewRetrofit = appContainer.nytListOverviewRetrofitService
+    private val nytOverviewRepository: NytOverviewRepository by lazy {
         NetworkNytOverviewRepository(nytOverviewRetrofit)
     }
 

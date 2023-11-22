@@ -393,7 +393,7 @@ fun MyBookshelfScreen(
                             onDarkModeClick = {
                                 setDarkMode(it)
                                 coroutineScope.launch{
-                                    viewModel.updateMyBestsellerDatabase(context)
+                                    viewModel.enqueuePeriodicUpdate(context)
                                 }
                                               },
                             startScreen = startupScreen,

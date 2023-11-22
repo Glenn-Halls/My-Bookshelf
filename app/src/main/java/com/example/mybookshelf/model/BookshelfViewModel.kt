@@ -41,7 +41,7 @@ import com.example.mybookshelf.data.repo.NytOverviewRepository
 import com.example.mybookshelf.model.extension.convertToMyBestseller
 import com.example.mybookshelf.network.NetworkBestsellerRepository
 import com.example.mybookshelf.network.NetworkBookRepository
-import com.example.mybookshelf.network.NetworkUpdateWorkManager
+import com.example.mybookshelf.data.repo.NetworkUpdateWorkManager
 import com.example.mybookshelf.ui.util.ActionButton
 import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
@@ -498,6 +498,10 @@ class BookshelfViewModel(
 
     fun updateMyBestsellerDatabase(context: Context) {
         NetworkUpdateWorkManager(context).startWork()
+    }
+
+    fun enqueuePeriodicUpdate(context: Context) {
+        NetworkUpdateWorkManager(context).enqueuePeriodicWork(1)
     }
 
     fun selectBook(book: Book?) {
