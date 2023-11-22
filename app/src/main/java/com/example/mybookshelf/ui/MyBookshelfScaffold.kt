@@ -390,12 +390,7 @@ fun MyBookshelfScreen(
                     } else {
                         SettingsScreen(
                             darkMode = darkMode,
-                            onDarkModeClick = {
-                                setDarkMode(it)
-                                coroutineScope.launch{
-                                    viewModel.enqueuePeriodicUpdate(context)
-                                }
-                                              },
+                            onDarkModeClick = { setDarkMode(it) },
                             startScreen = startupScreen,
                             navTabList = NavigationTabs,
                             onStartScreenClick = { setScreenSelect(it.screenSelect) },

@@ -49,6 +49,7 @@ class PeriodicUpdateWorker (
 
     private fun databaseDownload(): List<MyBestseller> {
         return try {
+            Log.d(TAG, "Fetching Bestsellers from database")
             database.getMyBestsellersList() ?: emptyList()
         } catch (exception: Exception) {
             Log.e(TAG, "Error downloading from MyBestseller Database")
@@ -58,6 +59,7 @@ class PeriodicUpdateWorker (
 
     private suspend fun networkDownload(): List<Bestseller> {
         return try {
+            Log.d(TAG, "Fetching Bestsellers from network")
             val nytResponse = nytOverviewRepository.getNytOverview()
             nytResponse.results.lists.flatMap { it.books }
         } catch (exception: Exception) {
@@ -75,6 +77,7 @@ class PeriodicUpdateWorker (
 
     private suspend fun updateDatabase(bestsellers: List<Bestseller>) {
         try {
+            Log.d(TAG, "Updating Database")
             bestsellers.forEach {
                 database.insert(it.convertToMyBestseller())
             }

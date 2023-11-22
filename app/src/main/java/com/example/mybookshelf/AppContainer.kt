@@ -9,10 +9,12 @@ import com.example.mybookshelf.data.api.DataStoreRepository
 import com.example.mybookshelf.data.api.MyBestsellerRepository
 import com.example.mybookshelf.data.api.MyBookRepository
 import com.example.mybookshelf.data.api.MyNytListRepository
+import com.example.mybookshelf.data.api.WorkManagerUpdateRepository
 import com.example.mybookshelf.data.database.AppDatabase
 import com.example.mybookshelf.data.database.DataStoreSerializer
 import com.example.mybookshelf.data.repo.NetworkNytListRepository
 import com.example.mybookshelf.data.repo.NetworkNytOverviewRepository
+import com.example.mybookshelf.data.repo.NetworkUpdateWorkManager
 import com.example.mybookshelf.data.repo.NytListRepository
 import com.example.mybookshelf.data.repo.NytOverviewRepository
 import com.example.mybookshelf.data.repo.OfflineMyBestsellerRepository
@@ -44,6 +46,7 @@ interface AppContainer {
     val myBestsellerRepository: MyBestsellerRepository
     val myNytListRepository: MyNytListRepository
     val protoDataRepository: DataStoreRepository
+    val workManagerRepository: WorkManagerUpdateRepository
     var searchString: String
     var nytListAddress: String
 }
@@ -149,5 +152,9 @@ class DefaultAppContainer(
 
     override val protoDataRepository: DataStoreRepository by lazy {
         ProtoDataStoreRepository(context.dataStore)
+    }
+
+    override val workManagerRepository: WorkManagerUpdateRepository by lazy {
+        NetworkUpdateWorkManager(context)
     }
 }

@@ -36,12 +36,11 @@ import com.example.mybookshelf.data.api.DataStoreRepository
 import com.example.mybookshelf.data.api.MyBestsellerRepository
 import com.example.mybookshelf.data.api.MyBookRepository
 import com.example.mybookshelf.data.api.MyNytListRepository
+import com.example.mybookshelf.data.api.WorkManagerUpdateRepository
 import com.example.mybookshelf.data.repo.NytListRepository
-import com.example.mybookshelf.data.repo.NytOverviewRepository
 import com.example.mybookshelf.model.extension.convertToMyBestseller
 import com.example.mybookshelf.network.NetworkBestsellerRepository
 import com.example.mybookshelf.network.NetworkBookRepository
-import com.example.mybookshelf.data.repo.NetworkUpdateWorkManager
 import com.example.mybookshelf.ui.util.ActionButton
 import com.example.mybookshelf.ui.util.BookshelfContentLayout
 import com.example.mybookshelf.ui.util.BookshelfNavigationType
@@ -100,11 +99,11 @@ class BookshelfViewModel(
     private var bookRepository: BookRepository,
     private var bestsellerRepository: BestsellerRepository,
     private val nytListRepository: NytListRepository,
-    private val nytFullOverviewRepository: NytOverviewRepository,
     private val myBookRepository: MyBookRepository,
     private val myBestsellerRepository: MyBestsellerRepository,
     private val myNytListRepository: MyNytListRepository,
     private val protoDataStoreRepository: DataStoreRepository,
+    private val workManagerRepository: WorkManagerUpdateRepository
 ) : ViewModel() {
 
     // Create observable state holder
@@ -494,14 +493,6 @@ class BookshelfViewModel(
                 )
             }
         }
-    }
-
-    fun updateMyBestsellerDatabase(context: Context) {
-        NetworkUpdateWorkManager(context).startWork()
-    }
-
-    fun enqueuePeriodicUpdate(context: Context) {
-        NetworkUpdateWorkManager(context).enqueuePeriodicWork(1)
     }
 
     fun selectBook(book: Book?) {
@@ -1074,6 +1065,8 @@ class BookshelfViewModel(
         }
         getBestsellers()
         getNytLists()
+        workManagerRepository.updateDatabase()
+        workManagerRepository.enqueuePeriodicUpdates(7)
     }
 
     companion object {
@@ -1083,20 +1076,20 @@ class BookshelfViewModel(
                 val bookRepository = application.container.bookRepository
                 val bestsellerRepository = application.container.bestsellerRepository
                 val nytListRepository = application.container.nytListRepository
-                val nytOverviewRepository = application.container.nytOverviewRepository
                 val myBookRepository = application.container.myBookRepository
                 val myBestsellerRepository = application.container.myBestsellerRepository
                 val myNytListRepository = application.container.myNytListRepository
                 val protoDataStoreRepository = application.container.protoDataRepository
+                val workManagerRepository = application.container.workManagerRepository
                 BookshelfViewModel(
                     bookRepository,
                     bestsellerRepository,
                     nytListRepository,
-                    nytOverviewRepository,
                     myBookRepository,
                     myBestsellerRepository,
                     myNytListRepository,
-                    protoDataStoreRepository
+                    protoDataStoreRepository,
+                    workManagerRepository
                     )
             }
         }

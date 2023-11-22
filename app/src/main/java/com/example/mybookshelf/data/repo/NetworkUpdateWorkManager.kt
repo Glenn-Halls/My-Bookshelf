@@ -51,9 +51,9 @@ class NetworkUpdateWorkManager(
 
         val constraints = Constraints(
             requiredNetworkType = NetworkType.CONNECTED,
-            requiresCharging = false,
-            requiresDeviceIdle = false,
-            requiresBatteryNotLow = false,
+            requiresCharging = true,
+            requiresDeviceIdle = true,
+            requiresBatteryNotLow = true,
         )
 
         val work =
