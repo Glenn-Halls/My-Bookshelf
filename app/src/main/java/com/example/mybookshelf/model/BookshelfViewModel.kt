@@ -631,7 +631,7 @@ class BookshelfViewModel(
         return when (windowSize.widthSizeClass) {
             WindowWidthSizeClass.Compact -> BookshelfNavigationType.BOTTOM_BAR
             WindowWidthSizeClass.Medium -> BookshelfNavigationType.NAVIGATION_RAIL
-            WindowWidthSizeClass.Expanded -> BookshelfNavigationType.NAVIGATION_DRAWER
+            WindowWidthSizeClass.Expanded -> BookshelfNavigationType.NAVIGATION_RAIL
             else -> BookshelfNavigationType.BOTTOM_BAR
         }
     }
