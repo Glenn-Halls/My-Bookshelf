@@ -21,4 +21,4 @@ This app that allows users to search for books via Google's database of over 40 
   <li>WorkManager</li>
 </ul>
 
-For those wanting a closer look, feel free to download the APK here.
+For those wanting a closer look, feel free to download the APK <a href="https://github.com/Glenn-Halls/My-Bookshelf/releases/download/v0.0.1-alpha/bookshelf.apk">here</a>.
